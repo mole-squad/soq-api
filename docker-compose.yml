@@ -1,0 +1,18 @@
+services:
+  db:
+    ports:
+      - "5432:5432"
+    image: "postgres:alpine"
+    environment:
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: task
+    volumes:
+      - ${PWD}/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+  db-admin:
+    image: "dpage/pgadmin4"
+    ports:
+      - "5444:5444"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: test@test.com
+      PGADMIN_DEFAULT_PASSWORD: pass
+      PGADMIN_LISTEN_PORT: 5444
