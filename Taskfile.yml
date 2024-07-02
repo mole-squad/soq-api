@@ -1,12 +1,19 @@
 version: '3'
 
 tasks:
-  watch:
+  run:
     watch: true
+    cmds:
+      - go build -o bin/main cmd/main.go
+      - defer: rm bin/main
+      - bin/main
     sources:
       - '**/*.go'
+    generates:
+      - './bin/main'
+
+  fmt:
     cmds:
-      - task run
-  run:
-    cmds:
-      - go run cmd/main.go
+      - go fmt ./...
+    sources:
+      - '**/*.go'
