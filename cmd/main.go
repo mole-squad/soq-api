@@ -3,10 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"net"
 	"net/http"
-	"os"
 
 	"github.com/burkel24/task-app/pkg/db"
 	"github.com/burkel24/task-app/pkg/tasks"
@@ -30,7 +28,6 @@ func NewRouter() *chi.Mux {
 }
 
 func NewServer(lc fx.Lifecycle, router *chi.Mux) *http.Server {
-
 	srv := &http.Server{Addr: port, Handler: router}
 
 	lc.Append(fx.Hook{
@@ -47,20 +44,15 @@ func NewServer(lc fx.Lifecycle, router *chi.Mux) *http.Server {
 		},
 		OnStop: func(ctx context.Context) error {
 			fmt.Println("Shutting down")
+
 			return srv.Shutdown(ctx)
 		},
 	})
+
 	return srv
 }
 
 func main() {
-	_, err := db.InitDb()
-
-	if err != nil {
-		slog.Error("DB connection failed %w", slog.Attr{Key: "error", Value: slog.AnyValue(err)})
-		os.Exit(1)
-	}
-
 	fx.New(
 		db.Module,
 		users.Module,

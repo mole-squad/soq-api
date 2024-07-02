@@ -9,28 +9,47 @@ import (
 	"gorm.io/gorm"
 )
 
+var models = []interface{}{
+	&users.User{},
+	&tasks.Task{},
+}
+
+type DBServiceParams struct {
+	fx.In
+}
+
+type DbServiceResult struct {
+	fx.Out
+
+	DBService interfaces.DBService
+}
+
 type DBService struct {
+	db *gorm.DB
 }
 
-var _ interfaces.DBService = DBService{}
+func NewDBService() (DbServiceResult, error) {
+	srv := DBService{}
+	srv.Init()
 
-func NewDBService() interfaces.DBService {
-	return DBService{}
+	return DbServiceResult{DBService: srv}, nil
 }
 
-var Module = fx.Module(
-	"DB",
-	fx.Provide(NewDBService),
-)
-
-func InitDb() (*gorm.DB, error) {
+func (srv *DBService) Init() error {
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN:                  "host=localhost user=postgres password=pass dbname=task port=5432 sslmode=disable",
 		PreferSimpleProtocol: true,
 	}), &gorm.Config{})
 
-	db.AutoMigrate(&users.User{})
-	db.AutoMigrate(&tasks.Task{})
+	if err != nil {
+		return err
+	}
 
-	return db, err
+	srv.db = db
+
+	for _, model := range models {
+		srv.db.AutoMigrate(model)
+	}
+
+	return err
 }
