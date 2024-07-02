@@ -5,6 +5,7 @@ import (
 
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/render"
 	"go.uber.org/fx"
 )
 
@@ -37,5 +38,12 @@ func NewTaskController(params TaskControllerParams) (TaskControllerResult, error
 }
 
 func (ctrl *TaskController) ListTasks(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("these are my tasks xD"))
+	fakeTasks := []Task{
+		{Summary: "Test Task"},
+		{Summary: "Test Task 2"},
+		{Summary: "Test Task 3"},
+		{Summary: "Test Task 4"},
+	}
+
+	render.RenderList(w, r, NewTaskListResponseDTO(fakeTasks))
 }

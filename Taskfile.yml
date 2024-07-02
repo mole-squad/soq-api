@@ -1,17 +1,24 @@
 version: '3'
 
+interval: 500ms
 tasks:
   dev:
     watch: true
     cmds:
-      - go build -o bin/main cmd/main.go
-      - defer: rm bin/main
-      - bin/main
+      - go build -o bin/server cmd/server/main.go
+      - defer: rm bin/server
+      - bin/server
     sources:
-      - '**/*.go'
+      - 'cmd/server/*.go'
+      - 'pkg/**/*.go'
     generates:
-      - './bin/main'
+      - './bin/server'
 
+  tui:
+    cmds:
+      - go build -o bin/tui cmd/tui/main.go
+      - defer: rm bin/tui
+      - bin/tui
   fmt:
     cmds:
       - go fmt ./...
