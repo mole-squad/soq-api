@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: task
     volumes:
-      - ${PWD}/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+      - ${PWD}/docker/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
   db-admin:
     image: "dpage/pgadmin4"
     ports:
