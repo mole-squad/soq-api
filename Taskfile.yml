@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+  watch:
+    watch: true
+    sources:
+      - '**/*.go'
+    cmds:
+      - task run
+  run:
+    cmds:
+      - go run cmd/main.go
