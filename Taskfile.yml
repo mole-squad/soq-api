@@ -14,6 +14,12 @@ tasks:
     generates:
       - './bin/server'
 
+  seed:
+    cmds:
+      - go build -o bin/seed cmd/seed/main.go
+      - defer: rm bin/seed
+      - bin/seed
+
   tui:
     cmds:
       - go build -o bin/tui cmd/tui/main.go
