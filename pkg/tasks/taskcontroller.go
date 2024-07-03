@@ -6,6 +6,7 @@ import (
 	"github.com/burkel24/task-app/pkg/auth"
 	"github.com/burkel24/task-app/pkg/common"
 	"github.com/burkel24/task-app/pkg/interfaces"
+	"github.com/burkel24/task-app/pkg/models"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"go.uber.org/fx"
@@ -33,10 +34,35 @@ func NewTaskController(params TaskControllerParams) (TaskControllerResult, error
 
 	taskRouter := chi.NewRouter()
 	taskRouter.Get("/", ctrl.ListTasks)
+	taskRouter.Post("/", ctrl.CreateTask)
 
 	params.Router.Mount("/tasks", taskRouter)
 
 	return TaskControllerResult{TaskController: ctrl}, nil
+}
+
+func (ctrl *TaskController) CreateTask(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	user, err := auth.GetUserFromCtx(ctx)
+	if err != nil {
+		render.Render(w, r, common.ErrUnauthorized(err))
+		return
+	}
+
+	dto := &CreateTaskRequestDto{}
+	if err = render.Bind(r, dto); err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
+
+	task, err := ctrl.taskService.CreateUserTask(ctx, &user, &models.Task{Summary: dto.Summary})
+	if err != nil {
+		render.Render(w, r, common.ErrUnknown(err))
+	}
+
+	resp := NewTaskDTO(task)
+	render.Render(w, r, resp)
 }
 
 func (ctrl *TaskController) ListTasks(w http.ResponseWriter, r *http.Request) {
@@ -48,7 +74,7 @@ func (ctrl *TaskController) ListTasks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tasks, err := ctrl.taskService.ListUserTasks(ctx, user)
+	tasks, err := ctrl.taskService.ListUserTasks(ctx, &user)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
 	}

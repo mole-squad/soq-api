@@ -7,6 +7,8 @@ import (
 	"net/http"
 
 	"github.com/burkel24/task-app/pkg/db"
+	"github.com/burkel24/task-app/pkg/interfaces"
+	"github.com/burkel24/task-app/pkg/models"
 	"github.com/burkel24/task-app/pkg/tasks"
 	"github.com/burkel24/task-app/pkg/users"
 	"github.com/go-chi/chi/v5"
@@ -54,6 +56,10 @@ func NewServer(lc fx.Lifecycle, router *chi.Mux) *http.Server {
 	return srv
 }
 
+func NewSeeder(lc fx.Lifecycle, dbService interfaces.DBService) {
+	dbService.CreateOne(context.Background(), &models.User{})
+}
+
 func main() {
 	fx.New(
 		db.Module,
@@ -62,5 +68,6 @@ func main() {
 		fx.Provide(NewRouter),
 		fx.Provide(NewServer),
 		fx.Invoke(func(*http.Server) {}),
+		fx.Invoke(NewSeeder),
 	).Run()
 }

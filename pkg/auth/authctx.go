@@ -3,13 +3,12 @@ package auth
 import (
 	"context"
 
-	"github.com/burkel24/task-app/pkg/interfaces"
-	"github.com/burkel24/task-app/pkg/users"
+	"github.com/burkel24/task-app/pkg/models"
 	"gorm.io/gorm"
 )
 
-func GetUserFromCtx(ctx context.Context) (interfaces.User, error) {
-	return &users.User{
+func GetUserFromCtx(ctx context.Context) (models.User, error) {
+	return models.User{
 		Model: gorm.Model{ID: 1},
 	}, nil
 }

@@ -1,7 +1,12 @@
 package interfaces
 
-import "context"
+import (
+	"context"
+
+	"github.com/burkel24/task-app/pkg/models"
+)
 
 type TaskService interface {
-	ListUserTasks(ctx context.Context, user User) ([]Task, error)
+	CreateUserTask(ctx context.Context, user *models.User, task *models.Task) (models.Task, error)
+	ListUserTasks(ctx context.Context, user *models.User) ([]models.Task, error)
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/burkel24/task-app/pkg/interfaces"
+	"github.com/burkel24/task-app/pkg/models"
 	"go.uber.org/fx"
 )
 
@@ -29,18 +30,22 @@ func NewTaskRepo(params TaskRepoParams) (TaskRepoResult, error) {
 	return TaskRepoResult{TaskRepo: repo}, nil
 }
 
-func (repo *TaskRepo) FindManyTasksByUser(ctx context.Context, userID uint) ([]interfaces.Task, error) {
-	var tasks []Task
+func (repo *TaskRepo) CreateOne(ctx context.Context, task *models.Task) error {
+	err := repo.dbService.CreateOne(ctx, task)
+	if err != nil {
+		return fmt.Errorf("failed to create one task: %w", err)
+	}
+
+	return nil
+}
+
+func (repo *TaskRepo) FindManyByUser(ctx context.Context, userID uint) ([]models.Task, error) {
+	var tasks []models.Task
 
 	err := repo.dbService.FindMany(ctx, &tasks, "user_id = ?", userID)
 	if err != nil {
-		return []interfaces.Task{}, fmt.Errorf("failed to find many taks by user: %w", err)
+		return nil, fmt.Errorf("failed to find many taks by user: %w", err)
 	}
 
-	taskResult := make([]interfaces.Task, len(tasks))
-	for idx, task := range tasks {
-		taskResult[idx] = &task
-	}
-
-	return taskResult, nil
+	return tasks, nil
 }
