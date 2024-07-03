@@ -1,6 +1,10 @@
 package db
 
 import (
+	"context"
+	"fmt"
+	"time"
+
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/burkel24/task-app/pkg/tasks"
 	"github.com/burkel24/task-app/pkg/users"
@@ -13,6 +17,10 @@ var models = []interface{}{
 	&users.User{},
 	&tasks.Task{},
 }
+
+const (
+	QueryTimeout = time.Second
+)
 
 type DBServiceParams struct {
 	fx.In
@@ -29,7 +37,7 @@ type DBService struct {
 }
 
 func NewDBService() (DbServiceResult, error) {
-	srv := DBService{}
+	srv := &DBService{}
 	srv.Init()
 
 	return DbServiceResult{DBService: srv}, nil
@@ -52,4 +60,24 @@ func (srv *DBService) Init() error {
 	}
 
 	return err
+}
+
+func (srv *DBService) FindMany(ctx context.Context, result interface{}, query interface{}, args ...interface{}) error {
+	sesh, cancel := srv.buildSession(ctx)
+	defer cancel()
+
+	queryResult := sesh.Where(query, args).Find(result)
+	if queryResult.Error != nil {
+		return fmt.Errorf("find many failed: %w", queryResult.Error)
+	}
+
+	return nil
+}
+
+func (srv *DBService) buildSession(ctx context.Context) (*gorm.DB, context.CancelFunc) {
+	timeoutCtx, cancel := context.WithTimeout(ctx, QueryTimeout)
+
+	return srv.db.Session(&gorm.Session{
+		Context: timeoutCtx,
+	}), cancel
 }

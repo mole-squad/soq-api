@@ -14,9 +14,21 @@ const (
 
 type Task struct {
 	gorm.Model
-	Summary string
-	Notes   string
-	Status  TaskStatus
-	UserID  int
-	User    users.User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	summary string
+	notes   string
+	status  TaskStatus
+	userID  uint
+	user    users.User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+func (t *Task) Summary() string {
+	return t.summary
+}
+
+func (t *Task) Notes() string {
+	return t.notes
+}
+
+func (t *Task) Status() TaskStatus {
+	return t.status
 }

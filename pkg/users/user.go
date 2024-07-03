@@ -6,5 +6,13 @@ import (
 
 type User struct {
 	gorm.Model
-	Name string
+	name string
+}
+
+func (u *User) Name() string {
+	return u.name
+}
+
+func (u *User) ID() uint {
+	return u.Model.ID
 }
