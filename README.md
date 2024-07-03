@@ -22,6 +22,7 @@ http://localhost:5444/ (test@test.com / pass)
 ## Server
  - [gORM](https://gorm.io/docs/)
  - [chi](https://go-chi.io/#/README)
+ - [chi-render](https://github.com/go-chi/render)
  - [fx](https://uber-go.github.io/fx/)
 
 

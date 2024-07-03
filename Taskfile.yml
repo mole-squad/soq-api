@@ -28,3 +28,7 @@ tasks:
   db:
     cmds:
       - docker-compose -f docker/docker-compose.yml up db
+
+  db_admin:
+    cmds:
+      - docker-compose -f docker/docker-compose.yml up db_admin

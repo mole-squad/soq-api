@@ -3,6 +3,8 @@ package tasks
 import (
 	"net/http"
 
+	"github.com/burkel24/task-app/pkg/auth"
+	"github.com/burkel24/task-app/pkg/common"
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -38,12 +40,18 @@ func NewTaskController(params TaskControllerParams) (TaskControllerResult, error
 }
 
 func (ctrl *TaskController) ListTasks(w http.ResponseWriter, r *http.Request) {
-	fakeTasks := []Task{
-		{Summary: "Test Task"},
-		{Summary: "Test Task 2"},
-		{Summary: "Test Task 3"},
-		{Summary: "Test Task 4"},
+	ctx := r.Context()
+
+	user, err := auth.GetUserFromCtx(ctx)
+	if err != nil {
+		render.Render(w, r, common.ErrUnauthorized(err))
+		return
 	}
 
-	render.RenderList(w, r, NewTaskListResponseDTO(fakeTasks))
+	tasks, err := ctrl.taskService.ListUserTasks(ctx, user)
+	if err != nil {
+		render.Render(w, r, common.ErrUnknown(err))
+	}
+
+	render.RenderList(w, r, NewTaskListResponseDTO(tasks))
 }
