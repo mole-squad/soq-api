@@ -6,16 +6,15 @@ import (
 	"time"
 
 	"github.com/burkel24/task-app/pkg/interfaces"
-	"github.com/burkel24/task-app/pkg/tasks"
-	"github.com/burkel24/task-app/pkg/users"
+	"github.com/burkel24/task-app/pkg/models"
 	"go.uber.org/fx"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var models = []interface{}{
-	&users.User{},
-	&tasks.Task{},
+var allModels = []interface{}{
+	&models.User{},
+	&models.Task{},
 }
 
 const (
@@ -55,11 +54,24 @@ func (srv *DBService) Init() error {
 
 	srv.db = db
 
-	for _, model := range models {
+	for _, model := range allModels {
 		srv.db.AutoMigrate(model)
 	}
 
 	return err
+}
+
+func (srv *DBService) CreateOne(ctx context.Context, record interface{}) error {
+	sesh, cancel := srv.buildSession(ctx)
+	defer cancel()
+
+	fmt.Printf("Creating task %v", record)
+	createResult := sesh.Create(record)
+	if createResult.Error != nil {
+		return fmt.Errorf("create one failed: %w", createResult.Error)
+	}
+
+	return nil
 }
 
 func (srv *DBService) FindMany(ctx context.Context, result interface{}, query interface{}, args ...interface{}) error {

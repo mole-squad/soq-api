@@ -1,7 +1,12 @@
 package interfaces
 
-import "context"
+import (
+	"context"
+
+	"github.com/burkel24/task-app/pkg/models"
+)
 
 type TaskRepo interface {
-	FindManyTasksByUser(ctx context.Context, userID uint) ([]Task, error)
+	CreateOne(ctx context.Context, task *models.Task) error
+	FindManyByUser(ctx context.Context, userID uint) ([]models.Task, error)
 }
