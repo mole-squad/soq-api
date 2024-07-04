@@ -36,6 +36,10 @@ tasks:
       - defer: rm bin/tui
       - bin/tui
 
+  tui_log:
+    cmds:
+      - tail -f debug.log
+
   fmt:
     cmds:
       - go fmt ./...

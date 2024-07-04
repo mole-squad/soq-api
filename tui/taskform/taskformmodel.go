@@ -12,7 +12,6 @@ import (
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textarea"
-	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -77,15 +76,20 @@ var keys = formKeyMap{
 }
 
 type TaskFormModel struct {
-	client    *api.Client
-	keys      formKeyMap
-	help      help.Model
-	height    int
+	client *api.Client
+
 	isNewTask bool
-	summary   textarea.Model
-	notes     textarea.Model
-	focused   int
 	task      tasks.TaskDTO
+
+	height int
+	width  int
+
+	focused int
+	summary textarea.Model
+	notes   textarea.Model
+
+	keys formKeyMap
+	help help.Model
 }
 
 func newFormField(label string, height int) textarea.Model {
@@ -97,7 +101,7 @@ func newFormField(label string, height int) textarea.Model {
 	input.MaxWidth = 0
 	input.FocusedStyle.CursorLine = lipgloss.NewStyle()
 
-	input.SetWidth(50)
+	// input.SetWidth(50)
 	input.SetHeight(height)
 
 	return input
@@ -115,11 +119,12 @@ func NewTaskFormModel(client *api.Client) TaskFormModel {
 		height:  0,
 		notes:   notesInput,
 		focused: summaryInputIdx,
+		width:   0,
 	}
 }
 
 func (m *TaskFormModel) Init() tea.Cmd {
-	return textinput.Blink
+	return textarea.Blink
 }
 
 func (m *TaskFormModel) Update(msg tea.Msg) (TaskFormModel, tea.Cmd) {
@@ -128,15 +133,11 @@ func (m *TaskFormModel) Update(msg tea.Msg) (TaskFormModel, tea.Cmd) {
 		notesCmd   tea.Cmd
 	)
 
-	slog.Info("TaskFormModel.Update", "msg", msg)
-
 	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		_, v := docStyle.GetFrameSize()
-		m.height = msg.Height - v
 
-		slog.Info("TaskFormModel.Update: tea.WindowSizeMsg")
-		m.help.Width = msg.Width
+	case tea.WindowSizeMsg:
+		slog.Info("Window size changed", "width", msg.Width, "height", msg.Height)
+		m.onWindowSize(msg.Width, msg.Height)
 
 	case tea.KeyMsg:
 		switch {
@@ -167,7 +168,6 @@ func (m *TaskFormModel) Update(msg tea.Msg) (TaskFormModel, tea.Cmd) {
 
 	case common.SelectTaskMsg:
 		m.onTaskSelect(msg.Task)
-		slog.Info("TaskFormModel.Update: common.SelectTaskMsg", "state", m)
 	}
 
 	m.summary, summaryCmd = m.summary.Update(msg)
@@ -200,7 +200,6 @@ func (m *TaskFormModel) View() string {
 
 	help := m.help.View(m.keys)
 	availHeight := m.height - lipgloss.Height(form) - lipgloss.Height(help)
-	slog.Info(fmt.Sprintf("%d", availHeight))
 
 	return docStyle.Render(lipgloss.JoinVertical(
 		lipgloss.Left,
@@ -230,6 +229,20 @@ func (m *TaskFormModel) onTaskSelect(task tasks.TaskDTO) {
 	m.setFormStateFromModel()
 }
 
+func (m *TaskFormModel) onWindowSize(width, height int) {
+	h, v := docStyle.GetFrameSize()
+
+	m.height = height - v
+
+	availWidth := width - h
+
+	m.summary.SetWidth(availWidth)
+	m.notes.SetWidth(availWidth)
+
+	m.width = availWidth
+	m.help.Width = availWidth
+}
+
 func (m *TaskFormModel) setFormStateFromModel() {
 	m.summary.SetValue(m.task.Summary)
 	m.notes.SetValue(m.task.Notes)
@@ -256,7 +269,6 @@ func (m *TaskFormModel) submitTask() tea.Cmd {
 	}
 
 	return tea.Sequence(
-		common.NewTaskCmd(),
 		common.NewRefreshListMsg(),
 		common.AppStateCmd(common.AppStateTaskList),
 	)

@@ -106,7 +106,7 @@ func (m TaskListModel) Update(msg tea.Msg) (TaskListModel, tea.Cmd) {
 		switch {
 		case key.Matches(msg, m.keys.New):
 			return m, tea.Sequence(
-				common.NewTaskCmd(),
+				common.NewCreateTaskMsg(),
 				common.AppStateCmd(common.AppStateTaskForm),
 			)
 
@@ -122,7 +122,7 @@ func (m TaskListModel) Update(msg tea.Msg) (TaskListModel, tea.Cmd) {
 			}
 
 			return m, tea.Sequence(
-				common.SelectTaskCmd(taskItem.task),
+				common.NewSelectTaskMsg(taskItem.task),
 				common.AppStateCmd(common.AppStateTaskForm),
 			)
 		}
