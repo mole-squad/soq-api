@@ -42,6 +42,17 @@ func (repo *TaskRepo) CreateOne(ctx context.Context, task *models.Task) error {
 	return nil
 }
 
+func (repo *TaskRepo) UpdateOne(ctx context.Context, task *models.Task) error {
+	slog.Info("Updating one task", "task", task)
+
+	err := repo.dbService.UpdateOne(ctx, task)
+	if err != nil {
+		return fmt.Errorf("failed to update one task: %w", err)
+	}
+
+	return nil
+}
+
 func (repo *TaskRepo) FindManyByUser(ctx context.Context, userID uint) ([]models.Task, error) {
 	var tasks []models.Task
 

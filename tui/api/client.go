@@ -100,3 +100,43 @@ func (c *Client) CreateTask(ctx context.Context, t *tasks.CreateTaskRequestDto) 
 
 	return task, nil
 }
+
+func (c *Client) UpdateTask(ctx context.Context, taskID uint, t *tasks.UpdateTaskRequestDto) (tasks.TaskDTO, error) {
+	var task tasks.TaskDTO
+
+	reqUrl := url.URL{
+		Scheme: "http",
+		Host:   APIHost,
+		Path:   fmt.Sprintf("/tasks/%d", taskID),
+	}
+
+	body, err := json.Marshal(t)
+	if err != nil {
+		return task, fmt.Errorf("error marshalling update task request: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, reqUrl.String(), bytes.NewBuffer(body))
+	if err != nil {
+		return task, fmt.Errorf("error building update task request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := c.httpClient.Do(req)
+	if err != nil {
+		return task, fmt.Errorf("error executing update task request: %w", err)
+	}
+
+	defer res.Body.Close()
+
+	respBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		return task, fmt.Errorf("error reading update task response: %w", err)
+	}
+
+	if err = json.Unmarshal(respBody, &task); err != nil {
+		return task, fmt.Errorf("error unmarshalling update task response: %w", err)
+	}
+
+	return task, nil
+}

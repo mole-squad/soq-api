@@ -267,6 +267,7 @@ func (m *TaskFormModel) submitTask() tea.Cmd {
 	}
 
 	if err != nil {
+		slog.Error("Error submitting task", "error", err)
 		return common.NewErrorMsg(err)
 	}
 
@@ -294,5 +295,18 @@ func (m *TaskFormModel) createTask(summary, notes string) error {
 }
 
 func (m *TaskFormModel) updateTask(summary, notes string) error {
-	return fmt.Errorf("not implemented")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	dto := tasks.UpdateTaskRequestDto{
+		Summary: summary,
+		Notes:   notes,
+	}
+
+	_, err := m.client.UpdateTask(ctx, m.task.ID, &dto)
+	if err != nil {
+		return fmt.Errorf("error updating task: %w", err)
+	}
+
+	return nil
 }
