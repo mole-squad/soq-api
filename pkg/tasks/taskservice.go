@@ -45,6 +45,18 @@ func (srv *TaskService) CreateUserTask(
 	return *task, nil
 }
 
+func (srv *TaskService) UpdateUserTask(
+	ctx context.Context,
+	task *models.Task,
+) (models.Task, error) {
+	err := srv.taskRepo.UpdateOne(ctx, task)
+	if err != nil {
+		return models.Task{}, fmt.Errorf("failed to update user task: %w", err)
+	}
+
+	return *task, nil
+}
+
 func (srv *TaskService) ListUserTasks(ctx context.Context, user *models.User) ([]models.Task, error) {
 	tasks, err := srv.taskRepo.FindManyByUser(ctx, user.ID)
 	if err != nil {

@@ -8,5 +8,6 @@ import (
 
 type TaskRepo interface {
 	CreateOne(ctx context.Context, task *models.Task) error
+	UpdateOne(ctx context.Context, task *models.Task) error
 	FindManyByUser(ctx context.Context, userID uint) ([]models.Task, error)
 }

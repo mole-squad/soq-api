@@ -65,10 +65,21 @@ func (srv *DBService) CreateOne(ctx context.Context, record interface{}) error {
 	sesh, cancel := srv.buildSession(ctx)
 	defer cancel()
 
-	fmt.Printf("Creating task %v", record)
 	createResult := sesh.Create(record)
 	if createResult.Error != nil {
 		return fmt.Errorf("create one failed: %w", createResult.Error)
+	}
+
+	return nil
+}
+
+func (srv *DBService) UpdateOne(ctx context.Context, record interface{}) error {
+	sesh, cancel := srv.buildSession(ctx)
+	defer cancel()
+
+	updateResult := sesh.Model(record).Updates(record)
+	if updateResult.Error != nil {
+		return fmt.Errorf("update one failed: %w", updateResult.Error)
 	}
 
 	return nil
