@@ -101,7 +101,6 @@ func newFormField(label string, height int) textarea.Model {
 	input.MaxWidth = 0
 	input.FocusedStyle.CursorLine = lipgloss.NewStyle()
 
-	// input.SetWidth(50)
 	input.SetHeight(height)
 
 	return input
@@ -136,7 +135,6 @@ func (m *TaskFormModel) Update(msg tea.Msg) (TaskFormModel, tea.Cmd) {
 	switch msg := msg.(type) {
 
 	case tea.WindowSizeMsg:
-		slog.Info("Window size changed", "width", msg.Width, "height", msg.Height)
 		m.onWindowSize(msg.Width, msg.Height)
 
 	case tea.KeyMsg:
@@ -152,15 +150,7 @@ func (m *TaskFormModel) Update(msg tea.Msg) (TaskFormModel, tea.Cmd) {
 			return *m, m.submitTask()
 
 		case key.Matches(msg, m.keys.Next):
-			if m.focused == summaryInputIdx {
-				m.summary.Blur()
-				m.notes.Focus()
-				m.focused = notesInputIdx
-			} else {
-				m.notes.Blur()
-				m.summary.Focus()
-				m.focused = summaryInputIdx
-			}
+			m.onNextField()
 		}
 
 	case common.CreateTaskMsg:
@@ -241,6 +231,18 @@ func (m *TaskFormModel) onWindowSize(width, height int) {
 
 	m.width = availWidth
 	m.help.Width = availWidth
+}
+
+func (m *TaskFormModel) onNextField() {
+	if m.focused == summaryInputIdx {
+		m.summary.Blur()
+		m.notes.Focus()
+		m.focused = notesInputIdx
+	} else {
+		m.notes.Blur()
+		m.summary.Focus()
+		m.focused = summaryInputIdx
+	}
 }
 
 func (m *TaskFormModel) setFormStateFromModel() {
