@@ -2,7 +2,7 @@ version: '3'
 
 interval: 500ms
 tasks:
-  dev:
+  api:
     watch: true
     cmds:
       - go build -o bin/server cmd/server/main.go
@@ -20,17 +20,6 @@ tasks:
       - defer: rm bin/seed
       - bin/seed
 
-  tui:
-    cmds:
-      - go build -o bin/tui cmd/tui/main.go
-      - defer: rm bin/tui
-      - bin/tui
-  fmt:
-    cmds:
-      - go fmt ./...
-    sources:
-      - '**/*.go'
-
   db:
     cmds:
       - docker-compose -f docker/docker-compose.yml up db
@@ -38,3 +27,23 @@ tasks:
   db_admin:
     cmds:
       - docker-compose -f docker/docker-compose.yml up db_admin
+
+  tui:
+    env:
+      DEBUG: 1
+    cmds:
+      - go build -o bin/tui cmd/tui/main.go
+      - defer: rm bin/tui
+      - bin/tui
+
+  tui_log:
+    cmds:
+      - tail -f debug.log
+
+  fmt:
+    cmds:
+      - go fmt ./...
+    sources:
+      - '**/*.go'
+
+

@@ -3,6 +3,7 @@ package tasks
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/burkel24/task-app/pkg/models"
@@ -31,6 +32,8 @@ func NewTaskRepo(params TaskRepoParams) (TaskRepoResult, error) {
 }
 
 func (repo *TaskRepo) CreateOne(ctx context.Context, task *models.Task) error {
+	slog.Info("Creating one task", "task", task)
+
 	err := repo.dbService.CreateOne(ctx, task)
 	if err != nil {
 		return fmt.Errorf("failed to create one task: %w", err)
