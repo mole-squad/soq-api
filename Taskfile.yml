@@ -21,6 +21,8 @@ tasks:
       - bin/seed
 
   tui:
+    env:
+      DEBUG: 1
     cmds:
       - go build -o bin/tui cmd/tui/main.go
       - defer: rm bin/tui

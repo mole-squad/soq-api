@@ -8,10 +8,14 @@ import (
 
 type TaskDTO struct {
 	Summary string `json:"summary"`
+	Notes   string `json:"notes"`
 }
 
 func NewTaskDTO(task models.Task) *TaskDTO {
-	dto := &TaskDTO{Summary: task.Summary}
+	dto := &TaskDTO{
+		Summary: task.Summary,
+		Notes:   task.Notes,
+	}
 
 	return dto
 }

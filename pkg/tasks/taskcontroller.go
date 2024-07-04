@@ -56,7 +56,9 @@ func (ctrl *TaskController) CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	task, err := ctrl.taskService.CreateUserTask(ctx, &user, &models.Task{Summary: dto.Summary})
+	newTask := models.Task{Summary: dto.Summary, Notes: dto.Notes}
+
+	task, err := ctrl.taskService.CreateUserTask(ctx, &user, &newTask)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
 	}

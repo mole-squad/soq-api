@@ -35,17 +35,14 @@ func (srv *TaskService) CreateUserTask(
 	user *models.User,
 	task *models.Task,
 ) (models.Task, error) {
-	newTask := models.Task{
-		UserID:  user.ID,
-		Summary: task.Summary,
-	}
+	task.UserID = user.ID
 
-	err := srv.taskRepo.CreateOne(ctx, &newTask)
+	err := srv.taskRepo.CreateOne(ctx, task)
 	if err != nil {
 		return models.Task{}, fmt.Errorf("failed to create user task: %w", err)
 	}
 
-	return newTask, nil
+	return *task, nil
 }
 
 func (srv *TaskService) ListUserTasks(ctx context.Context, user *models.User) ([]models.Task, error) {
