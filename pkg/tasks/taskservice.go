@@ -57,6 +57,15 @@ func (srv *TaskService) UpdateUserTask(
 	return *task, nil
 }
 
+func (srv *TaskService) DeleteUserTask(ctx context.Context, id uint) error {
+	err := srv.taskRepo.DeleteOne(ctx, id)
+	if err != nil {
+		return fmt.Errorf("failed to delete user task: %w", err)
+	}
+
+	return nil
+}
+
 func (srv *TaskService) ListUserTasks(ctx context.Context, user *models.User) ([]models.Task, error) {
 	tasks, err := srv.taskRepo.FindManyByUser(ctx, user.ID)
 	if err != nil {

@@ -23,8 +23,9 @@ type taskLoadMsg struct {
 }
 
 type listKeyMap struct {
-	New  key.Binding
-	Edit key.Binding
+	New    key.Binding
+	Edit   key.Binding
+	Delete key.Binding
 }
 
 func newListKeyMap() listKeyMap {
@@ -36,6 +37,10 @@ func newListKeyMap() listKeyMap {
 		Edit: key.NewBinding(
 			key.WithKeys("e"),
 			key.WithHelp("e", "edit task"),
+		),
+		Delete: key.NewBinding(
+			key.WithKeys("d"),
+			key.WithHelp("d", "delete task"),
 		),
 	}
 }
@@ -124,6 +129,26 @@ func (m TaskListModel) Update(msg tea.Msg) (TaskListModel, tea.Cmd) {
 			return m, tea.Sequence(
 				common.NewSelectTaskMsg(taskItem.task),
 				common.AppStateCmd(common.AppStateTaskForm),
+			)
+
+		case key.Matches(msg, m.keys.Delete):
+			selected := m.list.SelectedItem()
+			if selected == nil {
+				return m, common.NewErrorMsg(fmt.Errorf("no task selected"))
+			}
+
+			taskItem, ok := selected.(TaskListItem)
+			if !ok {
+				return m, common.NewErrorMsg(fmt.Errorf("unexpected task item type"))
+			}
+
+			err := m.client.DeleteTask(context.Background(), taskItem.task.ID)
+			if err != nil {
+				return m, common.NewErrorMsg(fmt.Errorf("failed to delete task: %w", err))
+			}
+
+			return m, tea.Sequence(
+				common.NewRefreshListMsg(),
 			)
 		}
 	}
