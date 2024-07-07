@@ -8,6 +8,7 @@ import (
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/burkel24/task-app/pkg/models"
 	"go.uber.org/fx"
+	"gorm.io/gorm"
 )
 
 type TaskRepoParams struct {
@@ -48,6 +49,19 @@ func (repo *TaskRepo) UpdateOne(ctx context.Context, task *models.Task) error {
 	err := repo.dbService.UpdateOne(ctx, task)
 	if err != nil {
 		return fmt.Errorf("failed to update one task: %w", err)
+	}
+
+	return nil
+}
+
+func (repo *TaskRepo) DeleteOne(ctx context.Context, id uint) error {
+	slog.Info("Deleting one task", "id", id)
+
+	task := &models.Task{Model: gorm.Model{ID: id}}
+
+	err := repo.dbService.DeleteOne(ctx, task)
+	if err != nil {
+		return fmt.Errorf("failed to delete one task: %w", err)
 	}
 
 	return nil

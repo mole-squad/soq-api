@@ -85,6 +85,18 @@ func (srv *DBService) UpdateOne(ctx context.Context, record interface{}) error {
 	return nil
 }
 
+func (srv *DBService) DeleteOne(ctx context.Context, record interface{}) error {
+	sesh, cancel := srv.buildSession(ctx)
+	defer cancel()
+
+	deleteResult := sesh.Delete(record)
+	if deleteResult.Error != nil {
+		return fmt.Errorf("delete one failed: %w", deleteResult.Error)
+	}
+
+	return nil
+}
+
 func (srv *DBService) FindMany(ctx context.Context, result interface{}, query interface{}, args ...interface{}) error {
 	sesh, cancel := srv.buildSession(ctx)
 	defer cancel()

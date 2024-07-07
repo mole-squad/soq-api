@@ -40,6 +40,7 @@ func NewTaskController(params TaskControllerParams) (TaskControllerResult, error
 	taskRouter.Get("/", ctrl.ListTasks)
 	taskRouter.Post("/", ctrl.CreateTask)
 	taskRouter.Patch("/{taskID}", ctrl.UpdateTask)
+	taskRouter.Delete("/{taskID}", ctrl.DeleteTask)
 
 	params.Router.Mount("/tasks", taskRouter)
 
@@ -106,6 +107,29 @@ func (ctrl *TaskController) UpdateTask(w http.ResponseWriter, r *http.Request) {
 
 	resp := NewTaskDTO(updatedTask)
 	render.Render(w, r, resp)
+}
+
+func (ctrl *TaskController) DeleteTask(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	_, err := auth.GetUserFromCtx(ctx)
+	if err != nil {
+		render.Render(w, r, common.ErrUnauthorized(err))
+		return
+	}
+
+	taskId := chi.URLParam(r, "taskID")
+	taskIdInt, err := strconv.Atoi(taskId)
+	if err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(fmt.Errorf("failed to parse taskID: %w", err)))
+	}
+
+	err = ctrl.taskService.DeleteUserTask(ctx, uint(taskIdInt))
+	if err != nil {
+		render.Render(w, r, common.ErrUnknown(err))
+	}
+
+	render.NoContent(w, r)
 }
 
 func (ctrl *TaskController) ListTasks(w http.ResponseWriter, r *http.Request) {

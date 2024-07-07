@@ -140,3 +140,29 @@ func (c *Client) UpdateTask(ctx context.Context, taskID uint, t *tasks.UpdateTas
 
 	return task, nil
 }
+
+func (c *Client) DeleteTask(ctx context.Context, taskID uint) error {
+	reqUrl := url.URL{
+		Scheme: "http",
+		Host:   APIHost,
+		Path:   fmt.Sprintf("/tasks/%d", taskID),
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, reqUrl.String(), nil)
+	if err != nil {
+		return fmt.Errorf("error building delete task request: %w", err)
+	}
+
+	res, err := c.httpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("error executing delete task request: %w", err)
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("unexpected status code: %d", res.StatusCode)
+	}
+
+	return nil
+}
