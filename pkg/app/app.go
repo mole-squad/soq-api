@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/burkel24/task-app/pkg/db"
+	"github.com/burkel24/task-app/pkg/focusareas"
 	"github.com/burkel24/task-app/pkg/tasks"
 	"github.com/burkel24/task-app/pkg/users"
 	"github.com/go-chi/chi/v5"
@@ -66,6 +67,7 @@ func BuildAppOpts() []fx.Option {
 		fx.Provide(NewRouter),
 		db.Module,
 		users.Module,
+		focusareas.Module,
 		tasks.Module,
 	}
 }

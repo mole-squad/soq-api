@@ -11,6 +11,9 @@ import (
 
 func NewSeeder(lc fx.Lifecycle, dbService interfaces.DBService) {
 	dbService.CreateOne(context.Background(), &models.User{})
+	dbService.CreateOne(context.Background(), &models.FocusArea{Name: "Work", UserID: 1})
+	dbService.CreateOne(context.Background(), &models.FocusArea{Name: "Personal", UserID: 1})
+	dbService.CreateOne(context.Background(), &models.FocusArea{Name: "BLxST", UserID: 1})
 }
 
 func main() {

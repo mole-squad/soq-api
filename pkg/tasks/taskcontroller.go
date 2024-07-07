@@ -25,7 +25,7 @@ type TaskControllerParams struct {
 type TaskControllerResult struct {
 	fx.Out
 
-	TaskController interface{}
+	TaskController TaskController
 }
 
 type TaskController struct {

@@ -16,6 +16,10 @@ type Task struct {
 	Summary string
 	Notes   string
 	Status  TaskStatus
-	UserID  uint
-	User    User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+
+	FocusAreaID uint
+	FocusArea   FocusArea `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+
+	UserID uint
+	User   User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
