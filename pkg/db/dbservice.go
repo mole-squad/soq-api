@@ -14,6 +14,7 @@ import (
 
 var allModels = []interface{}{
 	&models.User{},
+	&models.FocusArea{},
 	&models.Task{},
 }
 
