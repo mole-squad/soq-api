@@ -63,10 +63,12 @@ func (ctrl *QuotaController) CreateQuota(w http.ResponseWriter, r *http.Request)
 	}
 
 	// TODO validate user owns focus area
-	// TODO fields
 	newQuota := models.Quota{
-		Summary:     dto.Summary,
-		FocusAreaID: dto.FocusAreaID,
+		Summary:         dto.Summary,
+		TargetTimeMins:  dto.TargetTimeMins,
+		TargetInstances: dto.TargetInstances,
+		Period:          dto.Period,
+		FocusAreaID:     dto.FocusAreaID,
 	}
 
 	quota, err := ctrl.quotaService.CreateUserQuota(ctx, &user, &newQuota)
@@ -100,11 +102,13 @@ func (ctrl *QuotaController) UpdateQuota(w http.ResponseWriter, r *http.Request)
 	}
 
 	// TODO validate user owns focus area
-	// TODO fields
 	quota := models.Quota{
-		Model:       gorm.Model{ID: uint(quotaIdInt)},
-		Summary:     dto.Summary,
-		FocusAreaID: dto.FocusAreaID,
+		Model:           gorm.Model{ID: uint(quotaIdInt)},
+		Summary:         dto.Summary,
+		TargetTimeMins:  dto.TargetTimeMins,
+		TargetInstances: dto.TargetInstances,
+		Period:          dto.Period,
+		FocusAreaID:     dto.FocusAreaID,
 	}
 
 	updatedQuota, err := ctrl.quotaService.UpdateUserQuota(ctx, &quota)

@@ -72,9 +72,13 @@ func (repo *FocusAreaRepo) FindManyByUser(ctx context.Context, userID uint) ([]m
 
 	focusAreas := []models.FocusArea{}
 
-	err := repo.dbService.FindMany(ctx, &focusAreas, []string{}, "user_id = ?", userID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to find many focus areas by user: %w", err)
+	sesh, cancel := repo.dbService.GetSession(ctx)
+	defer cancel()
+
+	result := sesh.Where("user_id = ?", userID).Preload("TimeWindows").Find(&focusAreas)
+	// err := repo.dbService.FindMany(ctx, &focusAreas, []string{"timewindow"}, "focus_areas.user_id = ?", userID)
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to find many focus areas by user: %w", result.Error)
 	}
 
 	return focusAreas, nil
