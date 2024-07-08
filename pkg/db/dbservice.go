@@ -16,6 +16,7 @@ var allModels = []interface{}{
 	&models.User{},
 	&models.FocusArea{},
 	&models.Task{},
+	&models.Quota{},
 }
 
 const (

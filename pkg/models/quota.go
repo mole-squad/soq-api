@@ -1,21 +1,24 @@
 package models
 
-import (
-	"gorm.io/gorm"
-)
+import "gorm.io/gorm"
 
-type TaskStatus int
+type QuotaPeriod int
 
 const (
-	OpenStatus   TaskStatus = iota
-	ClosedStatus            = iota
+	DailyQuota   QuotaPeriod = iota
+	WeeklyQuota              = iota
+	MonthlyQuota             = iota
 )
 
-type Task struct {
+type Quota struct {
 	gorm.Model
+
 	Summary string
-	Notes   string
-	Status  TaskStatus
+
+	TargetTimeMins  int
+	TargetInstances int
+
+	Period QuotaPeriod
 
 	FocusAreaID uint
 	FocusArea   FocusArea `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;"`

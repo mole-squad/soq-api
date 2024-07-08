@@ -1,0 +1,31 @@
+package quotas
+
+import (
+	"net/http"
+
+	"github.com/burkel24/task-app/pkg/focusareas"
+	"github.com/burkel24/task-app/pkg/models"
+)
+
+type QuotaDTO struct {
+	ID      uint   `json:"id"`
+	Summary string `json:"summary"`
+	Notes   string `json:"notes"`
+
+	FocusArea focusareas.FocusAreaDTO `json:"focusArea"`
+}
+
+func NewQuotaDTO(quota models.Quota) *QuotaDTO {
+	// TODO
+	dto := &QuotaDTO{
+		ID:        quota.ID,
+		Summary:   quota.Summary,
+		FocusArea: *focusareas.NewFocusAreaDTO(quota.FocusArea),
+	}
+
+	return dto
+}
+
+func (t *QuotaDTO) Render(w http.ResponseWriter, r *http.Request) error {
+	return nil
+}
