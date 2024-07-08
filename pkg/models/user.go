@@ -6,5 +6,11 @@ import (
 
 type User struct {
 	gorm.Model
-	Name string
+	Name     string
+	Timezone string
+
+	FocusAreas  []FocusArea
+	Quotas      []Quota
+	Tasks       []Task
+	TimeWindows []TimeWindow
 }

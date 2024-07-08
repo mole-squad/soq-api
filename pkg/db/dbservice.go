@@ -14,6 +14,7 @@ import (
 
 var allModels = []interface{}{
 	&models.User{},
+	&models.TimeWindow{},
 	&models.FocusArea{},
 	&models.Task{},
 	&models.Quota{},
@@ -56,15 +57,16 @@ func (srv *DBService) Init() error {
 
 	srv.db = db
 
-	for _, model := range allModels {
-		srv.db.AutoMigrate(model)
+	err = srv.Migrate(context.Background())
+	if err != nil {
+		return fmt.Errorf("migrate failed: %w", err)
 	}
 
-	return err
+	return nil
 }
 
 func (srv *DBService) CreateOne(ctx context.Context, record interface{}) error {
-	sesh, cancel := srv.buildSession(ctx)
+	sesh, cancel := srv.GetSession(ctx)
 	defer cancel()
 
 	createResult := sesh.Create(record)
@@ -76,7 +78,7 @@ func (srv *DBService) CreateOne(ctx context.Context, record interface{}) error {
 }
 
 func (srv *DBService) UpdateOne(ctx context.Context, record interface{}) error {
-	sesh, cancel := srv.buildSession(ctx)
+	sesh, cancel := srv.GetSession(ctx)
 	defer cancel()
 
 	updateResult := sesh.Model(record).Updates(record)
@@ -88,7 +90,7 @@ func (srv *DBService) UpdateOne(ctx context.Context, record interface{}) error {
 }
 
 func (srv *DBService) DeleteOne(ctx context.Context, record interface{}) error {
-	sesh, cancel := srv.buildSession(ctx)
+	sesh, cancel := srv.GetSession(ctx)
 	defer cancel()
 
 	deleteResult := sesh.Delete(record)
@@ -99,12 +101,23 @@ func (srv *DBService) DeleteOne(ctx context.Context, record interface{}) error {
 	return nil
 }
 
-func (srv *DBService) FindMany(ctx context.Context, result interface{}, joins []string, query interface{}, args ...interface{}) error {
-	sesh, cancel := srv.buildSession(ctx)
+func (srv *DBService) FindMany(
+	ctx context.Context,
+	result interface{},
+	joins []string,
+	preloads []string,
+	query interface{},
+	args ...interface{},
+) error {
+	sesh, cancel := srv.GetSession(ctx)
 	defer cancel()
 
 	for _, join := range joins {
 		sesh = sesh.Joins(join)
+	}
+
+	for _, preload := range preloads {
+		sesh = sesh.Preload(preload)
 	}
 
 	queryResult := sesh.Where(query, args).Find(result)
@@ -115,7 +128,31 @@ func (srv *DBService) FindMany(ctx context.Context, result interface{}, joins []
 	return nil
 }
 
-func (srv *DBService) buildSession(ctx context.Context) (*gorm.DB, context.CancelFunc) {
+func (srv *DBService) Migrate(ctx context.Context) error {
+	for _, model := range allModels {
+		if err := srv.db.AutoMigrate(model); err != nil {
+			return fmt.Errorf("migrate failed for model %v: %w", model, err)
+		}
+	}
+
+	return nil
+}
+
+func (srv *DBService) DropAll(ctx context.Context) error {
+	sesh, cancel := srv.GetSession(ctx)
+	defer cancel()
+
+	for _, model := range allModels {
+		err := sesh.Migrator().DropTable(model)
+		if err != nil {
+			return fmt.Errorf("drop all failed: %w", err)
+		}
+	}
+
+	return nil
+}
+
+func (srv *DBService) GetSession(ctx context.Context) (*gorm.DB, context.CancelFunc) {
 	timeoutCtx, cancel := context.WithTimeout(ctx, QueryTimeout)
 
 	return srv.db.Session(&gorm.Session{

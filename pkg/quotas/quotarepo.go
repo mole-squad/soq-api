@@ -69,7 +69,7 @@ func (repo *QuotaRepo) DeleteOne(ctx context.Context, id uint) error {
 func (repo *QuotaRepo) FindManyByUser(ctx context.Context, userID uint) ([]models.Quota, error) {
 	var quotas []models.Quota
 
-	err := repo.dbService.FindMany(ctx, &quotas, []string{"FocusArea"}, "quota.user_id = ?", userID)
+	err := repo.dbService.FindMany(ctx, &quotas, []string{"FocusArea"}, []string{}, "quota.user_id = ?", userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find many quotas by user: %w", err)
 	}

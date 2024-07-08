@@ -10,7 +10,11 @@ import (
 type QuotaDTO struct {
 	ID      uint   `json:"id"`
 	Summary string `json:"summary"`
-	Notes   string `json:"notes"`
+
+	TargetTimeMins  int `json:"targetTimeMins"`
+	TargetInstances int `json:"targetInstances"`
+
+	Period models.QuotaPeriod `json:"period"`
 
 	FocusArea focusareas.FocusAreaDTO `json:"focusArea"`
 }
