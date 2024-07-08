@@ -70,7 +70,7 @@ func (repo *TaskRepo) DeleteOne(ctx context.Context, id uint) error {
 func (repo *TaskRepo) FindManyByUser(ctx context.Context, userID uint) ([]models.Task, error) {
 	var tasks []models.Task
 
-	err := repo.dbService.FindMany(ctx, &tasks, []string{"FocusArea"}, "tasks.user_id = ?", userID)
+	err := repo.dbService.FindMany(ctx, &tasks, []string{"FocusArea"}, []string{}, "tasks.user_id = ?", userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find many taks by user: %w", err)
 	}
