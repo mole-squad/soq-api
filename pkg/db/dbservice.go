@@ -98,9 +98,13 @@ func (srv *DBService) DeleteOne(ctx context.Context, record interface{}) error {
 	return nil
 }
 
-func (srv *DBService) FindMany(ctx context.Context, result interface{}, query interface{}, args ...interface{}) error {
+func (srv *DBService) FindMany(ctx context.Context, result interface{}, joins []string, query interface{}, args ...interface{}) error {
 	sesh, cancel := srv.buildSession(ctx)
 	defer cancel()
+
+	for _, join := range joins {
+		sesh = sesh.Joins(join)
+	}
 
 	queryResult := sesh.Where(query, args).Find(result)
 	if queryResult.Error != nil {

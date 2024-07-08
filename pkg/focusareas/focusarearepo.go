@@ -72,7 +72,7 @@ func (repo *FocusAreaRepo) FindManyByUser(ctx context.Context, userID uint) ([]m
 
 	focusAreas := []models.FocusArea{}
 
-	err := repo.dbService.FindMany(ctx, &focusAreas, "user_id = ?", userID)
+	err := repo.dbService.FindMany(ctx, &focusAreas, []string{}, "user_id = ?", userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find many focus areas by user: %w", err)
 	}

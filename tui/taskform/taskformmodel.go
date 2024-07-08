@@ -6,9 +6,12 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/burkel24/task-app/pkg/focusareas"
 	"github.com/burkel24/task-app/pkg/tasks"
 	"github.com/burkel24/task-app/tui/api"
 	"github.com/burkel24/task-app/tui/common"
+	"github.com/burkel24/task-app/tui/selectinput"
+	"github.com/burkel24/task-app/tui/styles"
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textarea"
@@ -17,27 +20,24 @@ import (
 )
 
 const (
-	hotPink  = lipgloss.Color("#FF06B7")
-	darkGray = lipgloss.Color("#767676")
-)
-
-var (
-	docStyle = lipgloss.NewStyle().Margin(1, 2)
-
-	inputLabelStyle = lipgloss.NewStyle().
-			Foreground(hotPink)
-
-	inputStyle = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(hotPink)
-
-	formFieldWrapperStyle = lipgloss.NewStyle().Padding(0)
+	summaryInputIdx = iota
+	notesInputIdx
+	focusAreaInputIdx
 )
 
 const (
-	summaryInputIdx = iota
-	notesInputIdx
+	sidePanelWidth = 30
 )
+
+type toggleSidePanelMsg struct {
+	isOpen bool
+}
+
+func NewToggleSidePanelMsg(isOpen bool) tea.Cmd {
+	return func() tea.Msg {
+		return toggleSidePanelMsg{isOpen: isOpen}
+	}
+}
 
 type formKeyMap struct {
 	Help key.Binding
@@ -81,12 +81,17 @@ type TaskFormModel struct {
 	isNewTask bool
 	task      tasks.TaskDTO
 
+	focusareas []focusareas.FocusAreaDTO
+
 	height int
 	width  int
 
-	focused int
-	summary textarea.Model
-	notes   textarea.Model
+	isSidePanelVisible bool
+
+	focused        int
+	summary        textarea.Model
+	notes          textarea.Model
+	focusAreaInput selectinput.SelectInputModel
 
 	keys formKeyMap
 	help help.Model
@@ -111,144 +116,287 @@ func NewTaskFormModel(client *api.Client) TaskFormModel {
 	notesInput := newFormField("Notes", 5)
 
 	return TaskFormModel{
-		client:  client,
-		keys:    keys,
-		help:    help.New(),
-		summary: summaryInput,
-		height:  0,
-		notes:   notesInput,
-		focused: summaryInputIdx,
-		width:   0,
+		client:         client,
+		keys:           keys,
+		help:           help.New(),
+		summary:        summaryInput,
+		height:         0,
+		notes:          notesInput,
+		focusAreaInput: *selectinput.NewSelectInputModel("Focus Area"),
+		focused:        summaryInputIdx,
+		width:          0,
 	}
 }
 
 func (m *TaskFormModel) Init() tea.Cmd {
-	return textarea.Blink
+	return tea.Batch(
+		textarea.Blink,
+	)
 }
 
 func (m *TaskFormModel) Update(msg tea.Msg) (TaskFormModel, tea.Cmd) {
 	var (
-		summaryCmd tea.Cmd
-		notesCmd   tea.Cmd
+		summaryCmd   tea.Cmd
+		notesCmd     tea.Cmd
+		loadCmd      tea.Cmd
+		nextCmd      tea.Cmd
+		focusAreaCmd tea.Cmd
+		fieldsCmd    tea.Cmd
 	)
 
 	switch msg := msg.(type) {
 
+	case tea.KeyMsg:
+		return m.onKeyMsg(msg)
+
 	case tea.WindowSizeMsg:
 		m.onWindowSize(msg.Width, msg.Height)
-
-	case tea.KeyMsg:
-		switch {
-
-		case key.Matches(msg, m.keys.Help):
-			m.help.ShowAll = !m.help.ShowAll
-
-		case key.Matches(msg, m.keys.Exit):
-			return *m, common.AppStateCmd(common.AppStateTaskList)
-
-		case key.Matches(msg, m.keys.Save):
-			return *m, m.submitTask()
-
-		case key.Matches(msg, m.keys.Next):
-			m.onNextField()
-		}
 
 	case common.CreateTaskMsg:
 		m.onTaskCreate()
 
 	case common.SelectTaskMsg:
 		m.onTaskSelect(msg.Task)
+
+	case toggleSidePanelMsg:
+		m.onSidePanelToggle(msg.isOpen)
 	}
 
 	m.summary, summaryCmd = m.summary.Update(msg)
 	m.notes, notesCmd = m.notes.Update(msg)
+	m.focusAreaInput, focusAreaCmd = m.focusAreaInput.Update(msg)
 
-	return *m, tea.Batch(
+	return *m, tea.Sequence(loadCmd, tea.Batch(
+		nextCmd,
 		summaryCmd,
 		notesCmd,
-	)
+		focusAreaCmd,
+		fieldsCmd,
+	))
 }
 
 func (m *TaskFormModel) View() string {
+	docFrameWidth, docFrameHeight := styles.PageWrapperStyle.GetFrameSize()
+	sectionFrameWidth, sectionFrameHeight := styles.BorderStyle.GetFrameSize()
+
+	help := m.help.View(m.keys)
+	availHeight := m.height - docFrameHeight - lipgloss.Height(help)
+
 	summary := lipgloss.JoinVertical(
 		lipgloss.Left,
-		inputLabelStyle.Width(30).Render("Summary"),
-		inputStyle.Render(m.summary.View()),
+		styles.InputLabelStyle.Render("Summary"),
+		styles.InputStyle.Render(m.summary.View()),
 	)
 
 	notes := lipgloss.JoinVertical(
 		lipgloss.Left,
-		inputLabelStyle.Width(30).Render("Notes"),
-		inputStyle.Render(m.notes.View()),
+		styles.InputLabelStyle.Render("Notes"),
+		styles.InputStyle.Render(m.notes.View()),
+	)
+
+	focusArea := lipgloss.JoinVertical(
+		lipgloss.Left,
+		styles.InputLabelStyle.Render("Focus Area"),
+		styles.InputStyle.Render(m.focusAreaInput.View()),
 	)
 
 	form := lipgloss.JoinVertical(
 		lipgloss.Left,
-		formFieldWrapperStyle.Render(summary),
-		formFieldWrapperStyle.Render(notes),
+		styles.FormFieldWrapperStyle.Render(summary),
+		styles.FormFieldWrapperStyle.Render(notes),
+		styles.FormFieldWrapperStyle.Render(focusArea),
 	)
 
-	help := m.help.View(m.keys)
-	availHeight := m.height - lipgloss.Height(form) - lipgloss.Height(help)
+	contentWidth := m.width - docFrameWidth
 
-	return docStyle.Render(lipgloss.JoinVertical(
+	content := form
+	if m.isSidePanelVisible {
+		panelContent := m.focusAreaInput.ViewSelectPanel()
+		formWidth := contentWidth - sidePanelWidth
+
+		content = lipgloss.JoinHorizontal(
+			lipgloss.Top,
+			lipgloss.NewStyle().Width(formWidth).Render(form),
+			styles.BorderStyle.Width(sidePanelWidth-sectionFrameWidth).Height(availHeight-sectionFrameHeight).Render(panelContent),
+		)
+	}
+
+	return styles.PageWrapperStyle.Render(lipgloss.JoinVertical(
 		lipgloss.Left,
-		lipgloss.NewStyle().Height(availHeight).Render(form),
-		help,
+		lipgloss.NewStyle().Height(availHeight).Render(content),
+		lipgloss.NewStyle().Width(m.width-docFrameWidth-sectionFrameWidth).Render(help),
 	))
 }
 
-func (m *TaskFormModel) onTaskCreate() {
-	slog.Info("Creating new task")
+func (m *TaskFormModel) onWindowSize(width, height int) {
+	m.height = height
+	m.width = width
+	m.setInputSizes()
+}
+
+func (m *TaskFormModel) onSidePanelToggle(isOpen bool) {
+	m.isSidePanelVisible = isOpen
+	m.setInputSizes()
+}
+
+func (m *TaskFormModel) setInputSizes() {
+	docFrameWidth, docFrameHeight := styles.PageWrapperStyle.GetFrameSize()
+	sectionFrameWidth, sectionFrameHeight := styles.BorderStyle.GetFrameSize()
+	formFieldWrapperWidth, _ := styles.FormFieldWrapperStyle.GetFrameSize()
+	inputFrameWidth, _ := styles.InputStyle.GetFrameSize()
+
+	help := m.help.View(m.keys)
+	helpHeight := lipgloss.Height(help)
+
+	availWidth := m.width - docFrameWidth
+	if m.isSidePanelVisible {
+		availWidth -= sidePanelWidth
+	}
+
+	inputWidth := availWidth - formFieldWrapperWidth - inputFrameWidth
+	m.summary.SetWidth(inputWidth)
+	m.notes.SetWidth(inputWidth)
+
+	m.help.Width = m.width - sectionFrameWidth
+
+	m.focusAreaInput.SetSize(sidePanelWidth-sectionFrameWidth, m.height-docFrameHeight-sectionFrameHeight-helpHeight)
+}
+
+func (m *TaskFormModel) onKeyMsg(msg tea.KeyMsg) (TaskFormModel, tea.Cmd) {
+	var cmd tea.Cmd
+
+	switch {
+
+	case key.Matches(msg, m.keys.Help):
+		m.help.ShowAll = !m.help.ShowAll
+		return *m, nil
+
+	case key.Matches(msg, m.keys.Exit):
+		return *m, common.AppStateCmd(common.AppStateTaskList)
+
+	case key.Matches(msg, m.keys.Save):
+		return *m, m.submitTask()
+
+	case key.Matches(msg, m.keys.Next):
+		return *m, m.onNextField()
+	}
+
+	switch m.focused {
+	case summaryInputIdx:
+		m.summary, cmd = m.summary.Update(msg)
+		return *m, cmd
+
+	case notesInputIdx:
+		m.notes, cmd = m.notes.Update(msg)
+		return *m, cmd
+
+	case focusAreaInputIdx:
+		m.focusAreaInput, cmd = m.focusAreaInput.Update(msg)
+		return *m, cmd
+	}
+
+	return *m, nil
+}
+
+func (m *TaskFormModel) onFocusAreaRefresh() error {
+	slog.Debug("Refreshing focus areas")
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	focusAreas, err := m.client.ListFocusAreas(ctx)
+	if err != nil {
+		return fmt.Errorf("error fetching focus areas: %w", err)
+	}
+
+	var opts = make([]selectinput.SelectOption, len(focusAreas))
+	for i, fa := range focusAreas {
+		opts[i] = NewFocusAreaOption(fa)
+	}
+
+	m.focusAreaInput.SetOptions(opts)
+	m.focusareas = focusAreas
+
+	return nil
+}
+
+func (m *TaskFormModel) onTaskCreate() tea.Msg {
+	m.onFocusAreaRefresh()
+
+	slog.Debug("Creating new task")
+
+	if len(m.focusareas) == 0 {
+		slog.Error("No focus areas available")
+		return nil
+	}
+
+	focusArea := m.focusareas[0]
 
 	m.isNewTask = true
 	m.task = tasks.TaskDTO{
-		Summary: "",
-		Notes:   "",
+		Summary:   "",
+		Notes:     "",
+		FocusArea: focusArea,
 	}
 
 	m.setFormStateFromModel()
+
+	return nil
 }
 
-func (m *TaskFormModel) onTaskSelect(task tasks.TaskDTO) {
-	slog.Info("Editing task", "task", task)
+func (m *TaskFormModel) onTaskSelect(task tasks.TaskDTO) tea.Msg {
+	m.onFocusAreaRefresh()
+
+	slog.Debug("Editing task", "task", task)
+
+	if len(m.focusareas) == 0 {
+		slog.Error("No focus areas available")
+		return nil
+	}
 
 	m.isNewTask = false
 	m.task = task
 
 	m.setFormStateFromModel()
+
+	return nil
 }
 
-func (m *TaskFormModel) onWindowSize(width, height int) {
-	h, v := docStyle.GetFrameSize()
-
-	m.height = height - v
-
-	availWidth := width - h
-
-	m.summary.SetWidth(availWidth)
-	m.notes.SetWidth(availWidth)
-
-	m.width = availWidth
-	m.help.Width = availWidth
-}
-
-func (m *TaskFormModel) onNextField() {
+func (m *TaskFormModel) onNextField() tea.Cmd {
 	if m.focused == summaryInputIdx {
 		m.summary.Blur()
 		m.notes.Focus()
 		m.focused = notesInputIdx
-	} else {
+	} else if m.focused == notesInputIdx {
 		m.notes.Blur()
+		m.focusAreaInput.Focus()
+
+		m.focused = focusAreaInputIdx
+
+		return NewToggleSidePanelMsg(true)
+	} else if m.focused == focusAreaInputIdx {
+		m.focusAreaInput.Blur()
 		m.summary.Focus()
+
 		m.focused = summaryInputIdx
+
+		selectedFocusArea := m.focusAreaInput.SelectedItem().(*focusAreaOption)
+		if selectedFocusArea != nil {
+			m.task.FocusArea = selectedFocusArea.focusArea
+		}
+
+		return NewToggleSidePanelMsg(false)
 	}
+
+	return nil
 }
 
 func (m *TaskFormModel) setFormStateFromModel() {
 	m.summary.SetValue(m.task.Summary)
 	m.notes.SetValue(m.task.Notes)
+	m.focusAreaInput.SetSelected(m.task.FocusArea.ID)
 
+	m.focusAreaInput.Blur()
 	m.notes.Blur()
 	m.summary.Focus()
 }
@@ -256,14 +404,15 @@ func (m *TaskFormModel) setFormStateFromModel() {
 func (m *TaskFormModel) submitTask() tea.Cmd {
 	summary := m.summary.Value()
 	notes := m.notes.Value()
+	focusAreaID := m.focusAreaInput.Value().(uint)
 
 	// TODO validation
 
 	var err error
 	if m.isNewTask {
-		err = m.createTask(summary, notes)
+		err = m.createTask(summary, notes, focusAreaID)
 	} else {
-		err = m.updateTask(summary, notes)
+		err = m.updateTask(summary, notes, focusAreaID)
 	}
 
 	if err != nil {
@@ -277,13 +426,14 @@ func (m *TaskFormModel) submitTask() tea.Cmd {
 	)
 }
 
-func (m *TaskFormModel) createTask(summary, notes string) error {
+func (m *TaskFormModel) createTask(summary, notes string, focusAreaID uint) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
 	dto := tasks.CreateTaskRequestDto{
-		Summary: summary,
-		Notes:   notes,
+		Summary:     summary,
+		Notes:       notes,
+		FocusAreaID: focusAreaID,
 	}
 
 	_, err := m.client.CreateTask(ctx, &dto)
@@ -294,13 +444,14 @@ func (m *TaskFormModel) createTask(summary, notes string) error {
 	return nil
 }
 
-func (m *TaskFormModel) updateTask(summary, notes string) error {
+func (m *TaskFormModel) updateTask(summary, notes string, focusAreaID uint) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
 	dto := tasks.UpdateTaskRequestDto{
-		Summary: summary,
-		Notes:   notes,
+		Summary:     summary,
+		Notes:       notes,
+		FocusAreaID: focusAreaID,
 	}
 
 	_, err := m.client.UpdateTask(ctx, m.task.ID, &dto)

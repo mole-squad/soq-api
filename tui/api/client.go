@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/burkel24/task-app/pkg/focusareas"
 	"github.com/burkel24/task-app/pkg/tasks"
 )
 
@@ -165,4 +166,36 @@ func (c *Client) DeleteTask(ctx context.Context, taskID uint) error {
 	}
 
 	return nil
+}
+
+func (c *Client) ListFocusAreas(ctx context.Context) ([]focusareas.FocusAreaDTO, error) {
+	reqUrl := url.URL{
+		Scheme: "http",
+		Host:   APIHost,
+		Path:   "/focusareas",
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqUrl.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("error building list focus areas request: %w", err)
+	}
+
+	res, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error executing list focus areas request: %w", err)
+	}
+
+	defer res.Body.Close()
+
+	respBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading list focus areas response: %w", err)
+	}
+
+	var focusAreasResp []focusareas.FocusAreaDTO
+	if err = json.Unmarshal(respBody, &focusAreasResp); err != nil {
+		return nil, fmt.Errorf("error unmarshalling list focus areas response: %w", err)
+	}
+
+	return focusAreasResp, nil
 }

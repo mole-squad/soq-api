@@ -37,6 +37,7 @@ func NewAppModel() AppModel {
 func (m AppModel) Init() tea.Cmd {
 	return tea.Batch(
 		m.taskList.Init(),
+		m.taskForm.Init(),
 	)
 }
 
