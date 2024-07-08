@@ -127,6 +127,7 @@ func (m TaskListModel) Update(msg tea.Msg) (TaskListModel, tea.Cmd) {
 			}
 
 			return m, tea.Sequence(
+				common.NewRefreshFocusAreasMsg(),
 				common.NewSelectTaskMsg(taskItem.task),
 				common.AppStateCmd(common.AppStateTaskForm),
 			)

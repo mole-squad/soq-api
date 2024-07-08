@@ -62,7 +62,12 @@ func (ctrl *TaskController) CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newTask := models.Task{Summary: dto.Summary, Notes: dto.Notes}
+	// TODO validate user owns focus area
+	newTask := models.Task{
+		Summary:     dto.Summary,
+		Notes:       dto.Notes,
+		FocusAreaID: dto.FocusAreaID,
+	}
 
 	task, err := ctrl.taskService.CreateUserTask(ctx, &user, &newTask)
 	if err != nil {
@@ -94,10 +99,12 @@ func (ctrl *TaskController) UpdateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO validate user owns focus area
 	task := models.Task{
-		Model:   gorm.Model{ID: uint(taskIdInt)},
-		Summary: dto.Summary,
-		Notes:   dto.Notes,
+		Model:       gorm.Model{ID: uint(taskIdInt)},
+		Summary:     dto.Summary,
+		Notes:       dto.Notes,
+		FocusAreaID: dto.FocusAreaID,
 	}
 
 	updatedTask, err := ctrl.taskService.UpdateUserTask(ctx, &task)
