@@ -15,12 +15,21 @@ var (
 	weekends = []int32{int32(time.Saturday), int32(time.Sunday)}
 )
 
-func NewSeeder(lc fx.Lifecycle, dbService interfaces.DBService) {
-	dbService.DropAll(context.Background())
-	dbService.Migrate(context.Background())
+type SeederParams struct {
+	fx.In
+
+	DbService interfaces.DBService
+	Logger    interfaces.LoggerService
+}
+
+func NewSeeder(params SeederParams) {
+	params.Logger.Info("Seeding database")
+
+	params.DbService.DropAll(context.Background())
+	params.DbService.Migrate(context.Background())
 
 	user := models.User{Name: "Burke", Timezone: "America/Los_Angeles"}
-	dbService.CreateOne(context.Background(), &user)
+	params.DbService.CreateOne(context.Background(), &user)
 
 	workFocusArea := models.FocusArea{
 		Name:   "Work",
@@ -32,10 +41,10 @@ func NewSeeder(lc fx.Lifecycle, dbService interfaces.DBService) {
 		UserID: user.ID,
 	}
 
-	dbService.CreateOne(context.Background(), &workFocusArea)
-	dbService.CreateOne(context.Background(), &personalFocusArea)
+	params.DbService.CreateOne(context.Background(), &workFocusArea)
+	params.DbService.CreateOne(context.Background(), &personalFocusArea)
 
-	dbService.CreateOne(context.Background(), &models.TimeWindow{
+	params.DbService.CreateOne(context.Background(), &models.TimeWindow{
 		Weekdays:    weekdays,
 		StartTime:   9.0,
 		EndTime:     17.0,
@@ -43,7 +52,7 @@ func NewSeeder(lc fx.Lifecycle, dbService interfaces.DBService) {
 		UserID:      user.ID,
 	})
 
-	dbService.CreateOne(context.Background(), &models.TimeWindow{
+	params.DbService.CreateOne(context.Background(), &models.TimeWindow{
 		Weekdays:    weekdays,
 		StartTime:   6.0,
 		EndTime:     9.0,
@@ -51,7 +60,7 @@ func NewSeeder(lc fx.Lifecycle, dbService interfaces.DBService) {
 		UserID:      user.ID,
 	})
 
-	dbService.CreateOne(context.Background(), &models.TimeWindow{
+	params.DbService.CreateOne(context.Background(), &models.TimeWindow{
 		Weekdays:    weekdays,
 		StartTime:   12.0,
 		EndTime:     13.0,
@@ -59,7 +68,7 @@ func NewSeeder(lc fx.Lifecycle, dbService interfaces.DBService) {
 		UserID:      user.ID,
 	})
 
-	dbService.CreateOne(context.Background(), &models.TimeWindow{
+	params.DbService.CreateOne(context.Background(), &models.TimeWindow{
 		Weekdays:    weekdays,
 		StartTime:   18.0,
 		EndTime:     22.0,
@@ -67,7 +76,7 @@ func NewSeeder(lc fx.Lifecycle, dbService interfaces.DBService) {
 		UserID:      user.ID,
 	})
 
-	dbService.CreateOne(context.Background(), &models.TimeWindow{
+	params.DbService.CreateOne(context.Background(), &models.TimeWindow{
 		Weekdays:    weekends,
 		StartTime:   8.0,
 		EndTime:     20.0,
@@ -82,7 +91,9 @@ func NewSeeder(lc fx.Lifecycle, dbService interfaces.DBService) {
 		UserID:      user.ID,
 	}
 
-	dbService.CreateOne(context.Background(), &quota)
+	params.DbService.CreateOne(context.Background(), &quota)
+
+	params.Logger.Info("Database seeded")
 }
 
 func main() {

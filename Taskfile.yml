@@ -2,28 +2,47 @@ version: '3'
 
 interval: 500ms
 tasks:
-  api:
-    watch: true
+  api_build:
     cmds:
       - go build -o bin/server cmd/server/main.go
-      - defer: rm bin/server
-      - bin/server
+    generates:
+      - './bin/server'
     sources:
       - 'cmd/server/*.go'
       - 'pkg/**/*.go'
+
+  api:
+    watch: true
+    cmds:
+      - task: api_build
+      - bin/server
+
+  seed_build:
+    cmds:
+      - go build -o bin/seed cmd/seed/main.go
     generates:
-      - './bin/server'
+      - './bin/seed'
+    sources:
+      - 'cmd/seed/*.go'
+      - 'pkg/**/*.go'
 
   seed:
     cmds:
-      - go build -o bin/seed cmd/seed/main.go
-      - defer: rm bin/seed
+      - task: seed_build
       - bin/seed
+
+  agendas_build:
+    cmds:
+      - go build -o bin/agendas cmd/agendas/main.go
+    generates:
+      - './bin/agendas'
+    sources:
+      - 'cmd/agendas/*.go'
+      - 'pkg/**/*.go'
 
   agendas:
     cmds:
-      - go build -o bin/agendas cmd/agendas/main.go
-      - defer: rm bin/agendas
+      - task: agendas_build
       - bin/agendas
 
   db:
@@ -34,12 +53,21 @@ tasks:
     cmds:
       - docker compose -f docker/docker-compose.yml up db_admin
 
+  tui_build:
+    cmds:
+      - go build -o bin/tui cmd/tui/main.go
+    generates:
+      - './bin/tui'
+    sources:
+      - 'cmd/tui/*.go'
+      - 'tui/**/*.go'
+      - 'pkg/**/*.go'
+
   tui:
     env:
       DEBUG: 1
     cmds:
-      - go build -o bin/tui cmd/tui/main.go
-      - defer: rm bin/tui
+      - task: tui_build
       - bin/tui
 
   tui_log:

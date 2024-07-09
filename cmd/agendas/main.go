@@ -8,19 +8,30 @@ import (
 	"go.uber.org/fx"
 )
 
-func GenerateAgendas(lc fx.Lifecycle, agendaService interfaces.AgendaService) {
+type GenerateAgendasParams struct {
+	fx.In
+
+	AgendaService interfaces.AgendaService
+	Logger        interfaces.LoggerService
+}
+
+func GenerateAgendas(params GenerateAgendasParams) {
+	params.Logger.Info("Generating agendas")
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err := agendaService.GenerateAgendasForUpcomingTimeWindows(ctx)
+	err := params.AgendaService.GenerateAgendasForUpcomingTimeWindows(ctx)
 	if err != nil {
 		panic(err)
 	}
 
-	err = agendaService.PopulatePendingAgendas(ctx)
+	err = params.AgendaService.PopulatePendingAgendas(ctx)
 	if err != nil {
 		panic(err)
 	}
+
+	params.Logger.Info("Finished generating agendas")
 }
 
 func main() {
