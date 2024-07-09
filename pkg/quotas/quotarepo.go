@@ -3,7 +3,6 @@ package quotas
 import (
 	"context"
 	"fmt"
-	"log/slog"
 
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/burkel24/task-app/pkg/models"
@@ -14,7 +13,8 @@ import (
 type QuotaRepoParams struct {
 	fx.In
 
-	DBService interfaces.DBService
+	DBService     interfaces.DBService
+	LoggerService interfaces.LoggerService
 }
 
 type QuotaRepoResult struct {
@@ -25,15 +25,20 @@ type QuotaRepoResult struct {
 
 type QuotaRepo struct {
 	dbService interfaces.DBService
+	logger    interfaces.LoggerService
 }
 
 func NewQuotaRepo(params QuotaRepoParams) (QuotaRepoResult, error) {
-	repo := &QuotaRepo{dbService: params.DBService}
+	repo := &QuotaRepo{
+		dbService: params.DBService,
+		logger:    params.LoggerService,
+	}
+
 	return QuotaRepoResult{QuotaRepo: repo}, nil
 }
 
 func (repo *QuotaRepo) CreateOne(ctx context.Context, quota *models.Quota) error {
-	slog.Info("Creating one quota", "quota", quota)
+	repo.logger.Info("Creating one quota", "quota", quota)
 
 	err := repo.dbService.CreateOne(ctx, quota)
 	if err != nil {
@@ -44,7 +49,7 @@ func (repo *QuotaRepo) CreateOne(ctx context.Context, quota *models.Quota) error
 }
 
 func (repo *QuotaRepo) UpdateOne(ctx context.Context, quota *models.Quota) error {
-	slog.Info("Updating one quota", "quota", quota)
+	repo.logger.Info("Updating one quota", "quota", quota)
 
 	err := repo.dbService.UpdateOne(ctx, quota)
 	if err != nil {
@@ -55,7 +60,7 @@ func (repo *QuotaRepo) UpdateOne(ctx context.Context, quota *models.Quota) error
 }
 
 func (repo *QuotaRepo) DeleteOne(ctx context.Context, id uint) error {
-	slog.Info("Deleting one quota", "id", id)
+	repo.logger.Info("Deleting one quota", "id", id)
 
 	quota := &models.Quota{Model: gorm.Model{ID: id}}
 	err := repo.dbService.DeleteOne(ctx, quota)
