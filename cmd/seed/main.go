@@ -84,6 +84,20 @@ func NewSeeder(params SeederParams) {
 		UserID:      user.ID,
 	})
 
+	params.DbService.CreateOne(context.Background(), &models.Task{
+		Summary:     "Write Code",
+		Status:      models.TaskStatusOpen,
+		FocusAreaID: workFocusArea.ID,
+		UserID:      user.ID,
+	})
+
+	params.DbService.CreateOne(context.Background(), &models.Task{
+		Summary:     "Write Tests",
+		Status:      models.TaskStatusOpen,
+		FocusAreaID: personalFocusArea.ID,
+		UserID:      user.ID,
+	})
+
 	quota := models.Quota{
 		Summary:     "Work Out",
 		Period:      models.DailyQuota,

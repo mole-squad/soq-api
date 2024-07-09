@@ -50,6 +50,17 @@ func (repo *AgendaRepo) CreateOne(ctx context.Context, agenda *models.Agenda) er
 	return nil
 }
 
+func (repo *AgendaRepo) UpdateOne(ctx context.Context, agenda *models.Agenda) error {
+	err := repo.dbService.UpdateOne(ctx, agenda)
+	if err != nil {
+		return fmt.Errorf("failed to update one agenda: %w", err)
+	}
+
+	repo.logger.Debug("Updated one agenda", "agenda", agenda)
+
+	return nil
+}
+
 func (repo *AgendaRepo) FindManyByUser(ctx context.Context, userID uint) ([]models.Agenda, error) {
 	var agendas []models.Agenda
 
@@ -85,7 +96,7 @@ func (repo *AgendaRepo) FindOneByTimeRangeFocusArea(
 		ctx,
 		&agenda,
 		[]string{},
-		[]string{},
+		[]string{"AgendaItems"},
 		"agendas.user_id = ? AND agendas.focus_area_id = ? AND agendas.start_time = ? AND agendas.end_time = ?",
 		userID,
 		focusAreaID,

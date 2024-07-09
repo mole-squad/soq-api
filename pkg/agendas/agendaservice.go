@@ -115,9 +115,10 @@ func (srv *AgendaService) GenerateAgendasForFocusArea(ctx context.Context, user 
 	}
 
 	if existingAgenda != nil {
-		srv.logger.Debug(
+		srv.logger.Info(
 			"Agenda already exists for time range",
 			"agenda", existingAgenda.ID,
+			"items", len(existingAgenda.AgendaItems),
 			"focusArea", focusArea.ID,
 			"startTime", timeRangeStart,
 			"endTime", timeRangeEnd,
@@ -241,9 +242,28 @@ func (srv *AgendaService) populateAgenda(ctx context.Context, agenda *models.Age
 		agenda.UserID,
 	)
 
-	_, err := srv.taskService.ListOpenUserTasksForFocusArea(ctx, agenda.User.ID, agenda.FocusAreaID)
+	tasks, err := srv.taskService.ListOpenUserTasksForFocusArea(ctx, agenda.User.ID, agenda.FocusAreaID)
 	if err != nil {
 		return fmt.Errorf("failed to load open tasks: %w", err)
+	}
+
+	var agendaItems []models.AgendaItem
+
+	for _, task := range tasks {
+		agendaItem := models.AgendaItem{
+			AgendaID: agenda.ID,
+			TaskID:   &task.ID,
+		}
+
+		agendaItems = append(agendaItems, agendaItem)
+	}
+
+	agenda.AgendaItems = agendaItems
+	agenda.Status = models.AgendaStatusCompleted
+
+	err = srv.agendaRepo.UpdateOne(ctx, agenda)
+	if err != nil {
+		return fmt.Errorf("failed to update agenda: %w", err)
 	}
 
 	return nil

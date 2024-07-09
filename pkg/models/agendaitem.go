@@ -8,7 +8,7 @@ type AgendaItem struct {
 	AgendaID uint
 	Agenda   Agenda `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" `
 
-	TaskId *uint `gorm:"default:null"`
+	TaskID *uint `gorm:"default:null"`
 	Task   *Task `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 
 	QuotaID *uint  `gorm:"default:null"`
