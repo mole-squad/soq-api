@@ -3,7 +3,6 @@ package focusareas
 import (
 	"context"
 	"fmt"
-	"log/slog"
 
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/burkel24/task-app/pkg/models"
@@ -14,7 +13,8 @@ import (
 type FocusAreaRepoParams struct {
 	fx.In
 
-	DBService interfaces.DBService
+	DBService     interfaces.DBService
+	LoggerService interfaces.LoggerService
 }
 
 type FocusAreaRepoResult struct {
@@ -25,15 +25,20 @@ type FocusAreaRepoResult struct {
 
 type FocusAreaRepo struct {
 	dbService interfaces.DBService
+	logger    interfaces.LoggerService
 }
 
 func NewFocusAreaRepo(params FocusAreaRepoParams) (FocusAreaRepoResult, error) {
-	repo := &FocusAreaRepo{dbService: params.DBService}
+	repo := &FocusAreaRepo{
+		dbService: params.DBService,
+		logger:    params.LoggerService,
+	}
+
 	return FocusAreaRepoResult{FocusAreaRepo: repo}, nil
 }
 
 func (repo *FocusAreaRepo) CreateOne(ctx context.Context, focusArea *models.FocusArea) error {
-	slog.Info("Creating one focus area", "focusArea", focusArea)
+	repo.logger.Info("Creating one focus area", "focusArea", focusArea)
 
 	err := repo.dbService.CreateOne(ctx, focusArea)
 	if err != nil {
@@ -44,7 +49,7 @@ func (repo *FocusAreaRepo) CreateOne(ctx context.Context, focusArea *models.Focu
 }
 
 func (repo *FocusAreaRepo) UpdateOne(ctx context.Context, focusArea *models.FocusArea) error {
-	slog.Info("Updating one focus area", "focusArea", focusArea)
+	repo.logger.Info("Updating one focus area", "focusArea", focusArea)
 
 	err := repo.dbService.UpdateOne(ctx, focusArea)
 	if err != nil {
@@ -55,7 +60,7 @@ func (repo *FocusAreaRepo) UpdateOne(ctx context.Context, focusArea *models.Focu
 }
 
 func (repo *FocusAreaRepo) DeleteOne(ctx context.Context, id uint) error {
-	slog.Info("Deleting one focus area", "id", id)
+	repo.logger.Info("Deleting one focus area", "id", id)
 
 	focusArea := &models.FocusArea{Model: gorm.Model{ID: id}}
 
@@ -68,7 +73,7 @@ func (repo *FocusAreaRepo) DeleteOne(ctx context.Context, id uint) error {
 }
 
 func (repo *FocusAreaRepo) FindManyByUser(ctx context.Context, userID uint) ([]models.FocusArea, error) {
-	slog.Info("Finding many focus areas by user", "userID", userID)
+	repo.logger.Info("Finding many focus areas by user", "userID", userID)
 
 	focusAreas := []models.FocusArea{}
 

@@ -3,7 +3,6 @@ package tasks
 import (
 	"context"
 	"fmt"
-	"log/slog"
 
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/burkel24/task-app/pkg/models"
@@ -14,7 +13,8 @@ import (
 type TaskRepoParams struct {
 	fx.In
 
-	DBService interfaces.DBService
+	DBService     interfaces.DBService
+	LoggerService interfaces.LoggerService
 }
 
 type TaskRepoResult struct {
@@ -25,15 +25,20 @@ type TaskRepoResult struct {
 
 type TaskRepo struct {
 	dbService interfaces.DBService
+	logger    interfaces.LoggerService
 }
 
 func NewTaskRepo(params TaskRepoParams) (TaskRepoResult, error) {
-	repo := &TaskRepo{dbService: params.DBService}
+	repo := &TaskRepo{
+		dbService: params.DBService,
+		logger:    params.LoggerService,
+	}
+
 	return TaskRepoResult{TaskRepo: repo}, nil
 }
 
 func (repo *TaskRepo) CreateOne(ctx context.Context, task *models.Task) error {
-	slog.Info("Creating one task", "task", task)
+	repo.logger.Info("Creating one task", "task", task)
 
 	err := repo.dbService.CreateOne(ctx, task)
 	if err != nil {
@@ -44,7 +49,7 @@ func (repo *TaskRepo) CreateOne(ctx context.Context, task *models.Task) error {
 }
 
 func (repo *TaskRepo) UpdateOne(ctx context.Context, task *models.Task) error {
-	slog.Info("Updating one task", "task", task)
+	repo.logger.Info("Updating one task", "task", task)
 
 	err := repo.dbService.UpdateOne(ctx, task)
 	if err != nil {
@@ -55,7 +60,7 @@ func (repo *TaskRepo) UpdateOne(ctx context.Context, task *models.Task) error {
 }
 
 func (repo *TaskRepo) DeleteOne(ctx context.Context, id uint) error {
-	slog.Info("Deleting one task", "id", id)
+	repo.logger.Info("Deleting one task", "id", id)
 
 	task := &models.Task{Model: gorm.Model{ID: id}}
 
