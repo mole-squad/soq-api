@@ -74,3 +74,12 @@ func (srv *TaskService) ListOpenUserTasks(ctx context.Context, userID uint) ([]m
 
 	return tasks, nil
 }
+
+func (srv *TaskService) ListOpenUserTasksForFocusArea(ctx context.Context, userID uint, focusAreaID uint) ([]models.Task, error) {
+	tasks, err := srv.taskRepo.FindManyByUser(ctx, userID, "status = ? AND focus_area_id = ?", models.TaskStatusOpen, focusAreaID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list user tasks: %w", err)
+	}
+
+	return tasks, nil
+}

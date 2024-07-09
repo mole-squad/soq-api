@@ -21,6 +21,8 @@ type Agenda struct {
 	StartTime time.Time
 	EndTime   time.Time
 
+	AgendaItems []AgendaItem
+
 	FocusAreaID uint
 	FocusArea   FocusArea `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;"`
 

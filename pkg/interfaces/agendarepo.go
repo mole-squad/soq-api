@@ -9,6 +9,7 @@ import (
 
 type AgendaRepo interface {
 	CreateOne(ctx context.Context, agenda *models.Agenda) error
+	UpdateOne(ctx context.Context, agenda *models.Agenda) error
 	FindManyByUser(ctx context.Context, userID uint) ([]models.Agenda, error)
 	FindManyByPending(ctx context.Context) ([]models.Agenda, error)
 	FindOneByTimeRangeFocusArea(
