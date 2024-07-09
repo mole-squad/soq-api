@@ -11,4 +11,5 @@ type TaskService interface {
 	UpdateUserTask(ctx context.Context, task *models.Task) (models.Task, error)
 	DeleteUserTask(ctx context.Context, id uint) error
 	ListOpenUserTasks(ctx context.Context, userID uint) ([]models.Task, error)
+	ListOpenUserTasksForFocusArea(ctx context.Context, userID uint, focusAreaID uint) ([]models.Task, error)
 }

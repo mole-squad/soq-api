@@ -20,6 +20,7 @@ var allModels = []interface{}{
 	&models.Task{},
 	&models.Quota{},
 	&models.Agenda{},
+	&models.AgendaItem{},
 }
 
 const (

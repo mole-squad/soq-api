@@ -45,7 +45,7 @@ func (repo *AgendaRepo) CreateOne(ctx context.Context, agenda *models.Agenda) er
 		return fmt.Errorf("failed to create one agenda: %w", err)
 	}
 
-	repo.logger.Info("Created one agenda", "agenda", agenda)
+	repo.logger.Debug("Created one agenda", "agenda", agenda)
 
 	return nil
 }

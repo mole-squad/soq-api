@@ -241,7 +241,7 @@ func (srv *AgendaService) populateAgenda(ctx context.Context, agenda *models.Age
 		agenda.UserID,
 	)
 
-	_, err := srv.taskService.ListOpenUserTasks(ctx, agenda.User.ID)
+	_, err := srv.taskService.ListOpenUserTasksForFocusArea(ctx, agenda.User.ID, agenda.FocusAreaID)
 	if err != nil {
 		return fmt.Errorf("failed to load open tasks: %w", err)
 	}
