@@ -67,10 +67,17 @@ func (repo *TaskRepo) DeleteOne(ctx context.Context, id uint) error {
 	return nil
 }
 
-func (repo *TaskRepo) FindManyByUser(ctx context.Context, userID uint) ([]models.Task, error) {
+func (repo *TaskRepo) FindManyByUser(ctx context.Context, userID uint, query string, args ...interface{}) ([]models.Task, error) {
 	var tasks []models.Task
 
-	err := repo.dbService.FindMany(ctx, &tasks, []string{"FocusArea"}, []string{}, "tasks.user_id = ?", userID)
+	fullQuery := "tasks.user_id = ?"
+	if query != "" {
+		fullQuery = fmt.Sprintf("%s AND %s", fullQuery, query)
+	}
+
+	fullArgs := append([]interface{}{userID}, args...)
+
+	err := repo.dbService.FindMany(ctx, &tasks, []string{"FocusArea"}, []string{}, fullQuery, fullArgs...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find many taks by user: %w", err)
 	}

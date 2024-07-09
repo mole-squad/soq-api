@@ -86,8 +86,8 @@ func NewSeeder(lc fx.Lifecycle, dbService interfaces.DBService) {
 }
 
 func main() {
-	serverOpts := app.BuildAppOpts()
-	serverOpts = append(serverOpts, fx.Invoke(NewSeeder))
+	appOpts := app.BuildAppOpts()
+	appOpts = append(appOpts, fx.Invoke(NewSeeder))
 
-	fx.New(serverOpts...).Run()
+	fx.New(appOpts...).Run()
 }

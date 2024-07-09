@@ -6,8 +6,10 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/burkel24/task-app/pkg/agendas"
 	"github.com/burkel24/task-app/pkg/db"
 	"github.com/burkel24/task-app/pkg/focusareas"
+	"github.com/burkel24/task-app/pkg/logger"
 	"github.com/burkel24/task-app/pkg/quotas"
 	"github.com/burkel24/task-app/pkg/tasks"
 	"github.com/burkel24/task-app/pkg/users"
@@ -66,10 +68,12 @@ func BuildServerOpts() []fx.Option {
 func BuildAppOpts() []fx.Option {
 	return []fx.Option{
 		fx.Provide(NewRouter),
+		fx.Provide(logger.NewLoggerService),
 		db.Module,
 		users.Module,
 		focusareas.Module,
 		tasks.Module,
 		quotas.Module,
+		agendas.Module,
 	}
 }

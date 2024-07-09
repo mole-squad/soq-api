@@ -148,7 +148,7 @@ func (ctrl *TaskController) ListTasks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tasks, err := ctrl.taskService.ListUserTasks(ctx, &user)
+	tasks, err := ctrl.taskService.ListOpenUserTasks(ctx, user.ID)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
 	}

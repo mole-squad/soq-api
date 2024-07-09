@@ -9,6 +9,7 @@ type User struct {
 	Name     string
 	Timezone string
 
+	Agendas     []Agenda
 	FocusAreas  []FocusArea
 	Quotas      []Quota
 	Tasks       []Task

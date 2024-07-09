@@ -59,7 +59,7 @@ func (srv *FocusAreaService) DeleteFocusArea(ctx context.Context, id uint) error
 	return nil
 }
 
-func (srv *FocusAreaService) ListFocusAreas(ctx context.Context, user *models.User) ([]models.FocusArea, error) {
+func (srv *FocusAreaService) ListUserFocusAreas(ctx context.Context, user *models.User) ([]models.FocusArea, error) {
 	focusAreas, err := srv.focusAreaRepo.FindManyByUser(ctx, user.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list focus areas: %w", err)
