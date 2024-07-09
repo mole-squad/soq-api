@@ -20,6 +20,12 @@ tasks:
       - defer: rm bin/seed
       - bin/seed
 
+  agendas:
+    cmds:
+      - go build -o bin/agendas cmd/agendas/main.go
+      - defer: rm bin/agendas
+      - bin/agendas
+
   db:
     cmds:
       - docker compose -f docker/docker-compose.yml up db

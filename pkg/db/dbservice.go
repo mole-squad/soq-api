@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -18,6 +19,7 @@ var allModels = []interface{}{
 	&models.FocusArea{},
 	&models.Task{},
 	&models.Quota{},
+	&models.Agenda{},
 }
 
 const (
@@ -101,6 +103,41 @@ func (srv *DBService) DeleteOne(ctx context.Context, record interface{}) error {
 	return nil
 }
 
+func (srv *DBService) FindOne(
+	ctx context.Context,
+	result interface{},
+	joins []string,
+	preloads []string,
+	query interface{},
+	args ...interface{},
+) error {
+	sesh, cancel := srv.GetSession(ctx)
+	defer cancel()
+
+	for _, join := range joins {
+		sesh = sesh.Joins(join)
+	}
+
+	for _, preload := range preloads {
+		sesh = sesh.Preload(preload)
+	}
+
+	if query != nil {
+		sesh = sesh.Where(query, args...)
+	}
+
+	queryResult := sesh.First(result)
+	if queryResult.Error != nil {
+		if errors.Is(queryResult.Error, gorm.ErrRecordNotFound) {
+			return ErrorNotFound
+		}
+
+		return fmt.Errorf("find many failed: %w", queryResult.Error)
+	}
+
+	return nil
+}
+
 func (srv *DBService) FindMany(
 	ctx context.Context,
 	result interface{},
@@ -120,7 +157,11 @@ func (srv *DBService) FindMany(
 		sesh = sesh.Preload(preload)
 	}
 
-	queryResult := sesh.Where(query, args).Find(result)
+	if query != nil {
+		sesh = sesh.Where(query, args...)
+	}
+
+	queryResult := sesh.Find(result)
 	if queryResult.Error != nil {
 		return fmt.Errorf("find many failed: %w", queryResult.Error)
 	}

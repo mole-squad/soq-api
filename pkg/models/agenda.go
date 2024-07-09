@@ -1,21 +1,25 @@
 package models
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
-type TaskStatus int
+type AgendaStatus int
 
 const (
-	TaskStatusOpen   TaskStatus = iota
-	TaskStatusClosed            = iota
+	AgendaStatusPending AgendaStatus = iota
+	AgendaStatusCompleted
 )
 
-type Task struct {
+type Agenda struct {
 	gorm.Model
-	Summary string
-	Notes   string
-	Status  TaskStatus
+
+	Status AgendaStatus
+
+	StartTime time.Time
+	EndTime   time.Time
 
 	FocusAreaID uint
 	FocusArea   FocusArea `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;"`

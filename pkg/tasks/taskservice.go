@@ -66,8 +66,8 @@ func (srv *TaskService) DeleteUserTask(ctx context.Context, id uint) error {
 	return nil
 }
 
-func (srv *TaskService) ListUserTasks(ctx context.Context, user *models.User) ([]models.Task, error) {
-	tasks, err := srv.taskRepo.FindManyByUser(ctx, user.ID)
+func (srv *TaskService) ListOpenUserTasks(ctx context.Context, userID uint) ([]models.Task, error) {
+	tasks, err := srv.taskRepo.FindManyByUser(ctx, userID, "status = ?", models.TaskStatusOpen)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list user tasks: %w", err)
 	}

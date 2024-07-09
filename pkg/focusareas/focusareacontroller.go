@@ -147,7 +147,7 @@ func (ctrl *FocusAreaController) ListFocusAreas(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	focusAreas, err := ctrl.focusAreaService.ListFocusAreas(ctx, &user)
+	focusAreas, err := ctrl.focusAreaService.ListUserFocusAreas(ctx, &user)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
 		return
