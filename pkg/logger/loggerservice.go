@@ -24,7 +24,7 @@ type LoggerService struct {
 
 func NewLoggerService(params LoggerServiceParams) (LoggerServiceResult, error) {
 	handler := slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
-		Level: slog.LevelDebug,
+		Level: slog.LevelInfo,
 	})
 
 	logger := slog.New(handler)
@@ -47,4 +47,8 @@ func (srv *LoggerService) Warn(msg string, args ...any) {
 
 func (srv *LoggerService) Error(msg string, args ...any) {
 	srv.logger.Error(msg, args...)
+}
+
+func (srv *LoggerService) Logger() *slog.Logger {
+	return srv.logger
 }
