@@ -1,4 +1,4 @@
-package tasks
+package api
 
 import (
 	"fmt"
@@ -9,6 +9,7 @@ import (
 	"github.com/burkel24/task-app/pkg/common"
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/burkel24/task-app/pkg/models"
+	"github.com/burkel24/task-app/pkg/tasks"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"go.uber.org/fx"
@@ -56,7 +57,7 @@ func (ctrl *TaskController) CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dto := &CreateTaskRequestDto{}
+	dto := &tasks.CreateTaskRequestDto{}
 	if err = render.Bind(r, dto); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
@@ -74,7 +75,7 @@ func (ctrl *TaskController) CreateTask(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, common.ErrUnknown(err))
 	}
 
-	resp := NewTaskDTO(task)
+	resp := tasks.NewTaskDTO(task)
 	render.Render(w, r, resp)
 }
 
@@ -93,7 +94,7 @@ func (ctrl *TaskController) UpdateTask(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, common.ErrInvalidRequest(fmt.Errorf("failed to parse taskID: %w", err)))
 	}
 
-	dto := &UpdateTaskRequestDto{}
+	dto := &tasks.UpdateTaskRequestDto{}
 	if err = render.Bind(r, dto); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
@@ -112,7 +113,7 @@ func (ctrl *TaskController) UpdateTask(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, common.ErrUnknown(err))
 	}
 
-	resp := NewTaskDTO(updatedTask)
+	resp := tasks.NewTaskDTO(updatedTask)
 	render.Render(w, r, resp)
 }
 
@@ -148,10 +149,10 @@ func (ctrl *TaskController) ListTasks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tasks, err := ctrl.taskService.ListOpenUserTasks(ctx, user.ID)
+	userTasks, err := ctrl.taskService.ListOpenUserTasks(ctx, user.ID)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
 	}
 
-	render.RenderList(w, r, NewTaskListResponseDTO(tasks))
+	render.RenderList(w, r, tasks.NewTaskListResponseDTO(userTasks))
 }

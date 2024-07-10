@@ -1,4 +1,4 @@
-package focusareas
+package api
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/burkel24/task-app/pkg/auth"
 	"github.com/burkel24/task-app/pkg/common"
+	"github.com/burkel24/task-app/pkg/focusareas"
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/burkel24/task-app/pkg/models"
 	"github.com/go-chi/chi/v5"
@@ -56,7 +57,7 @@ func (ctrl *FocusAreaController) CreateFocusArea(w http.ResponseWriter, r *http.
 		return
 	}
 
-	dto := &CreateFocusAreaRequestDTO{}
+	dto := &focusareas.CreateFocusAreaRequestDTO{}
 	if err = render.Bind(r, dto); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
@@ -72,7 +73,7 @@ func (ctrl *FocusAreaController) CreateFocusArea(w http.ResponseWriter, r *http.
 		return
 	}
 
-	resp := NewFocusAreaDTO(createdFocusArea)
+	resp := focusareas.NewFocusAreaDTO(createdFocusArea)
 	render.Render(w, r, resp)
 }
 
@@ -92,7 +93,7 @@ func (ctrl *FocusAreaController) UpdateFocusArea(w http.ResponseWriter, r *http.
 		return
 	}
 
-	dto := &UpdateFocusAreaRequestDTO{}
+	dto := &focusareas.UpdateFocusAreaRequestDTO{}
 	if err = render.Bind(r, dto); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
@@ -109,7 +110,7 @@ func (ctrl *FocusAreaController) UpdateFocusArea(w http.ResponseWriter, r *http.
 		return
 	}
 
-	resp := NewFocusAreaDTO(updatedFocusArea)
+	resp := focusareas.NewFocusAreaDTO(updatedFocusArea)
 	render.Render(w, r, resp)
 }
 
@@ -153,5 +154,5 @@ func (ctrl *FocusAreaController) ListFocusAreas(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	render.RenderList(w, r, NewFocusAreaListResponseDTO(focusAreas))
+	render.RenderList(w, r, focusareas.NewFocusAreaListResponseDTO(focusAreas))
 }
