@@ -18,6 +18,7 @@ require (
 	github.com/go-chi/chi/v5 v5.1.0 // indirect
 	github.com/go-chi/render v1.0.3 // indirect
 	github.com/gregdel/pushover v1.3.1 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.5.5 // indirect
@@ -35,6 +36,8 @@ require (
 	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/sahilm/fuzzy v0.1.1-0.20230530133925-c48e322e2a8f // indirect
+	github.com/spf13/cobra v1.8.1 // indirect
+	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	go.uber.org/dig v1.17.1 // indirect
 	go.uber.org/fx v1.22.1 // indirect

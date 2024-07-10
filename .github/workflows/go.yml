@@ -8,8 +8,8 @@ on:
 
 jobs:
 
-  api_build:
-    name: Build Server Command
+  taskapp_build:
+    name: Build taskapp Command
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -23,41 +23,7 @@ jobs:
       uses: pnorton5432/setup-task@v1
 
     - name: Build
-      run: task api_build
-
-  seed_build:
-    name: Build Seed Command
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.22'
-
-    - name: Setup go-task
-      uses: pnorton5432/setup-task@v1
-
-    - name: Build
-      run: task seed_build
-
-  agendas_build:
-    name: Build Agendas Command
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.22'
-
-    - name: Setup go-task
-      uses: pnorton5432/setup-task@v1
-
-    - name: Build
-      run: task agendas_build
+      run: task taskapp_build
 
   tui_build:
     name: Build Terminal UI
