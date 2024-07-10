@@ -1,4 +1,4 @@
-package quotas
+package api
 
 import (
 	"fmt"
@@ -9,6 +9,7 @@ import (
 	"github.com/burkel24/task-app/pkg/common"
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/burkel24/task-app/pkg/models"
+	"github.com/burkel24/task-app/pkg/quotas"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"go.uber.org/fx"
@@ -56,7 +57,7 @@ func (ctrl *QuotaController) CreateQuota(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	dto := &CreateQuotaRequestDTO{}
+	dto := &quotas.CreateQuotaRequestDTO{}
 	if err = render.Bind(r, dto); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
@@ -76,7 +77,7 @@ func (ctrl *QuotaController) CreateQuota(w http.ResponseWriter, r *http.Request)
 		render.Render(w, r, common.ErrUnknown(err))
 	}
 
-	resp := NewQuotaDTO(quota)
+	resp := quotas.NewQuotaDTO(quota)
 	render.Render(w, r, resp)
 }
 
@@ -95,7 +96,7 @@ func (ctrl *QuotaController) UpdateQuota(w http.ResponseWriter, r *http.Request)
 		render.Render(w, r, common.ErrInvalidRequest(fmt.Errorf("failed to parse quotaID: %w", err)))
 	}
 
-	dto := &UpdateQuotaRequestDto{}
+	dto := &quotas.UpdateQuotaRequestDto{}
 	if err = render.Bind(r, dto); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
@@ -116,7 +117,7 @@ func (ctrl *QuotaController) UpdateQuota(w http.ResponseWriter, r *http.Request)
 		render.Render(w, r, common.ErrUnknown(err))
 	}
 
-	resp := NewQuotaDTO(updatedQuota)
+	resp := quotas.NewQuotaDTO(updatedQuota)
 	render.Render(w, r, resp)
 }
 
@@ -152,10 +153,10 @@ func (ctrl *QuotaController) ListQuotas(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	quotas, err := ctrl.quotaService.ListUserQuotas(ctx, &user)
+	userQuotas, err := ctrl.quotaService.ListUserQuotas(ctx, &user)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
 	}
 
-	render.RenderList(w, r, NewQuotaListResponseDTO(quotas))
+	render.RenderList(w, r, quotas.NewQuotaListResponseDTO(userQuotas))
 }
