@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"os"
 
 	"github.com/burkel24/task-app/pkg/app"
 	"github.com/burkel24/task-app/pkg/interfaces"
@@ -15,7 +16,7 @@ type GenerateAgendasParams struct {
 	Logger        interfaces.LoggerService
 }
 
-func GenerateAgendas(params GenerateAgendasParams) {
+func GenerateAndSendAgendas(params GenerateAgendasParams) error {
 	params.Logger.Info("Generating agendas")
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -23,21 +24,32 @@ func GenerateAgendas(params GenerateAgendasParams) {
 
 	err := params.AgendaService.GenerateAgendasForUpcomingTimeWindows(ctx)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	err = params.AgendaService.PopulatePendingAgendas(ctx)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	params.Logger.Info("Finished generating agendas")
+	params.Logger.Info("Sending agenda notifications")
+
+	err = params.AgendaService.SendAgendaNotifications(ctx)
+	if err != nil {
+		return err
+	}
+
+	params.Logger.Info("Finished sending agenda notifications")
+
+	os.Exit(0)
+
+	return nil
 }
 
 func main() {
 	appOpts := app.BuildAppOpts()
-	appOpts = append(appOpts, fx.Invoke(GenerateAgendas))
+	appOpts = append(appOpts, fx.Invoke(GenerateAndSendAgendas))
 
-	// TODO figure out how to stop it once GenerateAgendas is done
 	fx.New(appOpts...).Run()
 }

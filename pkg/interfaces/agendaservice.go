@@ -5,4 +5,5 @@ import "context"
 type AgendaService interface {
 	GenerateAgendasForUpcomingTimeWindows(ctx context.Context) error
 	PopulatePendingAgendas(ctx context.Context) error
+	SendAgendaNotifications(ctx context.Context) error
 }

@@ -1,6 +1,9 @@
 version: '3'
 
+dotenv: ['.env']
+
 interval: 500ms
+
 tasks:
   api_build:
     cmds:

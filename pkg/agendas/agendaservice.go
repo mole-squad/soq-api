@@ -19,12 +19,13 @@ const (
 type AgendaServiceParams struct {
 	fx.In
 
-	AgendaRepo       interfaces.AgendaRepo
-	FocusAreaService interfaces.FocusAreaService
-	LoggerService    interfaces.LoggerService
-	QuotaService     interfaces.QuotaService
-	TaskService      interfaces.TaskService
-	UserService      interfaces.UserService
+	AgendaRepo          interfaces.AgendaRepo
+	FocusAreaService    interfaces.FocusAreaService
+	LoggerService       interfaces.LoggerService
+	NotificationService interfaces.NotificationService
+	QuotaService        interfaces.QuotaService
+	TaskService         interfaces.TaskService
+	UserService         interfaces.UserService
 }
 
 type AgendaServiceResult struct {
@@ -34,22 +35,24 @@ type AgendaServiceResult struct {
 }
 
 type AgendaService struct {
-	agendaRepo       interfaces.AgendaRepo
-	focusAreaService interfaces.FocusAreaService
-	logger           interfaces.LoggerService
-	quotaService     interfaces.QuotaService
-	taskService      interfaces.TaskService
-	userService      interfaces.UserService
+	agendaRepo          interfaces.AgendaRepo
+	focusAreaService    interfaces.FocusAreaService
+	logger              interfaces.LoggerService
+	notificationService interfaces.NotificationService
+	quotaService        interfaces.QuotaService
+	taskService         interfaces.TaskService
+	userService         interfaces.UserService
 }
 
 func NewAgendaService(params AgendaServiceParams) (AgendaServiceResult, error) {
 	srv := &AgendaService{
-		agendaRepo:       params.AgendaRepo,
-		focusAreaService: params.FocusAreaService,
-		logger:           params.LoggerService,
-		quotaService:     params.QuotaService,
-		taskService:      params.TaskService,
-		userService:      params.UserService,
+		agendaRepo:          params.AgendaRepo,
+		focusAreaService:    params.FocusAreaService,
+		logger:              params.LoggerService,
+		notificationService: params.NotificationService,
+		quotaService:        params.QuotaService,
+		taskService:         params.TaskService,
+		userService:         params.UserService,
 	}
 
 	return AgendaServiceResult{AgendaService: srv}, nil
@@ -145,7 +148,7 @@ func (srv *AgendaService) GenerateAgendasForFocusArea(ctx context.Context, user 
 }
 
 func (srv *AgendaService) PopulatePendingAgendas(ctx context.Context) error {
-	pendingAgendas, err := srv.agendaRepo.FindManyByPending(ctx)
+	pendingAgendas, err := srv.agendaRepo.FindManyByStatus(ctx, models.AgendaStatusPending)
 	if err != nil {
 		return fmt.Errorf("failed to load pending agendas: %w", err)
 	}
@@ -154,6 +157,26 @@ func (srv *AgendaService) PopulatePendingAgendas(ctx context.Context) error {
 		err := srv.populateAgenda(ctx, &agenda)
 		if err != nil {
 			return fmt.Errorf("failed to populate agenda: %w", err)
+		}
+	}
+
+	return nil
+}
+
+func (srv *AgendaService) SendAgendaNotifications(ctx context.Context) error {
+	agendas, err := srv.agendaRepo.FindManyByStatus(ctx, models.AgendaStatusGenerated)
+	if err != nil {
+		return fmt.Errorf("failed to load generated agendas: %w", err)
+	}
+
+	if len(agendas) == 0 {
+		srv.logger.Debug("No agendas to send")
+	}
+
+	for _, agenda := range agendas {
+		err := srv.sendAgendaNotification(ctx, &agenda)
+		if err != nil {
+			return fmt.Errorf("failed to send agenda notification: %w", err)
 		}
 	}
 
@@ -259,7 +282,43 @@ func (srv *AgendaService) populateAgenda(ctx context.Context, agenda *models.Age
 	}
 
 	agenda.AgendaItems = agendaItems
-	agenda.Status = models.AgendaStatusCompleted
+	agenda.Status = models.AgendaStatusGenerated
+
+	err = srv.agendaRepo.UpdateOne(ctx, agenda)
+	if err != nil {
+		return fmt.Errorf("failed to update agenda: %w", err)
+	}
+
+	return nil
+}
+
+func (srv *AgendaService) sendAgendaNotification(ctx context.Context, agenda *models.Agenda) error {
+	srv.logger.Info(
+		"Sending agenda notification",
+		"agenda",
+		agenda.ID,
+		"focusArea",
+		agenda.FocusAreaID,
+		"user",
+		agenda.UserID,
+		"startTime",
+		agenda.StartTime,
+		"endTime",
+		agenda.EndTime,
+	)
+
+	err := srv.notificationService.SendNotification(
+		ctx,
+		agenda.UserID,
+		agenda.GetTitle(),
+		agenda.GetBody(),
+	)
+
+	if err != nil {
+		return fmt.Errorf("failed to send notification: %w", err)
+	}
+
+	agenda.Status = models.AgendaStatusSent
 
 	err = srv.agendaRepo.UpdateOne(ctx, agenda)
 	if err != nil {
