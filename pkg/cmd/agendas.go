@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"context"
@@ -6,8 +6,19 @@ import (
 
 	"github.com/burkel24/task-app/pkg/app"
 	"github.com/burkel24/task-app/pkg/interfaces"
+	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )
+
+var agendasCmd = &cobra.Command{
+	Use: "agendas",
+	Run: func(cmd *cobra.Command, args []string) {
+		appOpts := app.BuildAppOpts()
+		appOpts = append(appOpts, fx.Invoke(GenerateAndSendAgendas))
+
+		fx.New(appOpts...).Run()
+	},
+}
 
 type GenerateAgendasParams struct {
 	fx.In
@@ -45,11 +56,4 @@ func GenerateAndSendAgendas(params GenerateAgendasParams) error {
 	os.Exit(0)
 
 	return nil
-}
-
-func main() {
-	appOpts := app.BuildAppOpts()
-	appOpts = append(appOpts, fx.Invoke(GenerateAndSendAgendas))
-
-	fx.New(appOpts...).Run()
 }

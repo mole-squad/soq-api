@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"context"
@@ -8,8 +8,19 @@ import (
 	"github.com/burkel24/task-app/pkg/app"
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/burkel24/task-app/pkg/models"
+	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )
+
+var seedCmd = &cobra.Command{
+	Use: "seed",
+	Run: func(cmd *cobra.Command, args []string) {
+		appOpts := app.BuildAppOpts()
+		appOpts = append(appOpts, fx.Invoke(NewSeeder))
+
+		fx.New(appOpts...).Run()
+	},
+}
 
 var (
 	weekdays = []int32{int32(time.Monday), int32(time.Tuesday), int32(time.Wednesday), int32(time.Thursday), int32(time.Friday)}
@@ -124,11 +135,4 @@ func NewSeeder(params SeederParams) {
 	params.Logger.Info("Database seeded")
 
 	os.Exit(0)
-}
-
-func main() {
-	appOpts := app.BuildAppOpts()
-	appOpts = append(appOpts, fx.Invoke(NewSeeder))
-
-	fx.New(appOpts...).Run()
 }

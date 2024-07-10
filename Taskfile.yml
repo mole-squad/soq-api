@@ -5,48 +5,30 @@ dotenv: ['.env']
 interval: 500ms
 
 tasks:
-  api_build:
+  taskapp_build:
     cmds:
-      - go build -o bin/server cmd/server/main.go
+      - go build -o bin/taskapp cmd/taskapp/main.go
     generates:
-      - './bin/server'
+      - './bin/taskapp'
     sources:
-      - 'cmd/server/*.go'
+      - 'cmd/taskapp/*.go'
       - 'pkg/**/*.go'
 
   api:
     watch: true
     cmds:
-      - task: api_build
-      - bin/server
-
-  seed_build:
-    cmds:
-      - go build -o bin/seed cmd/seed/main.go
-    generates:
-      - './bin/seed'
-    sources:
-      - 'cmd/seed/*.go'
-      - 'pkg/**/*.go'
+      - task: taskapp_build
+      - bin/taskapp api
 
   seed:
     cmds:
-      - task: seed_build
-      - bin/seed
-
-  agendas_build:
-    cmds:
-      - go build -o bin/agendas cmd/agendas/main.go
-    generates:
-      - './bin/agendas'
-    sources:
-      - 'cmd/agendas/*.go'
-      - 'pkg/**/*.go'
+      - task: taskapp_build
+      - bin/taskapp seed
 
   agendas:
     cmds:
-      - task: agendas_build
-      - bin/agendas
+      - task: taskapp_build
+      - bin/taskapp agendas
 
   db:
     cmds:
