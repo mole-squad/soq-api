@@ -26,6 +26,7 @@ http://localhost:5444/ (test@test.com / pass)
  - [fx](https://uber-go.github.io/fx/)
  - [pushover](https://pushover.net/)
  - [pushover client](https://github.com/gregdel/pushover)
+ - [cobra cmd](https://github.com/spf13/cobra)
 
 
 ## Terminal UI
