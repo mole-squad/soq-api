@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -10,7 +12,8 @@ type AgendaStatus int
 
 const (
 	AgendaStatusPending AgendaStatus = iota
-	AgendaStatusCompleted
+	AgendaStatusGenerated
+	AgendaStatusSent
 )
 
 type Agenda struct {
@@ -28,4 +31,24 @@ type Agenda struct {
 
 	UserID uint
 	User   User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+func (a *Agenda) GetTitle() string {
+	return fmt.Sprintf(
+		"%s Agenda %s",
+		a.FocusArea.Name,
+		a.StartTime.Format("Jan 1, 2006"),
+	)
+}
+
+func (a *Agenda) GetBody() string {
+	var builder strings.Builder
+
+	for _, item := range a.AgendaItems {
+		builder.WriteString(" - ")
+		builder.WriteString(item.GetShortDescription())
+		builder.WriteString("\n")
+	}
+
+	return builder.String()
 }

@@ -21,6 +21,7 @@ var allModels = []interface{}{
 	&models.Quota{},
 	&models.Agenda{},
 	&models.AgendaItem{},
+	&models.Device{},
 }
 
 const (

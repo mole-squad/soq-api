@@ -11,6 +11,7 @@ import (
 	"github.com/burkel24/task-app/pkg/focusareas"
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/burkel24/task-app/pkg/logger"
+	"github.com/burkel24/task-app/pkg/notifications"
 	"github.com/burkel24/task-app/pkg/quotas"
 	"github.com/burkel24/task-app/pkg/tasks"
 	"github.com/burkel24/task-app/pkg/users"
@@ -84,6 +85,7 @@ func BuildAppOpts() []fx.Option {
 		db.Module,
 		users.Module,
 		focusareas.Module,
+		notifications.Module,
 		tasks.Module,
 		quotas.Module,
 		agendas.Module,

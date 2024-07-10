@@ -72,10 +72,18 @@ func (repo *AgendaRepo) FindManyByUser(ctx context.Context, userID uint) ([]mode
 	return agendas, nil
 }
 
-func (repo *AgendaRepo) FindManyByPending(ctx context.Context) ([]models.Agenda, error) {
+func (repo *AgendaRepo) FindManyByStatus(ctx context.Context, status models.AgendaStatus) ([]models.Agenda, error) {
 	var agendas []models.Agenda
 
-	err := repo.dbService.FindMany(ctx, &agendas, []string{"FocusArea", "User"}, []string{}, "agendas.status = ?", models.AgendaStatusPending)
+	err := repo.dbService.FindMany(
+		ctx,
+		&agendas,
+		[]string{"FocusArea", "User"},
+		[]string{"AgendaItems", "AgendaItems.Task", "AgendaItems.Quota"},
+		"agendas.status = ?",
+		status,
+	)
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to list pending agendas: %w", err)
 	}

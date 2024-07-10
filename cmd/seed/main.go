@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/burkel24/task-app/pkg/app"
@@ -30,6 +31,12 @@ func NewSeeder(params SeederParams) {
 
 	user := models.User{Name: "Burke", Timezone: "America/Los_Angeles"}
 	params.DbService.CreateOne(context.Background(), &user)
+
+	params.DbService.CreateOne(context.Background(), &models.Device{
+		UserKey:  os.Getenv("PUSHOVER_USER_KEY"),
+		UserID:   user.ID,
+		DeviceID: "burke-iphone",
+	})
 
 	workFocusArea := models.FocusArea{
 		Name:   "Work",
@@ -92,7 +99,14 @@ func NewSeeder(params SeederParams) {
 	})
 
 	params.DbService.CreateOne(context.Background(), &models.Task{
-		Summary:     "Write Tests",
+		Summary:     "Exercise",
+		Status:      models.TaskStatusOpen,
+		FocusAreaID: personalFocusArea.ID,
+		UserID:      user.ID,
+	})
+
+	params.DbService.CreateOne(context.Background(), &models.Task{
+		Summary:     "Do Laundry",
 		Status:      models.TaskStatusOpen,
 		FocusAreaID: personalFocusArea.ID,
 		UserID:      user.ID,
@@ -108,6 +122,8 @@ func NewSeeder(params SeederParams) {
 	params.DbService.CreateOne(context.Background(), &quota)
 
 	params.Logger.Info("Database seeded")
+
+	os.Exit(0)
 }
 
 func main() {
