@@ -10,6 +10,7 @@ import (
 	"github.com/burkel24/task-app/pkg/tasks"
 	"github.com/burkel24/task-app/tui/api"
 	"github.com/burkel24/task-app/tui/common"
+	"github.com/burkel24/task-app/tui/forms"
 	"github.com/burkel24/task-app/tui/selectinput"
 	"github.com/burkel24/task-app/tui/styles"
 	"github.com/charmbracelet/bubbles/help"
@@ -97,23 +98,9 @@ type TaskFormModel struct {
 	help help.Model
 }
 
-func newFormField(label string, height int) textarea.Model {
-	input := textarea.New()
-	input.Placeholder = label
-	input.ShowLineNumbers = false
-	input.Prompt = ""
-
-	input.MaxWidth = 0
-	input.FocusedStyle.CursorLine = lipgloss.NewStyle()
-
-	input.SetHeight(height)
-
-	return input
-}
-
 func NewTaskFormModel(client *api.Client) TaskFormModel {
-	summaryInput := newFormField("Summary", 2)
-	notesInput := newFormField("Notes", 5)
+	summaryInput := forms.NewFormField("Summary", 2)
+	notesInput := forms.NewFormField("Notes", 5)
 
 	return TaskFormModel{
 		client:         client,
@@ -136,12 +123,8 @@ func (m *TaskFormModel) Init() tea.Cmd {
 
 func (m *TaskFormModel) Update(msg tea.Msg) (TaskFormModel, tea.Cmd) {
 	var (
-		summaryCmd   tea.Cmd
-		notesCmd     tea.Cmd
-		loadCmd      tea.Cmd
-		nextCmd      tea.Cmd
-		focusAreaCmd tea.Cmd
-		fieldsCmd    tea.Cmd
+		cmd  tea.Cmd
+		cmds []tea.Cmd
 	)
 
 	switch msg := msg.(type) {
@@ -153,26 +136,38 @@ func (m *TaskFormModel) Update(msg tea.Msg) (TaskFormModel, tea.Cmd) {
 		m.onWindowSize(msg.Width, msg.Height)
 
 	case common.CreateTaskMsg:
-		m.onTaskCreate()
+		cmd = m.onTaskCreate()
+		return *m, cmd
 
 	case common.SelectTaskMsg:
-		m.onTaskSelect(msg.Task)
+		cmd = m.onTaskSelect(msg.Task)
+		return *m, cmd
 
 	case toggleSidePanelMsg:
 		m.onSidePanelToggle(msg.isOpen)
 	}
 
-	m.summary, summaryCmd = m.summary.Update(msg)
-	m.notes, notesCmd = m.notes.Update(msg)
-	m.focusAreaInput, focusAreaCmd = m.focusAreaInput.Update(msg)
+	m.summary, cmd = m.summary.Update(msg)
+	if cmd != nil {
+		cmds = append(cmds, cmd)
+	}
 
-	return *m, tea.Sequence(loadCmd, tea.Batch(
-		nextCmd,
-		summaryCmd,
-		notesCmd,
-		focusAreaCmd,
-		fieldsCmd,
-	))
+	m.notes, cmd = m.notes.Update(msg)
+	if cmd != nil {
+		cmds = append(cmds, cmd)
+	}
+
+	m.focusAreaInput, cmd = m.focusAreaInput.Update(msg)
+	if cmd != nil {
+		cmds = append(cmds, cmd)
+	}
+
+	cmd = nil
+	if len(cmds) > 0 {
+		cmd = tea.Batch(cmds...)
+	}
+
+	return *m, cmd
 }
 
 func (m *TaskFormModel) View() string {
@@ -309,6 +304,8 @@ func (m *TaskFormModel) onFocusAreaRefresh() error {
 		return fmt.Errorf("error fetching focus areas: %w", err)
 	}
 
+	slog.Debug("Focus areas fetched", "count", len(focusAreas))
+
 	var opts = make([]selectinput.SelectOption, len(focusAreas))
 	for i, fa := range focusAreas {
 		opts[i] = NewFocusAreaOption(fa)
@@ -320,14 +317,16 @@ func (m *TaskFormModel) onFocusAreaRefresh() error {
 	return nil
 }
 
-func (m *TaskFormModel) onTaskCreate() tea.Msg {
-	m.onFocusAreaRefresh()
+func (m *TaskFormModel) onTaskCreate() tea.Cmd {
+	err := m.onFocusAreaRefresh()
+	if err != nil {
+		return common.NewErrorMsg(fmt.Errorf("failed to refresh focus areas: %w", err))
+	}
 
 	slog.Debug("Creating new task")
 
 	if len(m.focusareas) == 0 {
-		slog.Error("No focus areas available")
-		return nil
+		return common.NewErrorMsg(fmt.Errorf("no focus areas available"))
 	}
 
 	focusArea := m.focusareas[0]
@@ -344,8 +343,11 @@ func (m *TaskFormModel) onTaskCreate() tea.Msg {
 	return nil
 }
 
-func (m *TaskFormModel) onTaskSelect(task tasks.TaskDTO) tea.Msg {
-	m.onFocusAreaRefresh()
+func (m *TaskFormModel) onTaskSelect(task tasks.TaskDTO) tea.Cmd {
+	err := m.onFocusAreaRefresh()
+	if err != nil {
+		return common.NewErrorMsg(fmt.Errorf("failed to refresh focus areas: %w", err))
+	}
 
 	slog.Debug("Editing task", "task", task)
 

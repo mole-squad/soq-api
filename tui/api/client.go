@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/burkel24/task-app/pkg/auth"
 	"github.com/burkel24/task-app/pkg/focusareas"
 	"github.com/burkel24/task-app/pkg/tasks"
 )
@@ -18,6 +19,8 @@ const APIHost = "localhost:3000"
 
 type Client struct {
 	httpClient *http.Client
+
+	token string
 }
 
 func NewClient() *Client {
@@ -28,6 +31,56 @@ func NewClient() *Client {
 	return &Client{
 		httpClient: c,
 	}
+}
+
+func (c *Client) SetToken(token string) {
+	c.token = token
+}
+
+func (c *Client) Login(ctx context.Context, username, password string) (string, error) {
+	var tokenResp auth.TokenResponseDTO
+
+	reqUrl := url.URL{
+		Scheme: "http",
+		Host:   APIHost,
+		Path:   "/auth/token",
+	}
+
+	req := auth.NewLoginRequestDTO(username, password)
+
+	body, err := json.Marshal(req)
+	if err != nil {
+		return "", fmt.Errorf("error marshalling login request: %w", err)
+	}
+
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, reqUrl.String(), bytes.NewBuffer(body))
+	if err != nil {
+		return "", fmt.Errorf("error building login request: %w", err)
+	}
+
+	httpReq.Header.Set("Content-Type", "application/json")
+
+	res, err := c.httpClient.Do(httpReq)
+	if err != nil {
+		return "", fmt.Errorf("error executing login request: %w", err)
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("unexpected status code: %d", res.StatusCode)
+	}
+
+	respBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		return "", fmt.Errorf("error reading login response: %w", err)
+	}
+
+	if err = json.Unmarshal(respBody, &tokenResp); err != nil {
+		return "", fmt.Errorf("error unmarshalling login response: %w", err)
+	}
+
+	return tokenResp.Token, nil
 }
 
 func (c *Client) ListTasks(ctx context.Context) ([]tasks.TaskDTO, error) {
@@ -41,6 +94,8 @@ func (c *Client) ListTasks(ctx context.Context) ([]tasks.TaskDTO, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error building list tasks request: %w", err)
 	}
+
+	req.Header = c.buildHeaders()
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {
@@ -80,6 +135,8 @@ func (c *Client) CreateTask(ctx context.Context, t *tasks.CreateTaskRequestDto) 
 	if err != nil {
 		return task, fmt.Errorf("error building create task request: %w", err)
 	}
+
+	req.Header = c.buildHeaders()
 
 	req.Header.Set("Content-Type", "application/json")
 
@@ -121,7 +178,7 @@ func (c *Client) UpdateTask(ctx context.Context, taskID uint, t *tasks.UpdateTas
 		return task, fmt.Errorf("error building update task request: %w", err)
 	}
 
-	req.Header.Set("Content-Type", "application/json")
+	req.Header = c.buildHeaders()
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {
@@ -154,6 +211,8 @@ func (c *Client) DeleteTask(ctx context.Context, taskID uint) error {
 		return fmt.Errorf("error building delete task request: %w", err)
 	}
 
+	req.Header = c.buildHeaders()
+
 	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("error executing delete task request: %w", err)
@@ -180,6 +239,8 @@ func (c *Client) ListFocusAreas(ctx context.Context) ([]focusareas.FocusAreaDTO,
 		return nil, fmt.Errorf("error building list focus areas request: %w", err)
 	}
 
+	req.Header = c.buildHeaders()
+
 	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error executing list focus areas request: %w", err)
@@ -198,4 +259,16 @@ func (c *Client) ListFocusAreas(ctx context.Context) ([]focusareas.FocusAreaDTO,
 	}
 
 	return focusAreasResp, nil
+}
+
+func (c *Client) buildHeaders() http.Header {
+	headers := http.Header{}
+
+	if c.token != "" {
+		headers.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
+	}
+
+	headers.Set("Content-Type", "application/json")
+
+	return headers
 }
