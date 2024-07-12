@@ -8,6 +8,11 @@ Install Taskfile
 brew install go-task
 ```
 
+Install Heroku CLI
+```
+brew tap heroku/brew && brew install heroku
+```
+
 # PG Admin
 
 http://localhost:5444/ (test@test.com / pass)
