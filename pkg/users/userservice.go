@@ -7,6 +7,7 @@ import (
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/burkel24/task-app/pkg/models"
 	"go.uber.org/fx"
+	"gorm.io/gorm"
 )
 
 type UserServiceParams struct {
@@ -59,4 +60,23 @@ func (srv *UserService) GetUserByCredentials(ctx context.Context, username, pass
 	}
 
 	return nil, fmt.Errorf("invalid password")
+}
+
+func (srv *UserService) UpdateUserPassword(ctx context.Context, userID uint, password string) error {
+	hashedPassword, err := HashUserPassword(password)
+	if err != nil {
+		return fmt.Errorf("failed to hash password: %w", err)
+	}
+
+	user := models.User{
+		Model:        gorm.Model{ID: userID},
+		PasswordHash: hashedPassword,
+	}
+
+	err = srv.userRepo.UpdateOne(ctx, &user)
+	if err != nil {
+		return fmt.Errorf("failed to update user password: %w", err)
+	}
+
+	return nil
 }
