@@ -6,6 +6,9 @@ import (
 
 type User struct {
 	gorm.Model
+	Username     string
+	PasswordHash string
+
 	Name     string
 	Timezone string
 

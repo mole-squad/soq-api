@@ -1,8 +1,6 @@
 package api
 
 import (
-	"net/http"
-
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
@@ -11,6 +9,7 @@ import (
 type UserControllerParams struct {
 	fx.In
 
+	AuthService interfaces.AuthService
 	UserService interfaces.UserService
 	Router      *chi.Mux
 }
@@ -29,13 +28,11 @@ func NewUserController(params UserControllerParams) (UserControllerResult, error
 	ctrl := UserController{userService: params.UserService}
 
 	userRouter := chi.NewRouter()
-	userRouter.Get("/", ctrl.ListUsers)
+	userRouter.Use(params.AuthService.AuthRequired())
 
 	params.Router.Mount("/users", userRouter)
 
-	return UserControllerResult{UserController: ctrl}, nil
-}
-
-func (ctrl *UserController) ListUsers(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("these are my users xD"))
+	return UserControllerResult{
+		UserController: ctrl,
+	}, nil
 }

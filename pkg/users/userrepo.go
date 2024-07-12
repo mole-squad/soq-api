@@ -41,3 +41,25 @@ func (repo *UserRepo) ListUsers(ctx context.Context) ([]models.User, error) {
 
 	return users, nil
 }
+
+func (repo *UserRepo) FindOneByID(ctx context.Context, userID uint) (*models.User, error) {
+	var user models.User
+
+	err := repo.dbService.FindOne(ctx, &user, []string{}, []string{}, "id = ?", userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user by ID: %w", err)
+	}
+
+	return &user, nil
+}
+
+func (repo *UserRepo) FindOneByUsername(ctx context.Context, username string) (*models.User, error) {
+	var user models.User
+
+	err := repo.dbService.FindOne(ctx, &user, []string{}, []string{}, "username = ?", username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user by username: %w", err)
+	}
+
+	return &user, nil
+}

@@ -11,6 +11,7 @@ import (
 func NewRouter() *chi.Mux {
 	router := chi.NewRouter()
 	router.Use(middleware.DefaultLogger)
+	router.Use(middleware.AllowContentType("application/json"))
 	router.Use(render.SetContentType(render.ContentTypeJSON))
 
 	router.Get("/healthcheck", func(w http.ResponseWriter, r *http.Request) {

@@ -8,6 +8,7 @@ import (
 	"github.com/burkel24/task-app/pkg/app"
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/burkel24/task-app/pkg/models"
+	"github.com/burkel24/task-app/pkg/users"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )
@@ -32,15 +33,28 @@ type SeederParams struct {
 
 	DbService interfaces.DBService
 	Logger    interfaces.LoggerService
+	interfaces.UserService
 }
 
-func NewSeeder(params SeederParams) {
+func NewSeeder(params SeederParams) error {
 	params.Logger.Info("Seeding database")
 
 	params.DbService.DropAll(context.Background())
 	params.DbService.Migrate(context.Background())
 
-	user := models.User{Name: "Burke", Timezone: "America/Los_Angeles"}
+	password := os.Getenv("TEST_USER_PASSWORD")
+	hash, err := users.HashUserPassword(password)
+	if err != nil {
+		return err
+	}
+
+	user := models.User{
+		Username:     "burke",
+		PasswordHash: hash,
+		Name:         "Burke",
+		Timezone:     "America/Los_Angeles",
+	}
+
 	params.DbService.CreateOne(context.Background(), &user)
 
 	params.DbService.CreateOne(context.Background(), &models.Device{
@@ -135,4 +149,5 @@ func NewSeeder(params SeederParams) {
 	params.Logger.Info("Database seeded")
 
 	os.Exit(0)
+	return nil
 }
