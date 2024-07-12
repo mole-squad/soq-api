@@ -19,6 +19,7 @@ import (
 type FocusAreaControllerParams struct {
 	fx.In
 
+	AuthService      interfaces.AuthService
 	FocusAreaService interfaces.FocusAreaService
 	Router           *chi.Mux
 }
@@ -37,6 +38,8 @@ func NewFocusAreaController(params FocusAreaControllerParams) (FocusAreaControll
 	ctrl := FocusAreaController{focusAreaService: params.FocusAreaService}
 
 	focusAreaRouter := chi.NewRouter()
+
+	focusAreaRouter.Use(params.AuthService.AuthRequired())
 
 	focusAreaRouter.Get("/", ctrl.ListFocusAreas)
 	focusAreaRouter.Post("/", ctrl.CreateFocusArea)
@@ -67,7 +70,7 @@ func (ctrl *FocusAreaController) CreateFocusArea(w http.ResponseWriter, r *http.
 		Name: dto.Name,
 	}
 
-	createdFocusArea, err := ctrl.focusAreaService.CreateFocusArea(ctx, &user, newFocusArea)
+	createdFocusArea, err := ctrl.focusAreaService.CreateFocusArea(ctx, user, newFocusArea)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
 		return
@@ -148,7 +151,7 @@ func (ctrl *FocusAreaController) ListFocusAreas(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	focusAreas, err := ctrl.focusAreaService.ListUserFocusAreas(ctx, &user)
+	focusAreas, err := ctrl.focusAreaService.ListUserFocusAreas(ctx, user)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
 		return

@@ -19,6 +19,7 @@ import (
 type TaskControllerParams struct {
 	fx.In
 
+	AuthService interfaces.AuthService
 	TaskService interfaces.TaskService
 	Router      *chi.Mux
 }
@@ -37,6 +38,7 @@ func NewTaskController(params TaskControllerParams) (TaskControllerResult, error
 	ctrl := TaskController{taskService: params.TaskService}
 
 	taskRouter := chi.NewRouter()
+	taskRouter.Use(params.AuthService.AuthRequired())
 
 	taskRouter.Get("/", ctrl.ListTasks)
 	taskRouter.Post("/", ctrl.CreateTask)
@@ -70,7 +72,7 @@ func (ctrl *TaskController) CreateTask(w http.ResponseWriter, r *http.Request) {
 		FocusAreaID: dto.FocusAreaID,
 	}
 
-	task, err := ctrl.taskService.CreateUserTask(ctx, &user, &newTask)
+	task, err := ctrl.taskService.CreateUserTask(ctx, user, &newTask)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
 	}

@@ -38,3 +38,25 @@ func (srv *UserService) ListUsers(ctx context.Context) ([]models.User, error) {
 
 	return users, nil
 }
+
+func (srv *UserService) GetUserByID(ctx context.Context, userID uint) (*models.User, error) {
+	user, err := srv.userRepo.FindOneByID(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user by ID: %w", err)
+	}
+
+	return user, nil
+}
+
+func (srv *UserService) GetUserByCredentials(ctx context.Context, username, passwordHash string) (*models.User, error) {
+	user, err := srv.userRepo.FindOneByUsername(ctx, username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user by username: %w", err)
+	}
+
+	if DoPasswordsMatch(user.PasswordHash, passwordHash) {
+		return user, nil
+	}
+
+	return nil, fmt.Errorf("invalid password")
+}

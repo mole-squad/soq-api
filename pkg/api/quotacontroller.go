@@ -19,6 +19,7 @@ import (
 type QuotaControllerParams struct {
 	fx.In
 
+	AuthService  interfaces.AuthService
 	QuotaService interfaces.QuotaService
 	Router       *chi.Mux
 }
@@ -37,6 +38,7 @@ func NewQuotaController(params QuotaControllerParams) (QuotaControllerResult, er
 	ctrl := QuotaController{quotaService: params.QuotaService}
 
 	quotaRouter := chi.NewRouter()
+	quotaRouter.Use(params.AuthService.AuthRequired())
 
 	quotaRouter.Get("/", ctrl.ListQuotas)
 	quotaRouter.Post("/", ctrl.CreateQuota)
@@ -72,7 +74,7 @@ func (ctrl *QuotaController) CreateQuota(w http.ResponseWriter, r *http.Request)
 		FocusAreaID:     dto.FocusAreaID,
 	}
 
-	quota, err := ctrl.quotaService.CreateUserQuota(ctx, &user, &newQuota)
+	quota, err := ctrl.quotaService.CreateUserQuota(ctx, user, &newQuota)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
 	}
@@ -153,7 +155,7 @@ func (ctrl *QuotaController) ListQuotas(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	userQuotas, err := ctrl.quotaService.ListUserQuotas(ctx, &user)
+	userQuotas, err := ctrl.quotaService.ListUserQuotas(ctx, user)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
 	}

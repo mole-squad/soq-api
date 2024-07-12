@@ -134,7 +134,7 @@ func (srv *DBService) FindOne(
 			return ErrorNotFound
 		}
 
-		return fmt.Errorf("find many failed: %w", queryResult.Error)
+		return fmt.Errorf("find one failed: %w", queryResult.Error)
 	}
 
 	return nil
