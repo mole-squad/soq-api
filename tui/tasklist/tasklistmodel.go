@@ -71,20 +71,8 @@ func NewTaskListModel(client *api.Client) TaskListModel {
 	}
 }
 
-func (m TaskListModel) getTasks() tea.Msg {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	tasks, err := m.client.ListTasks(ctx)
-	if err != nil {
-		return common.ErrorMsg{Err: err}
-	}
-
-	return taskLoadMsg{tasks: tasks}
-}
-
 func (m TaskListModel) Init() tea.Cmd {
-	return m.getTasks
+	return nil
 }
 
 func (m TaskListModel) Update(msg tea.Msg) (TaskListModel, tea.Cmd) {
@@ -162,4 +150,16 @@ func (m TaskListModel) Update(msg tea.Msg) (TaskListModel, tea.Cmd) {
 
 func (m TaskListModel) View() string {
 	return docStyle.Render(m.list.View())
+}
+
+func (m TaskListModel) getTasks() tea.Msg {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	tasks, err := m.client.ListTasks(ctx)
+	if err != nil {
+		return common.ErrorMsg{Err: err}
+	}
+
+	return taskLoadMsg{tasks: tasks}
 }

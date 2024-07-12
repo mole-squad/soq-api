@@ -57,6 +57,8 @@ tasks:
 
   tui_log:
     cmds:
+      - rm -f debug.log
+      - touch debug.log
       - tail -f debug.log
 
   fmt:

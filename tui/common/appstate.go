@@ -3,6 +3,7 @@ package common
 type AppState int
 
 const (
-	AppStateTaskList AppState = iota
+	AppStateLogin AppState = iota
+	AppStateTaskList
 	AppStateTaskForm
 )
