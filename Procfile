@@ -1,1 +1,1 @@
-web: bin/taskapp
+web: bin/taskapp api
