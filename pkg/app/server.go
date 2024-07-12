@@ -2,17 +2,20 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"net/http"
+	"os"
 
 	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
 )
 
-const port = ":3000"
-
 func NewServer(lc fx.Lifecycle, router *chi.Mux, logger interfaces.LoggerService) *http.Server {
+	portStr := os.Getenv("PORT")
+	port := fmt.Sprintf(":%s", portStr)
+
 	srv := &http.Server{Addr: port, Handler: router}
 
 	lc.Append(fx.Hook{
