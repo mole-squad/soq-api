@@ -2,15 +2,19 @@ setup:
   addons:
   - plan: heroku-postgresql
     as: DATABASE
+  config:
+    TEST_USER_PASSWORD: 1234password
 
 build:
   docker:
     web: Dockerfile
+
 run:
   web: bin/taskapp api
+
 release:
   command:
   - bin/taskapp seed
   image: web
   config:
-    TEST_USER_PASSWORD: 1234password
+
