@@ -51,6 +51,7 @@ tasks:
   tui:
     env:
       DEBUG: 1
+      API_HOST: 'localhost:3000'
     cmds:
       - task: tui_build
       - bin/tui
@@ -61,6 +62,12 @@ tasks:
       - touch debug.log
       - tail -f debug.log
 
+  tui_live:
+    env:
+      API_HOST: 'tasks.tennyson.io'
+    cmds:
+      - task: tui_build
+      - bin/tui
   fmt:
     cmds:
       - go fmt ./...

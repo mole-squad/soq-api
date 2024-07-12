@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 
 	"github.com/burkel24/task-app/pkg/auth"
@@ -15,20 +16,22 @@ import (
 	"github.com/burkel24/task-app/pkg/tasks"
 )
 
-const APIHost = "localhost:3000"
-
 type Client struct {
+	apiHost    string
 	httpClient *http.Client
 
 	token string
 }
 
 func NewClient() *Client {
+	apiHost := os.Getenv("API_HOST")
+
 	c := &http.Client{
 		Timeout: 10 * time.Second,
 	}
 
 	return &Client{
+		apiHost:    apiHost,
 		httpClient: c,
 	}
 }
@@ -42,7 +45,7 @@ func (c *Client) Login(ctx context.Context, username, password string) (string, 
 
 	reqUrl := url.URL{
 		Scheme: "http",
-		Host:   APIHost,
+		Host:   c.apiHost,
 		Path:   "/auth/token",
 	}
 
@@ -86,7 +89,7 @@ func (c *Client) Login(ctx context.Context, username, password string) (string, 
 func (c *Client) ListTasks(ctx context.Context) ([]tasks.TaskDTO, error) {
 	reqUrl := url.URL{
 		Scheme: "http",
-		Host:   APIHost,
+		Host:   c.apiHost,
 		Path:   "/tasks",
 	}
 
@@ -122,7 +125,7 @@ func (c *Client) CreateTask(ctx context.Context, t *tasks.CreateTaskRequestDto) 
 
 	reqUrl := url.URL{
 		Scheme: "http",
-		Host:   APIHost,
+		Host:   c.apiHost,
 		Path:   "/tasks",
 	}
 
@@ -164,7 +167,7 @@ func (c *Client) UpdateTask(ctx context.Context, taskID uint, t *tasks.UpdateTas
 
 	reqUrl := url.URL{
 		Scheme: "http",
-		Host:   APIHost,
+		Host:   c.apiHost,
 		Path:   fmt.Sprintf("/tasks/%d", taskID),
 	}
 
@@ -202,7 +205,7 @@ func (c *Client) UpdateTask(ctx context.Context, taskID uint, t *tasks.UpdateTas
 func (c *Client) DeleteTask(ctx context.Context, taskID uint) error {
 	reqUrl := url.URL{
 		Scheme: "http",
-		Host:   APIHost,
+		Host:   c.apiHost,
 		Path:   fmt.Sprintf("/tasks/%d", taskID),
 	}
 
@@ -230,7 +233,7 @@ func (c *Client) DeleteTask(ctx context.Context, taskID uint) error {
 func (c *Client) ListFocusAreas(ctx context.Context) ([]focusareas.FocusAreaDTO, error) {
 	reqUrl := url.URL{
 		Scheme: "http",
-		Host:   APIHost,
+		Host:   c.apiHost,
 		Path:   "/focusareas",
 	}
 
