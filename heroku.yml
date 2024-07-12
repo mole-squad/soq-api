@@ -12,5 +12,5 @@ release:
   command:
   - bin/taskapp seed
   image: web
-  env:
+  config:
     TEST_USER_PASSWORD: 1234password
