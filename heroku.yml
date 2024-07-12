@@ -8,3 +8,9 @@ build:
     web: Dockerfile
 run:
   web: bin/taskapp api
+release:
+  seed:
+    command: bin/taskapp seed
+    image: web
+    env:
+      TEST_USER_PASSWORD: 1234password
