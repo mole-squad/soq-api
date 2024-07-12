@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/burkel24/task-app/pkg/interfaces"
@@ -50,8 +51,10 @@ func NewDBService() (DbServiceResult, error) {
 }
 
 func (srv *DBService) Init() error {
+	dbUrl := os.Getenv("DATABASE_URL")
+
 	db, err := gorm.Open(postgres.New(postgres.Config{
-		DSN:                  "host=localhost user=postgres password=pass dbname=task port=5432 sslmode=disable",
+		DSN:                  dbUrl,
 		PreferSimpleProtocol: true,
 	}), &gorm.Config{})
 
