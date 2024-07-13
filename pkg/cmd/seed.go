@@ -50,6 +50,7 @@ func NewSeeder(params SeederParams) error {
 
 	user := models.User{
 		Username:     "burke",
+		Admin:        true,
 		PasswordHash: hash,
 		Name:         "Burke",
 		Timezone:     "America/Los_Angeles",

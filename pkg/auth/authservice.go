@@ -83,6 +83,27 @@ func (svc *AuthService) AuthRequired() func(http.Handler) http.Handler {
 	}
 }
 
+func (svc *AuthService) AdminRequired() func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+
+			user, err := GetUserFromCtx(ctx)
+			if err != nil {
+				render.Render(w, r, common.ErrUnauthorized(err))
+				return
+			}
+
+			if !user.Admin {
+				render.Render(w, r, common.ErrUnauthorized(fmt.Errorf("user is not an admin")))
+				return
+			}
+
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
+}
+
 func (svc *AuthService) LoginUser(ctx context.Context, username, password string) (string, error) {
 	user, err := svc.userService.GetUserByCredentials(ctx, username, password)
 	if err != nil {

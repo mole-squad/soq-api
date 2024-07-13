@@ -77,6 +77,7 @@ func (ctrl *QuotaController) CreateQuota(w http.ResponseWriter, r *http.Request)
 	quota, err := ctrl.quotaService.CreateUserQuota(ctx, user, &newQuota)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
+		return
 	}
 
 	render.Render(w, r, quota.AsDTO())
@@ -95,6 +96,7 @@ func (ctrl *QuotaController) UpdateQuota(w http.ResponseWriter, r *http.Request)
 	quotaIdInt, err := strconv.Atoi(quotaId)
 	if err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(fmt.Errorf("failed to parse quotaID: %w", err)))
+		return
 	}
 
 	dto := &api.UpdateQuotaRequestDto{}
@@ -116,6 +118,7 @@ func (ctrl *QuotaController) UpdateQuota(w http.ResponseWriter, r *http.Request)
 	updatedQuota, err := ctrl.quotaService.UpdateUserQuota(ctx, &quota)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
+		return
 	}
 
 	render.Render(w, r, updatedQuota.AsDTO())
@@ -134,11 +137,13 @@ func (ctrl *QuotaController) DeleteQuota(w http.ResponseWriter, r *http.Request)
 	quotaIdInt, err := strconv.Atoi(quotaId)
 	if err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(fmt.Errorf("failed to parse quotaID: %w", err)))
+		return
 	}
 
 	err = ctrl.quotaService.DeleteUserQuota(ctx, uint(quotaIdInt))
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
+		return
 	}
 
 	render.NoContent(w, r)
@@ -156,6 +161,7 @@ func (ctrl *QuotaController) ListQuotas(w http.ResponseWriter, r *http.Request) 
 	userQuotas, err := ctrl.quotaService.ListUserQuotas(ctx, user)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
+		return
 	}
 
 	respList := []render.Renderer{}
