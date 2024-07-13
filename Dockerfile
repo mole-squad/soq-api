@@ -12,4 +12,7 @@ FROM alpine:latest
 
 COPY --from=builder /go/src/mole-squad/soq-api/bin/soq /bin/soq
 
+ADD https://github.com/golang/go/raw/master/lib/time/zoneinfo.zip /zoneinfo.zip
+ENV ZONEINFO /zoneinfo.zip
+
 CMD ["/bin/soq", "api"]
