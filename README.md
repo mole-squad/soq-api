@@ -33,7 +33,3 @@ http://localhost:5444/ (test@test.com / pass)
  - [pushover](https://pushover.net/)
  - [pushover client](https://github.com/gregdel/pushover)
  - [cobra cmd](https://github.com/spf13/cobra)
-
-
-## Terminal UI
- - [BuubleTea](https://github.com/charmbracelet/bubbletea)
