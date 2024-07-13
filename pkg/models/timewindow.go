@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/lib/pq"
+	"github.com/mole-squad/soq-api/api"
 	"gorm.io/gorm"
 )
 
@@ -18,4 +19,15 @@ type TimeWindow struct {
 
 	UserID uint
 	User   User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+func (t *TimeWindow) AsDTO() *api.TimeWindowDTO {
+	dto := &api.TimeWindowDTO{
+		ID:        t.ID,
+		Weekdays:  t.Weekdays,
+		StartTime: t.StartTime,
+		EndTime:   t.EndTime,
+	}
+
+	return dto
 }

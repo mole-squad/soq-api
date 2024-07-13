@@ -78,8 +78,7 @@ func (ctrl *TaskController) CreateTask(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, common.ErrUnknown(err))
 	}
 
-	resp := api.NewTaskDTO(task)
-	render.Render(w, r, resp)
+	render.Render(w, r, task.AsDTO())
 }
 
 func (ctrl *TaskController) UpdateTask(w http.ResponseWriter, r *http.Request) {
@@ -116,8 +115,7 @@ func (ctrl *TaskController) UpdateTask(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, common.ErrUnknown(err))
 	}
 
-	resp := api.NewTaskDTO(updatedTask)
-	render.Render(w, r, resp)
+	render.Render(w, r, updatedTask.AsDTO())
 }
 
 func (ctrl *TaskController) DeleteTask(w http.ResponseWriter, r *http.Request) {
@@ -157,5 +155,10 @@ func (ctrl *TaskController) ListTasks(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, common.ErrUnknown(err))
 	}
 
-	render.RenderList(w, r, api.NewTaskListResponseDTO(userTasks))
+	respList := []render.Renderer{}
+	for _, task := range userTasks {
+		respList = append(respList, task.AsDTO())
+	}
+
+	render.RenderList(w, r, respList)
 }
