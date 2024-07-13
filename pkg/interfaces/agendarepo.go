@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/mole-squad/soq/pkg/models"
+	"github.com/mole-squad/soq-api/pkg/models"
 )
 
 type AgendaRepo interface {

@@ -5,10 +5,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/mole-squad/soq/pkg/app"
-	"github.com/mole-squad/soq/pkg/interfaces"
-	"github.com/mole-squad/soq/pkg/models"
-	"github.com/mole-squad/soq/pkg/users"
+	"github.com/mole-squad/soq-api/pkg/app"
+	"github.com/mole-squad/soq-api/pkg/interfaces"
+	"github.com/mole-squad/soq-api/pkg/models"
+	"github.com/mole-squad/soq-api/pkg/users"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )

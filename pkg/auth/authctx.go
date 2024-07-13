@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mole-squad/soq/pkg/models"
+	"github.com/mole-squad/soq-api/pkg/models"
 )
 
 func GetUserFromCtx(ctx context.Context) (*models.User, error) {

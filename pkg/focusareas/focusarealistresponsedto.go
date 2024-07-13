@@ -2,7 +2,7 @@ package focusareas
 
 import (
 	"github.com/go-chi/render"
-	"github.com/mole-squad/soq/pkg/models"
+	"github.com/mole-squad/soq-api/pkg/models"
 )
 
 func NewFocusAreaListResponseDTO(focusAreas []models.FocusArea) []render.Renderer {

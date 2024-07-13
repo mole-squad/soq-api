@@ -5,10 +5,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"github.com/mole-squad/soq/pkg/auth"
-	"github.com/mole-squad/soq/pkg/common"
-	"github.com/mole-squad/soq/pkg/interfaces"
-	"github.com/mole-squad/soq/pkg/users"
+	"github.com/mole-squad/soq-api/pkg/auth"
+	"github.com/mole-squad/soq-api/pkg/common"
+	"github.com/mole-squad/soq-api/pkg/interfaces"
+	"github.com/mole-squad/soq-api/pkg/users"
 	"go.uber.org/fx"
 )
 

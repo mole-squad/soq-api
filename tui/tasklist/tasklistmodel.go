@@ -9,9 +9,9 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/mole-squad/soq/pkg/tasks"
-	"github.com/mole-squad/soq/tui/api"
-	"github.com/mole-squad/soq/tui/common"
+	"github.com/mole-squad/soq-api/pkg/tasks"
+	"github.com/mole-squad/soq-api/tui/api"
+	"github.com/mole-squad/soq-api/tui/common"
 )
 
 var (

@@ -6,11 +6,11 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/mole-squad/soq/tui/api"
-	"github.com/mole-squad/soq/tui/common"
-	"github.com/mole-squad/soq/tui/loginform"
-	"github.com/mole-squad/soq/tui/taskform"
-	"github.com/mole-squad/soq/tui/tasklist"
+	"github.com/mole-squad/soq-api/tui/api"
+	"github.com/mole-squad/soq-api/tui/common"
+	"github.com/mole-squad/soq-api/tui/loginform"
+	"github.com/mole-squad/soq-api/tui/taskform"
+	"github.com/mole-squad/soq-api/tui/tasklist"
 )
 
 var (

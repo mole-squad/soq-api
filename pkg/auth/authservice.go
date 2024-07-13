@@ -8,9 +8,9 @@ import (
 
 	"github.com/go-chi/render"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/mole-squad/soq/pkg/common"
-	"github.com/mole-squad/soq/pkg/interfaces"
-	"github.com/mole-squad/soq/pkg/models"
+	"github.com/mole-squad/soq-api/pkg/common"
+	"github.com/mole-squad/soq-api/pkg/interfaces"
+	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
 )
 

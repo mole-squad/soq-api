@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/mole-squad/soq/pkg/interfaces"
+	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"go.uber.org/fx"
 )
 

@@ -11,9 +11,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/mole-squad/soq/pkg/auth"
-	"github.com/mole-squad/soq/pkg/focusareas"
-	"github.com/mole-squad/soq/pkg/tasks"
+	"github.com/mole-squad/soq-api/pkg/auth"
+	"github.com/mole-squad/soq-api/pkg/focusareas"
+	"github.com/mole-squad/soq-api/pkg/tasks"
 )
 
 type Client struct {

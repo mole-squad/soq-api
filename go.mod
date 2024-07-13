@@ -1,4 +1,4 @@
-module github.com/mole-squad/soq
+module github.com/mole-squad/soq-api
 
 go 1.22.4
 

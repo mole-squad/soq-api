@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/mole-squad/soq/pkg/app"
+	"github.com/mole-squad/soq-api/pkg/app"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )

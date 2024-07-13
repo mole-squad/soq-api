@@ -2,7 +2,7 @@ package common
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/mole-squad/soq/pkg/tasks"
+	"github.com/mole-squad/soq-api/pkg/tasks"
 )
 
 type SelectTaskMsg struct {

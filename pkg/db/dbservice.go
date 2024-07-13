@@ -7,8 +7,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/mole-squad/soq/pkg/interfaces"
-	"github.com/mole-squad/soq/pkg/models"
+	"github.com/mole-squad/soq-api/pkg/interfaces"
+	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

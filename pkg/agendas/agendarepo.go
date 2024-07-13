@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mole-squad/soq/pkg/db"
-	"github.com/mole-squad/soq/pkg/interfaces"
-	"github.com/mole-squad/soq/pkg/models"
+	"github.com/mole-squad/soq-api/pkg/db"
+	"github.com/mole-squad/soq-api/pkg/interfaces"
+	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
 )
 

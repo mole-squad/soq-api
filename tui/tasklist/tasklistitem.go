@@ -1,6 +1,6 @@
 package tasklist
 
-import "github.com/mole-squad/soq/pkg/tasks"
+import "github.com/mole-squad/soq-api/pkg/tasks"
 
 type TaskListItem struct {
 	task tasks.TaskDTO

@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/mole-squad/soq/pkg/interfaces"
+	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"go.uber.org/fx"
 )
 

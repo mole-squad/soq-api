@@ -1,6 +1,6 @@
 package main
 
-import "github.com/mole-squad/soq/pkg/cmd"
+import "github.com/mole-squad/soq-api/pkg/cmd"
 
 func main() {
 	cmd.Execute()

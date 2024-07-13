@@ -3,7 +3,7 @@ package quotas
 import (
 	"net/http"
 
-	"github.com/mole-squad/soq/pkg/models"
+	"github.com/mole-squad/soq-api/pkg/models"
 )
 
 type UpdateQuotaRequestDto struct {

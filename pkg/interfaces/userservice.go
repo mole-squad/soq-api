@@ -3,7 +3,7 @@ package interfaces
 import (
 	"context"
 
-	"github.com/mole-squad/soq/pkg/models"
+	"github.com/mole-squad/soq-api/pkg/models"
 )
 
 type UserService interface {

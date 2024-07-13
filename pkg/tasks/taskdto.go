@@ -3,8 +3,8 @@ package tasks
 import (
 	"net/http"
 
-	"github.com/mole-squad/soq/pkg/focusareas"
-	"github.com/mole-squad/soq/pkg/models"
+	"github.com/mole-squad/soq-api/pkg/focusareas"
+	"github.com/mole-squad/soq-api/pkg/models"
 )
 
 type TaskDTO struct {
