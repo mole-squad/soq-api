@@ -14,7 +14,6 @@ jobs:
 
     outputs:
       tag: ${{ steps.semver.outputs.next }}
-      changes: ${{ steps.changelog.outputs.changes }}
       bump: ${{ steps.semver.outputs.bump }}
 
     steps:
@@ -28,25 +27,18 @@ jobs:
           token: ${{ github.token }}
           branch: main
 
-      - name: Update CHANGELOG
-        if: steps.semver.outputs.bump != 'none'
-        id: changelog
-        uses: requarks/changelog-action@v1
-        with:
-          token: ${{ github.token }}
-          tag: ${{ steps.semver.outputs.next }}
-
       - name: Update version.txt
         if: steps.semver.outputs.bump != 'none'
         run: echo ${{ steps.semver.outputs.next }} > version.txt
 
-      - name: Commit CHANGELOG.md and version.txt
+      - name: Commit version.txt
         if: steps.semver.outputs.bump != 'none'
         uses: stefanzweifel/git-auto-commit-action@v5.0.1
         with:
           branch: main
           commit_message: 'docs: ${{ steps.semver.outputs.next }} [skip ci]'
-          file_pattern: CHANGELOG.md version.txt
+          file_pattern: version.txt
+          tagging_message: ${{ steps.semver.outputs.next }}
 
   release:
     runs-on: ubuntu-latest
@@ -62,6 +54,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Update CHANGELOG
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: ${{ needs.tag.outputs.tag }}
+
       - name: Create Release
         uses: ncipollo/release-action@v1.14.0
         with:
@@ -70,8 +69,15 @@ jobs:
           makeLatest: true
           tag: ${{ needs.tag.outputs.tag }}
           name: ${{ needs.tag.outputs.tag }}
-          body: ${{ needs.tag.outputs.changes }}
+          body: ${{ steps.changelog.outputs.changes }}
           token: ${{ github.token }}
+
+      - name: Commit CHANGELOG.md
+        uses: stefanzweifel/git-auto-commit-action@v5.0.1
+        with:
+          branch: main
+          commit_message: 'docs: update CHANGELOG.md for ${{ needs.tag.outputs.tag }} [skip ci]'
+          file_pattern: CHANGELOG.md
 
   deploy:
     runs-on: ubuntu-latest
