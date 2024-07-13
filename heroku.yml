@@ -2,6 +2,8 @@ setup:
   addons:
   - plan: heroku-postgresql
     as: DATABASE
+  - plan: scheduler
+    as: SCHEDULER
 
 build:
   docker:
