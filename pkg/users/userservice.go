@@ -40,6 +40,15 @@ func (srv *UserService) ListUsers(ctx context.Context) ([]models.User, error) {
 	return users, nil
 }
 
+func (srv *UserService) CreateUser(ctx context.Context, user *models.User) (*models.User, error) {
+	err := srv.userRepo.CreateOne(ctx, user)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user: %w", err)
+	}
+
+	return user, nil
+}
+
 func (srv *UserService) GetUserByID(ctx context.Context, userID uint) (*models.User, error) {
 	user, err := srv.userRepo.FindOneByID(ctx, userID)
 	if err != nil {

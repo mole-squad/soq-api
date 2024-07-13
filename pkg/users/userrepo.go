@@ -12,7 +12,8 @@ import (
 type UserRepoParams struct {
 	fx.In
 
-	DBService interfaces.DBService
+	DBService     interfaces.DBService
+	LoggerService interfaces.LoggerService
 }
 
 type UserRepoResult struct {
@@ -23,10 +24,14 @@ type UserRepoResult struct {
 
 type UserRepo struct {
 	dbService interfaces.DBService
+	logger    interfaces.LoggerService
 }
 
 func NewUserRepo(params UserRepoParams) (UserRepoResult, error) {
-	repo := &UserRepo{dbService: params.DBService}
+	repo := &UserRepo{
+		dbService: params.DBService,
+		logger:    params.LoggerService,
+	}
 
 	return UserRepoResult{UserRepo: repo}, nil
 }
@@ -40,6 +45,17 @@ func (repo *UserRepo) ListUsers(ctx context.Context) ([]models.User, error) {
 	}
 
 	return users, nil
+}
+
+func (repo *UserRepo) CreateOne(ctx context.Context, user *models.User) error {
+	repo.logger.Debug("Creating one user", "user", user.Username)
+
+	err := repo.dbService.CreateOne(ctx, user)
+	if err != nil {
+		return fmt.Errorf("failed to create user: %w", err)
+	}
+
+	return nil
 }
 
 func (repo *UserRepo) FindOneByID(ctx context.Context, userID uint) (*models.User, error) {

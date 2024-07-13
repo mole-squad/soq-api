@@ -75,6 +75,7 @@ func (ctrl *TaskController) CreateTask(w http.ResponseWriter, r *http.Request) {
 	task, err := ctrl.taskService.CreateUserTask(ctx, user, &newTask)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
+		return
 	}
 
 	render.Render(w, r, task.AsDTO())
@@ -112,6 +113,7 @@ func (ctrl *TaskController) UpdateTask(w http.ResponseWriter, r *http.Request) {
 	updatedTask, err := ctrl.taskService.UpdateUserTask(ctx, &task)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
+		return
 	}
 
 	render.Render(w, r, updatedTask.AsDTO())
@@ -135,6 +137,7 @@ func (ctrl *TaskController) DeleteTask(w http.ResponseWriter, r *http.Request) {
 	err = ctrl.taskService.DeleteUserTask(ctx, uint(taskIdInt))
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
+		return
 	}
 
 	render.NoContent(w, r)
@@ -152,6 +155,7 @@ func (ctrl *TaskController) ListTasks(w http.ResponseWriter, r *http.Request) {
 	userTasks, err := ctrl.taskService.ListOpenUserTasks(ctx, user.ID)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
+		return
 	}
 
 	respList := []render.Renderer{}
