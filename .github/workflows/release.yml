@@ -13,7 +13,7 @@ jobs:
       contents: write
 
     outputs:
-      tag: {{ steps.semver.outputs.next }}
+      tag: ${{ steps.semver.outputs.next }}
       bump: ${{ steps.semver.outputs.bump }}
 
     steps:
