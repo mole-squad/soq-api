@@ -1,8 +1,11 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"github.com/mole-squad/soq-api/api"
+	"gorm.io/gorm"
+)
 
-type QuotaPeriod int
+type QuotaPeriod = int
 
 const (
 	DailyQuota   QuotaPeriod = iota
@@ -25,4 +28,16 @@ type Quota struct {
 
 	UserID uint
 	User   User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+func (q *Quota) AsDTO() *api.QuotaDTO {
+	focusArea := q.FocusArea.AsDTO()
+
+	dto := &api.QuotaDTO{
+		ID:        q.ID,
+		Summary:   q.Summary,
+		FocusArea: *focusArea,
+	}
+
+	return dto
 }

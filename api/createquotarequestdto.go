@@ -2,8 +2,6 @@ package api
 
 import (
 	"net/http"
-
-	"github.com/mole-squad/soq-api/pkg/models"
 )
 
 type CreateQuotaRequestDTO struct {
@@ -12,7 +10,7 @@ type CreateQuotaRequestDTO struct {
 	TargetTimeMins  int `json:"targetTimeMins"`
 	TargetInstances int `json:"targetInstances"`
 
-	Period models.QuotaPeriod `json:"period"`
+	Period int `json:"period"`
 
 	FocusAreaID uint `json:"focusAreaId"`
 }

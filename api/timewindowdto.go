@@ -2,8 +2,6 @@ package api
 
 import (
 	"net/http"
-
-	"github.com/mole-squad/soq-api/pkg/models"
 )
 
 type TimeWindowDTO struct {
@@ -13,17 +11,6 @@ type TimeWindowDTO struct {
 
 	StartTime float32 `json:"startTime"`
 	EndTime   float32 `json:"endTime"`
-}
-
-func NewTimeWindowDTO(timeWindow models.TimeWindow) *TimeWindowDTO {
-	dto := &TimeWindowDTO{
-		ID:        timeWindow.ID,
-		Weekdays:  timeWindow.Weekdays,
-		StartTime: timeWindow.StartTime,
-		EndTime:   timeWindow.EndTime,
-	}
-
-	return dto
 }
 
 func (t *TimeWindowDTO) Render(w http.ResponseWriter, r *http.Request) error {

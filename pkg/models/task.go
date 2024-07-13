@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/mole-squad/soq-api/api"
 	"gorm.io/gorm"
 )
 
@@ -22,4 +23,17 @@ type Task struct {
 
 	UserID uint
 	User   User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+func (t *Task) AsDTO() *api.TaskDTO {
+	focusArea := t.FocusArea.AsDTO()
+
+	dto := &api.TaskDTO{
+		ID:        t.ID,
+		Summary:   t.Summary,
+		Notes:     t.Notes,
+		FocusArea: *focusArea,
+	}
+
+	return dto
 }

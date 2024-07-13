@@ -2,8 +2,6 @@ package api
 
 import (
 	"net/http"
-
-	"github.com/mole-squad/soq-api/pkg/models"
 )
 
 type QuotaDTO struct {
@@ -13,20 +11,9 @@ type QuotaDTO struct {
 	TargetTimeMins  int `json:"targetTimeMins"`
 	TargetInstances int `json:"targetInstances"`
 
-	Period models.QuotaPeriod `json:"period"`
+	Period int `json:"period"`
 
 	FocusArea FocusAreaDTO `json:"focusArea"`
-}
-
-func NewQuotaDTO(quota models.Quota) *QuotaDTO {
-	// TODO
-	dto := &QuotaDTO{
-		ID:        quota.ID,
-		Summary:   quota.Summary,
-		FocusArea: *NewFocusAreaDTO(quota.FocusArea),
-	}
-
-	return dto
 }
 
 func (t *QuotaDTO) Render(w http.ResponseWriter, r *http.Request) error {
