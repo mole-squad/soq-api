@@ -46,9 +46,6 @@ jobs:
 
     if: ${{ needs.tag.outputs.bump != 'none' }}
 
-    env:
-      VERSION: ${{ needs.tag.outputs.tag }}
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -58,7 +55,7 @@ jobs:
         uses: requarks/changelog-action@v1
         with:
           token: ${{ github.token }}
-          tag: ${{ env.VERSION }}
+          tag: ${{ needs.tag.outputs.tag }}
 
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
@@ -66,7 +63,7 @@ jobs:
           allowUpdates: true
           draft: false
           makeLatest: true
-          name: ${{ env.VERSION }}
+          name: ${{ needs.tag.outputs.tag }}
           body: ${{ steps.changelog.outputs.changes }}
           token: ${{ github.token }}
 
@@ -74,7 +71,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           branch: main
-          commit_message: 'docs: update CHANGELOG.md for ${{ env.VERSION }} [skip ci]'
+          commit_message: 'docs: update CHANGELOG.md for ${{ needs.tag.outputs.tag }} [skip ci]'
           file_pattern: CHANGELOG.md
 
   deploy:
