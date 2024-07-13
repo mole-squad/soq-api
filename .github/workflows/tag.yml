@@ -23,7 +23,7 @@ jobs:
       - name: Create Tag
         if: steps.semver.outputs.bump != 'none'
         run: |
-          git config --local user.password ${{ secrets.GITHUB_TOKEN }}
+          git remote add other https://${{ secrets.GITHUB_TOKEN }}@github.com/molesquad/soq-api.git
           git tag -a ${{ steps.semver.outputs.next }}
-          git push origin --tags
+          git push other --tags
 
