@@ -40,6 +40,12 @@ heroku config:set PUSHOVER_TOKEN="" -a <app_name>
 heroku config:set JWT_SIGNING_SECRET=secret -a <app_name>
 ```
 
+### Run commands on remote dyno
+
+```
+heroku run -a <app_name> <cmd>
+```
+
 
 # Helpful Docs
 
