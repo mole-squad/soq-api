@@ -2,10 +2,17 @@ setup:
   addons:
   - plan: heroku-postgresql
     as: DATABASE
+  - plan: scheduler
+    as: SCHEDULER
+
+  config:
+    NOTIFICATIONS_ENABLED: true
 
 build:
   docker:
     web: Dockerfile
 
 run:
-  web: bin/soq api
+  web:
+    command: bin/soq api
+    image: web
