@@ -26,7 +26,7 @@ jobs:
           git config --global user.email "ci@tennyson.io"
           git config --global user.name "Github Actions"
 
-          git remote add other https://${{ secrets.GITHUB_TOKEN }}@github.com/molesquad/soq-api.git
+          git remote add other https://${{ secrets.GITHUB_TOKEN }}@github.com/mole-squad/soq-api.git
 
           git tag -a ${{ steps.semver.outputs.next }} -m "${{ steps.semver.outputs.next }}"
           git push other --tags
