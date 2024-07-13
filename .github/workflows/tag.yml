@@ -28,6 +28,6 @@ jobs:
 
           git remote add other https://${{ secrets.GITHUB_TOKEN }}@github.com/molesquad/soq-api.git
 
-          git tag -a ${{ steps.semver.outputs.next }}
+          git tag -a ${{ steps.semver.outputs.next }} -m "${{ steps.semver.outputs.next }}"
           git push other --tags
 
