@@ -22,7 +22,8 @@ jobs:
 
       - name: Create Tag
         if: steps.semver.outputs.bump != 'none'
-        uses: rickstaa/action-create-tag@v1
-        id: "tag_create"
-        with:
-          tag: ${{ steps.semver.outputs.next }}
+        run: |
+          git config --local user.password ${{ secrets.GITHUB_TOKEN }}
+          git tag -a ${{ steps.semver.outputs.next }}
+          git push origin --tags
+
