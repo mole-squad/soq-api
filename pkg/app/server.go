@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/burkel24/task-app/pkg/interfaces"
 	"github.com/go-chi/chi/v5"
+	"github.com/mole-squad/soq/pkg/interfaces"
 	"go.uber.org/fx"
 )
 

@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/burkel24/task-app/tui/api"
-	"github.com/burkel24/task-app/tui/common"
-	"github.com/burkel24/task-app/tui/loginform"
-	"github.com/burkel24/task-app/tui/taskform"
-	"github.com/burkel24/task-app/tui/tasklist"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/mole-squad/soq/tui/api"
+	"github.com/mole-squad/soq/tui/common"
+	"github.com/mole-squad/soq/tui/loginform"
+	"github.com/mole-squad/soq/tui/taskform"
+	"github.com/mole-squad/soq/tui/tasklist"
 )
 
 var (

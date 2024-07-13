@@ -3,15 +3,15 @@ package loginform
 import (
 	"context"
 
-	"github.com/burkel24/task-app/tui/api"
-	"github.com/burkel24/task-app/tui/common"
-	"github.com/burkel24/task-app/tui/forms"
-	"github.com/burkel24/task-app/tui/styles"
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textarea"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/mole-squad/soq/tui/api"
+	"github.com/mole-squad/soq/tui/common"
+	"github.com/mole-squad/soq/tui/forms"
+	"github.com/mole-squad/soq/tui/styles"
 )
 
 const (

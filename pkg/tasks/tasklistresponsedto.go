@@ -1,8 +1,8 @@
 package tasks
 
 import (
-	"github.com/burkel24/task-app/pkg/models"
 	"github.com/go-chi/render"
+	"github.com/mole-squad/soq/pkg/models"
 )
 
 func NewTaskListResponseDTO(tasks []models.Task) []render.Renderer {

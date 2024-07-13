@@ -3,8 +3,8 @@ package quotas
 import (
 	"net/http"
 
-	"github.com/burkel24/task-app/pkg/focusareas"
-	"github.com/burkel24/task-app/pkg/models"
+	"github.com/mole-squad/soq/pkg/focusareas"
+	"github.com/mole-squad/soq/pkg/models"
 )
 
 type QuotaDTO struct {

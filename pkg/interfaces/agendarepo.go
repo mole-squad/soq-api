@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/burkel24/task-app/pkg/models"
+	"github.com/mole-squad/soq/pkg/models"
 )
 
 type AgendaRepo interface {

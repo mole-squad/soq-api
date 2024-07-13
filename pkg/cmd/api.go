@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/burkel24/task-app/pkg/app"
+	"github.com/mole-squad/soq/pkg/app"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )

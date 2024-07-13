@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/burkel24/task-app/pkg/tasks"
-	"github.com/burkel24/task-app/tui/api"
-	"github.com/burkel24/task-app/tui/common"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/mole-squad/soq/pkg/tasks"
+	"github.com/mole-squad/soq/tui/api"
+	"github.com/mole-squad/soq/tui/common"
 )
 
 var (

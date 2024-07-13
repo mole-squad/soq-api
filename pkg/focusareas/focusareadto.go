@@ -3,7 +3,7 @@ package focusareas
 import (
 	"net/http"
 
-	"github.com/burkel24/task-app/pkg/models"
+	"github.com/mole-squad/soq/pkg/models"
 )
 
 type FocusAreaDTO struct {

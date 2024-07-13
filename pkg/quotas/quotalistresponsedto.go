@@ -1,8 +1,8 @@
 package quotas
 
 import (
-	"github.com/burkel24/task-app/pkg/models"
 	"github.com/go-chi/render"
+	"github.com/mole-squad/soq/pkg/models"
 )
 
 func NewQuotaListResponseDTO(tasks []models.Quota) []render.Renderer {

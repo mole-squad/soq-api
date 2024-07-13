@@ -5,10 +5,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/burkel24/task-app/pkg/app"
-	"github.com/burkel24/task-app/pkg/interfaces"
-	"github.com/burkel24/task-app/pkg/models"
-	"github.com/burkel24/task-app/pkg/users"
+	"github.com/mole-squad/soq/pkg/app"
+	"github.com/mole-squad/soq/pkg/interfaces"
+	"github.com/mole-squad/soq/pkg/models"
+	"github.com/mole-squad/soq/pkg/users"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )

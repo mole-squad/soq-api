@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/burkel24/task-app/pkg/interfaces"
-	"github.com/burkel24/task-app/pkg/models"
+	"github.com/mole-squad/soq/pkg/interfaces"
+	"github.com/mole-squad/soq/pkg/models"
 	"go.uber.org/fx"
 )
 

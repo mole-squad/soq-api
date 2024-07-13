@@ -1,6 +1,6 @@
 package taskform
 
-import "github.com/burkel24/task-app/pkg/focusareas"
+import "github.com/mole-squad/soq/pkg/focusareas"
 
 type focusAreaOption struct {
 	focusArea focusareas.FocusAreaDTO

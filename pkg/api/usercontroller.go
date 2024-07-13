@@ -3,12 +3,12 @@ package api
 import (
 	"net/http"
 
-	"github.com/burkel24/task-app/pkg/auth"
-	"github.com/burkel24/task-app/pkg/common"
-	"github.com/burkel24/task-app/pkg/interfaces"
-	"github.com/burkel24/task-app/pkg/users"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/mole-squad/soq/pkg/auth"
+	"github.com/mole-squad/soq/pkg/common"
+	"github.com/mole-squad/soq/pkg/interfaces"
+	"github.com/mole-squad/soq/pkg/users"
 	"go.uber.org/fx"
 )
 

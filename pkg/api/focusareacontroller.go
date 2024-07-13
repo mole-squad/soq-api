@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/burkel24/task-app/pkg/auth"
-	"github.com/burkel24/task-app/pkg/common"
-	"github.com/burkel24/task-app/pkg/focusareas"
-	"github.com/burkel24/task-app/pkg/interfaces"
-	"github.com/burkel24/task-app/pkg/models"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/mole-squad/soq/pkg/auth"
+	"github.com/mole-squad/soq/pkg/common"
+	"github.com/mole-squad/soq/pkg/focusareas"
+	"github.com/mole-squad/soq/pkg/interfaces"
+	"github.com/mole-squad/soq/pkg/models"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
 )

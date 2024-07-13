@@ -1,6 +1,6 @@
 package tasklist
 
-import "github.com/burkel24/task-app/pkg/tasks"
+import "github.com/mole-squad/soq/pkg/tasks"
 
 type TaskListItem struct {
 	task tasks.TaskDTO

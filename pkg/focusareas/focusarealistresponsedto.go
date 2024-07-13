@@ -1,8 +1,8 @@
 package focusareas
 
 import (
-	"github.com/burkel24/task-app/pkg/models"
 	"github.com/go-chi/render"
+	"github.com/mole-squad/soq/pkg/models"
 )
 
 func NewFocusAreaListResponseDTO(focusAreas []models.FocusArea) []render.Renderer {

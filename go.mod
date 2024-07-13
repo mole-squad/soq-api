@@ -1,4 +1,4 @@
-module github.com/burkel24/task-app
+module github.com/mole-squad/soq
 
 go 1.22.4
 

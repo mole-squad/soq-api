@@ -11,9 +11,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/burkel24/task-app/pkg/auth"
-	"github.com/burkel24/task-app/pkg/focusareas"
-	"github.com/burkel24/task-app/pkg/tasks"
+	"github.com/mole-squad/soq/pkg/auth"
+	"github.com/mole-squad/soq/pkg/focusareas"
+	"github.com/mole-squad/soq/pkg/tasks"
 )
 
 type Client struct {

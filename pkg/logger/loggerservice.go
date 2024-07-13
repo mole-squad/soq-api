@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/burkel24/task-app/pkg/interfaces"
+	"github.com/mole-squad/soq/pkg/interfaces"
 	"go.uber.org/fx"
 )
 

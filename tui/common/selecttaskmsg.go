@@ -1,8 +1,8 @@
 package common
 
 import (
-	"github.com/burkel24/task-app/pkg/tasks"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/mole-squad/soq/pkg/tasks"
 )
 
 type SelectTaskMsg struct {

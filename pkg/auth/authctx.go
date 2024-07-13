@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/burkel24/task-app/pkg/models"
+	"github.com/mole-squad/soq/pkg/models"
 )
 
 func GetUserFromCtx(ctx context.Context) (*models.User, error) {

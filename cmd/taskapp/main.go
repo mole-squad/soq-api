@@ -1,6 +1,6 @@
 package main
 
-import "github.com/burkel24/task-app/pkg/cmd"
+import "github.com/mole-squad/soq/pkg/cmd"
 
 func main() {
 	cmd.Execute()
