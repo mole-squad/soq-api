@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  deploy:
+  tag:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +23,11 @@ jobs:
       - name: Create Tag
         if: steps.semver.outputs.bump != 'none'
         run: |
+          git config --global user.email "ci@tennyson.io"
+          git config --global user.name "Github Actions"
+
           git remote add other https://${{ secrets.GITHUB_TOKEN }}@github.com/molesquad/soq-api.git
+
           git tag -a ${{ steps.semver.outputs.next }}
           git push other --tags
 
