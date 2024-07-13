@@ -12,7 +12,6 @@ import (
 	"github.com/mole-squad/soq-api/pkg/common"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
-	"github.com/mole-squad/soq-api/pkg/tasks"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
 )
@@ -96,7 +95,7 @@ func (ctrl *TaskController) UpdateTask(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, common.ErrInvalidRequest(fmt.Errorf("failed to parse taskID: %w", err)))
 	}
 
-	dto := &tasks.UpdateTaskRequestDto{}
+	dto := &api.UpdateTaskRequestDto{}
 	if err = render.Bind(r, dto); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
