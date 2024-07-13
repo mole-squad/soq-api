@@ -8,4 +8,4 @@ build:
     web: Dockerfile
 
 run:
-  web: bin/taskapp api
+  web: bin/soq api

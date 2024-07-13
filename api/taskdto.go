@@ -1,9 +1,8 @@
-package tasks
+package api
 
 import (
 	"net/http"
 
-	"github.com/mole-squad/soq-api/pkg/focusareas"
 	"github.com/mole-squad/soq-api/pkg/models"
 )
 
@@ -12,7 +11,7 @@ type TaskDTO struct {
 	Summary string `json:"summary"`
 	Notes   string `json:"notes"`
 
-	FocusArea focusareas.FocusAreaDTO `json:"focusArea"`
+	FocusArea FocusAreaDTO `json:"focusArea"`
 }
 
 func NewTaskDTO(task models.Task) *TaskDTO {
@@ -20,7 +19,7 @@ func NewTaskDTO(task models.Task) *TaskDTO {
 		ID:        task.ID,
 		Summary:   task.Summary,
 		Notes:     task.Notes,
-		FocusArea: *focusareas.NewFocusAreaDTO(task.FocusArea),
+		FocusArea: *NewFocusAreaDTO(task.FocusArea),
 	}
 
 	return dto

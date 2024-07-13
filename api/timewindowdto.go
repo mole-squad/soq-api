@@ -1,4 +1,4 @@
-package focusareas
+package api
 
 import (
 	"net/http"

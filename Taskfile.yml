@@ -5,30 +5,31 @@ dotenv: ['.env']
 interval: 500ms
 
 tasks:
-  taskapp_build:
+  build:
     cmds:
-      - go build -o bin/taskapp cmd/taskapp/main.go
+      - go build -o bin/soq cmd/main.go
     generates:
-      - './bin/taskapp'
+      - './bin/soq'
     sources:
-      - 'cmd/taskapp/*.go'
+      - 'cmd/*.go'
+      - 'api/**/*.go'
       - 'pkg/**/*.go'
 
   api:
     watch: true
     cmds:
-      - task: taskapp_build
-      - bin/taskapp api
+      - task: build
+      - bin/soq api
 
   seed:
     cmds:
-      - task: taskapp_build
-      - bin/taskapp seed
+      - task: build
+      - bin/soq seed
 
   agendas:
     cmds:
-      - task: taskapp_build
-      - bin/taskapp agendas
+      - task: build
+      - bin/soq agendas
 
   db:
     cmds:
@@ -38,36 +39,6 @@ tasks:
     cmds:
       - docker compose -f docker/docker-compose.yml up db_admin
 
-  tui_build:
-    cmds:
-      - go build -o bin/tui cmd/tui/main.go
-    generates:
-      - './bin/tui'
-    sources:
-      - 'cmd/tui/*.go'
-      - 'tui/**/*.go'
-      - 'pkg/**/*.go'
-
-  tui:
-    env:
-      DEBUG: 1
-      API_HOST: 'localhost:3000'
-    cmds:
-      - task: tui_build
-      - bin/tui
-
-  tui_log:
-    cmds:
-      - rm -f debug.log
-      - touch debug.log
-      - tail -f debug.log
-
-  tui_live:
-    env:
-      API_HOST: 'tasks.tennyson.io'
-    cmds:
-      - task: tui_build
-      - bin/tui
   fmt:
     cmds:
       - go fmt ./...

@@ -1,4 +1,4 @@
-package quotas
+package api
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 	"github.com/mole-squad/soq-api/pkg/models"
 )
 
-type UpdateQuotaRequestDto struct {
+type CreateQuotaRequestDTO struct {
 	Summary string `json:"summary"`
 
 	TargetTimeMins  int `json:"targetTimeMins"`
@@ -17,6 +17,6 @@ type UpdateQuotaRequestDto struct {
 	FocusAreaID uint `json:"focusAreaId"`
 }
 
-func (dto *UpdateQuotaRequestDto) Bind(r *http.Request) error {
+func (dto *CreateQuotaRequestDTO) Bind(r *http.Request) error {
 	return nil
 }

@@ -10,8 +10,8 @@ import (
 
 const (
 	TokenExpirationTime = time.Hour * 24
-	TokenAudience       = "https://taskapp.com"
-	TokenIssuer         = "taskapp.com"
+	TokenAudience       = "https://tasks.tennyson.io"
+	TokenIssuer         = "tasks.tennyson.io"
 )
 
 type Claims struct {

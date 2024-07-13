@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"github.com/mole-squad/soq-api/pkg/auth"
+	"github.com/mole-squad/soq-api/api"
 	"github.com/mole-squad/soq-api/pkg/common"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"go.uber.org/fx"
@@ -44,7 +44,7 @@ func NewAuthController(params AuthControllerParams) (AuthControllerResult, error
 func (ctrl *AuthController) GetToken(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	dto := &auth.LoginRequestDTO{}
+	dto := &api.LoginRequestDTO{}
 	if err := render.Bind(r, dto); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
@@ -56,6 +56,6 @@ func (ctrl *AuthController) GetToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp := auth.NewTokenResponseDTO(token)
+	resp := api.NewTokenResponseDTO(token)
 	render.Render(w, r, resp)
 }

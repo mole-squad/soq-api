@@ -1,9 +1,8 @@
-package quotas
+package api
 
 import (
 	"net/http"
 
-	"github.com/mole-squad/soq-api/pkg/focusareas"
 	"github.com/mole-squad/soq-api/pkg/models"
 )
 
@@ -16,7 +15,7 @@ type QuotaDTO struct {
 
 	Period models.QuotaPeriod `json:"period"`
 
-	FocusArea focusareas.FocusAreaDTO `json:"focusArea"`
+	FocusArea FocusAreaDTO `json:"focusArea"`
 }
 
 func NewQuotaDTO(quota models.Quota) *QuotaDTO {
@@ -24,7 +23,7 @@ func NewQuotaDTO(quota models.Quota) *QuotaDTO {
 	dto := &QuotaDTO{
 		ID:        quota.ID,
 		Summary:   quota.Summary,
-		FocusArea: *focusareas.NewFocusAreaDTO(quota.FocusArea),
+		FocusArea: *NewFocusAreaDTO(quota.FocusArea),
 	}
 
 	return dto

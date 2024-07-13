@@ -7,11 +7,11 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/mole-squad/soq-api/api"
 	"github.com/mole-squad/soq-api/pkg/auth"
 	"github.com/mole-squad/soq-api/pkg/common"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
-	"github.com/mole-squad/soq-api/pkg/quotas"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
 )
@@ -59,7 +59,7 @@ func (ctrl *QuotaController) CreateQuota(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	dto := &quotas.CreateQuotaRequestDTO{}
+	dto := &api.CreateQuotaRequestDTO{}
 	if err = render.Bind(r, dto); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
@@ -79,7 +79,7 @@ func (ctrl *QuotaController) CreateQuota(w http.ResponseWriter, r *http.Request)
 		render.Render(w, r, common.ErrUnknown(err))
 	}
 
-	resp := quotas.NewQuotaDTO(quota)
+	resp := api.NewQuotaDTO(quota)
 	render.Render(w, r, resp)
 }
 
@@ -98,7 +98,7 @@ func (ctrl *QuotaController) UpdateQuota(w http.ResponseWriter, r *http.Request)
 		render.Render(w, r, common.ErrInvalidRequest(fmt.Errorf("failed to parse quotaID: %w", err)))
 	}
 
-	dto := &quotas.UpdateQuotaRequestDto{}
+	dto := &api.UpdateQuotaRequestDto{}
 	if err = render.Bind(r, dto); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
@@ -119,7 +119,7 @@ func (ctrl *QuotaController) UpdateQuota(w http.ResponseWriter, r *http.Request)
 		render.Render(w, r, common.ErrUnknown(err))
 	}
 
-	resp := quotas.NewQuotaDTO(updatedQuota)
+	resp := api.NewQuotaDTO(updatedQuota)
 	render.Render(w, r, resp)
 }
 
@@ -160,5 +160,5 @@ func (ctrl *QuotaController) ListQuotas(w http.ResponseWriter, r *http.Request) 
 		render.Render(w, r, common.ErrUnknown(err))
 	}
 
-	render.RenderList(w, r, quotas.NewQuotaListResponseDTO(userQuotas))
+	render.RenderList(w, r, api.NewQuotaListResponseDTO(userQuotas))
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/mole-squad/soq-api/api"
 	"github.com/mole-squad/soq-api/pkg/auth"
 	"github.com/mole-squad/soq-api/pkg/common"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
@@ -59,7 +60,7 @@ func (ctrl *TaskController) CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dto := &tasks.CreateTaskRequestDto{}
+	dto := &api.CreateTaskRequestDto{}
 	if err = render.Bind(r, dto); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
@@ -77,7 +78,7 @@ func (ctrl *TaskController) CreateTask(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, common.ErrUnknown(err))
 	}
 
-	resp := tasks.NewTaskDTO(task)
+	resp := api.NewTaskDTO(task)
 	render.Render(w, r, resp)
 }
 
@@ -115,7 +116,7 @@ func (ctrl *TaskController) UpdateTask(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, common.ErrUnknown(err))
 	}
 
-	resp := tasks.NewTaskDTO(updatedTask)
+	resp := api.NewTaskDTO(updatedTask)
 	render.Render(w, r, resp)
 }
 
@@ -156,5 +157,5 @@ func (ctrl *TaskController) ListTasks(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, common.ErrUnknown(err))
 	}
 
-	render.RenderList(w, r, tasks.NewTaskListResponseDTO(userTasks))
+	render.RenderList(w, r, api.NewTaskListResponseDTO(userTasks))
 }

@@ -7,9 +7,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/mole-squad/soq-api/api"
 	"github.com/mole-squad/soq-api/pkg/auth"
 	"github.com/mole-squad/soq-api/pkg/common"
-	"github.com/mole-squad/soq-api/pkg/focusareas"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -60,7 +60,7 @@ func (ctrl *FocusAreaController) CreateFocusArea(w http.ResponseWriter, r *http.
 		return
 	}
 
-	dto := &focusareas.CreateFocusAreaRequestDTO{}
+	dto := &api.CreateFocusAreaRequestDTO{}
 	if err = render.Bind(r, dto); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
@@ -76,7 +76,7 @@ func (ctrl *FocusAreaController) CreateFocusArea(w http.ResponseWriter, r *http.
 		return
 	}
 
-	resp := focusareas.NewFocusAreaDTO(createdFocusArea)
+	resp := api.NewFocusAreaDTO(createdFocusArea)
 	render.Render(w, r, resp)
 }
 
@@ -96,7 +96,7 @@ func (ctrl *FocusAreaController) UpdateFocusArea(w http.ResponseWriter, r *http.
 		return
 	}
 
-	dto := &focusareas.UpdateFocusAreaRequestDTO{}
+	dto := &api.UpdateFocusAreaRequestDTO{}
 	if err = render.Bind(r, dto); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
@@ -113,7 +113,7 @@ func (ctrl *FocusAreaController) UpdateFocusArea(w http.ResponseWriter, r *http.
 		return
 	}
 
-	resp := focusareas.NewFocusAreaDTO(updatedFocusArea)
+	resp := api.NewFocusAreaDTO(updatedFocusArea)
 	render.Render(w, r, resp)
 }
 
@@ -157,5 +157,5 @@ func (ctrl *FocusAreaController) ListFocusAreas(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	render.RenderList(w, r, focusareas.NewFocusAreaListResponseDTO(focusAreas))
+	render.RenderList(w, r, api.NewFocusAreaListResponseDTO(focusAreas))
 }
