@@ -1,4 +1,4 @@
-name: Tag
+name: Release
 
 on:
   push:
@@ -50,7 +50,7 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Update CHANGELOG
         id: changelog
@@ -60,7 +60,7 @@ jobs:
           tag: ${{ needs.tag.outputs.tag }}
 
       - name: Create Release
-        uses: ncipollo/release-action@v1.12.0
+        uses: ncipollo/release-action@v1.14.0
         with:
           allowUpdates: true
           draft: false
@@ -71,7 +71,7 @@ jobs:
           token: ${{ github.token }}
 
       - name: Commit CHANGELOG.md
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5.0.1
         with:
           branch: main
           commit_message: 'docs: update CHANGELOG.md for ${{ needs.tag.outputs.tag }} [skip ci]'
@@ -85,7 +85,7 @@ jobs:
     if: ${{ needs.tag.outputs.bump != 'none' }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: akhileshns/heroku-deploy@v3.13.15
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
