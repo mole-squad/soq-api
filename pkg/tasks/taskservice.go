@@ -46,6 +46,19 @@ func (srv *TaskService) CreateUserTask(
 	return *task, nil
 }
 
+func (srv *TaskService) GetUserTask(
+	ctx context.Context,
+	userID uint,
+	taskID uint,
+) (models.Task, error) {
+	task, err := srv.taskRepo.FindOneByUser(ctx, userID, "tasks.id = ?", taskID)
+	if err != nil {
+		return models.Task{}, fmt.Errorf("failed to get user task: %w", err)
+	}
+
+	return *task, nil
+}
+
 func (srv *TaskService) UpdateUserTask(
 	ctx context.Context,
 	task *models.Task,

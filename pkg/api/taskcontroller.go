@@ -1,6 +1,8 @@
 package api
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -14,6 +16,12 @@ import (
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
+)
+
+type contextKey int
+
+const (
+	taskContextkey contextKey = iota
 )
 
 type TaskControllerParams struct {
@@ -42,9 +50,14 @@ func NewTaskController(params TaskControllerParams) (TaskControllerResult, error
 
 	taskRouter.Get("/", ctrl.ListTasks)
 	taskRouter.Post("/", ctrl.CreateTask)
-	taskRouter.Patch("/{taskID}", ctrl.UpdateTask)
-	taskRouter.Post("/{taskID}/resolve", ctrl.ResolveTask)
-	taskRouter.Delete("/{taskID}", ctrl.DeleteTask)
+
+	taskRouter.Route("/{taskID}", func(r chi.Router) {
+		r.Use(ctrl.taskContextMiddleware)
+
+		r.Patch("/", ctrl.UpdateTask)
+		r.Delete("/", ctrl.DeleteTask)
+		r.Post("/resolve", ctrl.ResolveTask)
+	})
 
 	params.Router.Mount("/tasks", taskRouter)
 
@@ -85,33 +98,23 @@ func (ctrl *TaskController) CreateTask(w http.ResponseWriter, r *http.Request) {
 func (ctrl *TaskController) UpdateTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	_, err := auth.GetUserFromCtx(ctx)
-	if err != nil {
-		render.Render(w, r, common.ErrUnauthorized(err))
-		return
-	}
-
-	taskId := chi.URLParam(r, "taskID")
-	taskIdInt, err := strconv.Atoi(taskId)
-	if err != nil {
-		render.Render(w, r, common.ErrInvalidRequest(fmt.Errorf("failed to parse taskID: %w", err)))
-	}
+	task := r.Context().Value(taskContextkey).(*models.Task)
 
 	dto := &api.UpdateTaskRequestDto{}
-	if err = render.Bind(r, dto); err != nil {
+	if err := render.Bind(r, dto); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
 	}
 
 	// TODO validate user owns focus area
-	task := models.Task{
-		Model:       gorm.Model{ID: uint(taskIdInt)},
+	update := models.Task{
+		Model:       gorm.Model{ID: task.ID},
 		Summary:     dto.Summary,
 		Notes:       dto.Notes,
 		FocusAreaID: dto.FocusAreaID,
 	}
 
-	updatedTask, err := ctrl.taskService.UpdateUserTask(ctx, &task)
+	updatedTask, err := ctrl.taskService.UpdateUserTask(ctx, &update)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
 		return
@@ -123,43 +126,23 @@ func (ctrl *TaskController) UpdateTask(w http.ResponseWriter, r *http.Request) {
 func (ctrl *TaskController) ResolveTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	_, err := auth.GetUserFromCtx(ctx)
-	if err != nil {
-		render.Render(w, r, common.ErrUnauthorized(err))
-		return
-	}
+	task := r.Context().Value(taskContextkey).(*models.Task)
 
-	taskId := chi.URLParam(r, "taskID")
-	taskIdInt, err := strconv.Atoi(taskId)
-	if err != nil {
-		render.Render(w, r, common.ErrInvalidRequest(fmt.Errorf("failed to parse taskID: %w", err)))
-	}
-
-	task, err := ctrl.taskService.ResolveUserTask(ctx, 0, uint(taskIdInt))
+	updatedTask, err := ctrl.taskService.ResolveUserTask(ctx, task.UserID, task.ID)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
 		return
 	}
 
-	render.Render(w, r, task.AsDTO())
+	render.Render(w, r, updatedTask.AsDTO())
 }
 
 func (ctrl *TaskController) DeleteTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	_, err := auth.GetUserFromCtx(ctx)
-	if err != nil {
-		render.Render(w, r, common.ErrUnauthorized(err))
-		return
-	}
+	task := r.Context().Value(taskContextkey).(*models.Task)
 
-	taskId := chi.URLParam(r, "taskID")
-	taskIdInt, err := strconv.Atoi(taskId)
-	if err != nil {
-		render.Render(w, r, common.ErrInvalidRequest(fmt.Errorf("failed to parse taskID: %w", err)))
-	}
-
-	err = ctrl.taskService.DeleteUserTask(ctx, uint(taskIdInt))
+	err := ctrl.taskService.DeleteUserTask(ctx, task.ID)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
 		return
@@ -189,4 +172,43 @@ func (ctrl *TaskController) ListTasks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.RenderList(w, r, respList)
+}
+
+func (ctrl *TaskController) taskContextMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		taskID := chi.URLParam(r, "taskID")
+		if taskID == "" {
+			render.Render(w, r, common.ErrNotFound)
+			return
+		}
+
+		taskIDInt, err := strconv.Atoi(taskID)
+		if err != nil {
+			render.Render(w, r, common.ErrInvalidRequest(fmt.Errorf("failed to parse taskID: %w", err)))
+			return
+		}
+
+		user, err := auth.GetUserFromCtx(ctx)
+		if err != nil {
+			render.Render(w, r, common.ErrUnauthorized(err))
+			return
+		}
+
+		task, err := ctrl.taskService.GetUserTask(ctx, user.ID, uint(taskIDInt))
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				render.Render(w, r, common.ErrNotFound)
+			} else {
+				render.Render(w, r, common.ErrUnknown(err))
+			}
+
+			return
+		}
+
+		ctxWithTask := context.WithValue(r.Context(), taskContextkey, &task)
+
+		next.ServeHTTP(w, r.WithContext(ctxWithTask))
+	})
 }
