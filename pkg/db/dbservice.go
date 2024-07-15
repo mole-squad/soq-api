@@ -12,6 +12,7 @@ import (
 	"go.uber.org/fx"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 var allModels = []interface{}{
@@ -88,7 +89,7 @@ func (srv *DBService) UpdateOne(ctx context.Context, record interface{}) error {
 	sesh, cancel := srv.GetSession(ctx)
 	defer cancel()
 
-	updateResult := sesh.Model(record).Updates(record)
+	updateResult := sesh.Model(record).Clauses(clause.Returning{}).Updates(record)
 	if updateResult.Error != nil {
 		return fmt.Errorf("update one failed: %w", updateResult.Error)
 	}

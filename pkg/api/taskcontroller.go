@@ -43,6 +43,7 @@ func NewTaskController(params TaskControllerParams) (TaskControllerResult, error
 	taskRouter.Get("/", ctrl.ListTasks)
 	taskRouter.Post("/", ctrl.CreateTask)
 	taskRouter.Patch("/{taskID}", ctrl.UpdateTask)
+	taskRouter.Post("/{taskID}/resolve", ctrl.ResolveTask)
 	taskRouter.Delete("/{taskID}", ctrl.DeleteTask)
 
 	params.Router.Mount("/tasks", taskRouter)
@@ -117,6 +118,30 @@ func (ctrl *TaskController) UpdateTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Render(w, r, updatedTask.AsDTO())
+}
+
+func (ctrl *TaskController) ResolveTask(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	_, err := auth.GetUserFromCtx(ctx)
+	if err != nil {
+		render.Render(w, r, common.ErrUnauthorized(err))
+		return
+	}
+
+	taskId := chi.URLParam(r, "taskID")
+	taskIdInt, err := strconv.Atoi(taskId)
+	if err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(fmt.Errorf("failed to parse taskID: %w", err)))
+	}
+
+	task, err := ctrl.taskService.ResolveUserTask(ctx, 0, uint(taskIdInt))
+	if err != nil {
+		render.Render(w, r, common.ErrUnknown(err))
+		return
+	}
+
+	render.Render(w, r, task.AsDTO())
 }
 
 func (ctrl *TaskController) DeleteTask(w http.ResponseWriter, r *http.Request) {
