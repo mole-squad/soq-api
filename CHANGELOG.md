@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.6.0] - 2024-07-15
+### :sparkles: New Features
+- [`0d85c81`](https://github.com/mole-squad/soq-api/commit/0d85c81e3158996065942f709862b0cde9fafed1) - add resolve task api *(PR [#31](https://github.com/mole-squad/soq-api/pull/31) by [@burkel24](https://github.com/burkel24))*
+
+
 ## [v0.5.0] - 2024-07-13
 ### :sparkles: New Features
 - [`7d244f8`](https://github.com/mole-squad/soq-api/commit/7d244f839b1a58d3b80dec71525add6420f7af5b) - add create user API *(PR [#30](https://github.com/mole-squad/soq-api/pull/30) by [@burkel24](https://github.com/burkel24))*
@@ -36,3 +41,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v0.2.8]: https://github.com/mole-squad/soq-api/compare/v0.2.7...v0.2.8
 [v0.4.0]: https://github.com/mole-squad/soq-api/compare/v0.3.0...v0.4.0
 [v0.5.0]: https://github.com/mole-squad/soq-api/compare/v0.4.0...v0.5.0
+[v0.6.0]: https://github.com/mole-squad/soq-api/compare/v0.5.0...v0.6.0
