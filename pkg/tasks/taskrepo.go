@@ -10,6 +10,10 @@ import (
 	"gorm.io/gorm"
 )
 
+var (
+	joins = []string{"FocusArea"}
+)
+
 type TaskRepoParams struct {
 	fx.In
 
@@ -48,6 +52,24 @@ func (repo *TaskRepo) CreateOne(ctx context.Context, task *models.Task) error {
 	return nil
 }
 
+func (repo *TaskRepo) FindOneByUser(ctx context.Context, userID uint, query string, args ...interface{}) (*models.Task, error) {
+	var task models.Task
+
+	fullQuery := "tasks.user_id = ?"
+	if query != "" {
+		fullQuery = fmt.Sprintf("%s AND %s", fullQuery, query)
+	}
+
+	fullArgs := append([]interface{}{userID}, args...)
+
+	err := repo.dbService.FindOne(ctx, &task, joins, []string{}, fullQuery, fullArgs...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find one task: %w", err)
+	}
+
+	return &task, nil
+}
+
 func (repo *TaskRepo) UpdateOne(ctx context.Context, task *models.Task) error {
 	repo.logger.Info("Updating one task", "task", task)
 
@@ -82,7 +104,7 @@ func (repo *TaskRepo) FindManyByUser(ctx context.Context, userID uint, query str
 
 	fullArgs := append([]interface{}{userID}, args...)
 
-	err := repo.dbService.FindMany(ctx, &tasks, []string{"FocusArea"}, []string{}, fullQuery, fullArgs...)
+	err := repo.dbService.FindMany(ctx, &tasks, joins, []string{}, fullQuery, fullArgs...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find many taks by user: %w", err)
 	}
