@@ -7,6 +7,7 @@ import (
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
+	"gorm.io/gorm"
 )
 
 type TaskServiceParams struct {
@@ -55,6 +56,25 @@ func (srv *TaskService) UpdateUserTask(
 	}
 
 	return *task, nil
+}
+
+func (srv *TaskService) ResolveUserTask(
+	ctx context.Context,
+	userID uint,
+	taskID uint,
+) (models.Task, error) {
+	task := models.Task{
+		Model:  gorm.Model{ID: taskID},
+		UserID: userID,
+		Status: models.TaskStatusClosed,
+	}
+
+	err := srv.taskRepo.UpdateOne(ctx, &task)
+	if err != nil {
+		return models.Task{}, fmt.Errorf("failed to resolve user task: %w", err)
+	}
+
+	return task, nil
 }
 
 func (srv *TaskService) DeleteUserTask(ctx context.Context, id uint) error {
