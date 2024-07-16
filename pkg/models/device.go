@@ -1,6 +1,9 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"github.com/mole-squad/soq-api/api"
+	"gorm.io/gorm"
+)
 
 type Device struct {
 	gorm.Model
@@ -10,4 +13,12 @@ type Device struct {
 
 	UserID uint
 	User   User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+func (d *Device) AsDTO() *api.DeviceDTO {
+	return &api.DeviceDTO{
+		ID:       d.ID,
+		UserKey:  d.UserKey,
+		DeviceID: d.DeviceID,
+	}
 }

@@ -18,12 +18,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type contextKey int
-
-const (
-	taskContextkey contextKey = iota
-)
-
 type TaskControllerParams struct {
 	fx.In
 
