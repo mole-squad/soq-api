@@ -6,6 +6,7 @@ var Module = fx.Module(
 	"API",
 	fx.Invoke(NewAuthController),
 	fx.Invoke(NewFocusAreaController),
+	fx.Invoke(NewDeviceController),
 	fx.Invoke(NewTaskController),
 	fx.Invoke(NewQuotaController),
 	fx.Invoke(NewUserController),
