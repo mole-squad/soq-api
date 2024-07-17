@@ -2,6 +2,7 @@ package agendas
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -173,11 +174,17 @@ func (srv *AgendaService) SendAgendaNotifications(ctx context.Context) error {
 		srv.logger.Debug("No agendas to send")
 	}
 
+	sendErrors := make([]error, 0)
+
 	for _, agenda := range agendas {
 		err := srv.sendAgendaNotification(ctx, &agenda)
 		if err != nil {
-			return fmt.Errorf("failed to send agenda notification: %w", err)
+			sendErrors = append(sendErrors, fmt.Errorf("failed to send agenda notification: %w", err))
 		}
+	}
+
+	if len(sendErrors) > 0 {
+		return errors.Join(sendErrors...)
 	}
 
 	return nil
