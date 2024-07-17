@@ -307,6 +307,11 @@ func (srv *AgendaService) sendAgendaNotification(ctx context.Context, agenda *mo
 		agenda.EndTime,
 	)
 
+	if len(agenda.AgendaItems) == 0 {
+		srv.logger.Info("Agenda has no items", "agenda", agenda.ID)
+		return nil
+	}
+
 	err := srv.notificationService.SendNotification(
 		ctx,
 		agenda.UserID,
