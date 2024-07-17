@@ -6,7 +6,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/mole-squad/soq-api/api"
-	"github.com/mole-squad/soq-api/pkg/auth"
 	"github.com/mole-squad/soq-api/pkg/common"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
@@ -29,11 +28,15 @@ type UserControllerResult struct {
 }
 
 type UserController struct {
+	auth        interfaces.AuthService
 	userService interfaces.UserService
 }
 
 func NewUserController(params UserControllerParams) (UserControllerResult, error) {
-	ctrl := UserController{userService: params.UserService}
+	ctrl := UserController{
+		auth:        params.AuthService,
+		userService: params.UserService,
+	}
 
 	userRouter := chi.NewRouter()
 	userRouter.Use(params.AuthService.AuthRequired())
@@ -84,7 +87,7 @@ func (ctrl *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 func (ctrl *UserController) SetPassword(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	user, err := auth.GetUserFromCtx(ctx)
+	user, err := ctrl.auth.GetUserFromCtx(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrUnauthorized(err))
 		return

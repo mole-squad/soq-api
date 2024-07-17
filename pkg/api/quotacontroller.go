@@ -8,7 +8,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/mole-squad/soq-api/api"
-	"github.com/mole-squad/soq-api/pkg/auth"
 	"github.com/mole-squad/soq-api/pkg/common"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
@@ -31,11 +30,15 @@ type QuotaControllerResult struct {
 }
 
 type QuotaController struct {
+	auth         interfaces.AuthService
 	quotaService interfaces.QuotaService
 }
 
 func NewQuotaController(params QuotaControllerParams) (QuotaControllerResult, error) {
-	ctrl := QuotaController{quotaService: params.QuotaService}
+	ctrl := QuotaController{
+		auth:         params.AuthService,
+		quotaService: params.QuotaService,
+	}
 
 	quotaRouter := chi.NewRouter()
 	quotaRouter.Use(params.AuthService.AuthRequired())
@@ -53,7 +56,7 @@ func NewQuotaController(params QuotaControllerParams) (QuotaControllerResult, er
 func (ctrl *QuotaController) CreateQuota(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	user, err := auth.GetUserFromCtx(ctx)
+	user, err := ctrl.auth.GetUserFromCtx(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrUnauthorized(err))
 		return
@@ -86,7 +89,7 @@ func (ctrl *QuotaController) CreateQuota(w http.ResponseWriter, r *http.Request)
 func (ctrl *QuotaController) UpdateQuota(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	_, err := auth.GetUserFromCtx(ctx)
+	_, err := ctrl.auth.GetUserFromCtx(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrUnauthorized(err))
 		return
@@ -127,7 +130,7 @@ func (ctrl *QuotaController) UpdateQuota(w http.ResponseWriter, r *http.Request)
 func (ctrl *QuotaController) DeleteQuota(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	_, err := auth.GetUserFromCtx(ctx)
+	_, err := ctrl.auth.GetUserFromCtx(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrUnauthorized(err))
 		return
@@ -152,7 +155,7 @@ func (ctrl *QuotaController) DeleteQuota(w http.ResponseWriter, r *http.Request)
 func (ctrl *QuotaController) ListQuotas(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	user, err := auth.GetUserFromCtx(ctx)
+	user, err := ctrl.auth.GetUserFromCtx(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrUnauthorized(err))
 		return

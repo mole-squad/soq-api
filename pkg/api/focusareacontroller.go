@@ -8,7 +8,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/mole-squad/soq-api/api"
-	"github.com/mole-squad/soq-api/pkg/auth"
 	"github.com/mole-squad/soq-api/pkg/common"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
@@ -31,11 +30,15 @@ type FocusAreaControllerResult struct {
 }
 
 type FocusAreaController struct {
+	auth             interfaces.AuthService
 	focusAreaService interfaces.FocusAreaService
 }
 
 func NewFocusAreaController(params FocusAreaControllerParams) (FocusAreaControllerResult, error) {
-	ctrl := FocusAreaController{focusAreaService: params.FocusAreaService}
+	ctrl := FocusAreaController{
+		auth:             params.AuthService,
+		focusAreaService: params.FocusAreaService,
+	}
 
 	focusAreaRouter := chi.NewRouter()
 
@@ -54,7 +57,7 @@ func NewFocusAreaController(params FocusAreaControllerParams) (FocusAreaControll
 func (ctrl *FocusAreaController) CreateFocusArea(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	user, err := auth.GetUserFromCtx(ctx)
+	user, err := ctrl.auth.GetUserFromCtx(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrUnauthorized(err))
 		return
@@ -82,7 +85,7 @@ func (ctrl *FocusAreaController) CreateFocusArea(w http.ResponseWriter, r *http.
 func (ctrl *FocusAreaController) UpdateFocusArea(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	_, err := auth.GetUserFromCtx(ctx)
+	_, err := ctrl.auth.GetUserFromCtx(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrUnauthorized(err))
 		return
@@ -118,7 +121,7 @@ func (ctrl *FocusAreaController) UpdateFocusArea(w http.ResponseWriter, r *http.
 func (ctrl *FocusAreaController) DeleteFocusArea(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	_, err := auth.GetUserFromCtx(ctx)
+	_, err := ctrl.auth.GetUserFromCtx(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrUnauthorized(err))
 		return
@@ -143,7 +146,7 @@ func (ctrl *FocusAreaController) DeleteFocusArea(w http.ResponseWriter, r *http.
 func (ctrl *FocusAreaController) ListFocusAreas(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	user, err := auth.GetUserFromCtx(ctx)
+	user, err := ctrl.auth.GetUserFromCtx(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrUnauthorized(err))
 		return
