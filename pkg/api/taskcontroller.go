@@ -28,7 +28,7 @@ type TaskControllerResult struct {
 }
 
 type TaskController struct {
-	ctrl        *generics.Controller[*models.Task]
+	interfaces.ResourceController[*models.Task]
 	logger      interfaces.LoggerService
 	taskService interfaces.TaskService
 }
@@ -39,7 +39,7 @@ func NewTaskController(params TaskControllerParams) (TaskControllerResult, error
 		taskService: params.TaskService,
 	}
 
-	taskCtrl.ctrl = generics.NewController[*models.Task](
+	taskCtrl.ResourceController = generics.NewResourceController[*models.Task](
 		params.TaskService,
 		params.LoggerService,
 		params.AuthService,
@@ -47,9 +47,9 @@ func NewTaskController(params TaskControllerParams) (TaskControllerResult, error
 		models.NewTaskFromUpdateRequest,
 		generics.WithContextKey[*models.Task](taskContextkey),
 		generics.WithDetailRoute[*models.Task]("POST", "/resolve", taskCtrl.ResolveTask),
-	)
+	).(*generics.ResourceController[*models.Task])
 
-	params.Router.Mount("/tasks", taskCtrl.ctrl.Router)
+	params.Router.Mount("/tasks", taskCtrl.ResourceController.GetRouter())
 
 	return TaskControllerResult{TaskController: taskCtrl}, nil
 }
@@ -57,7 +57,7 @@ func NewTaskController(params TaskControllerParams) (TaskControllerResult, error
 func (ctrl *TaskController) ResolveTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	task, err := ctrl.ctrl.ItemFromContext(ctx)
+	task, err := ctrl.ItemFromContext(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
