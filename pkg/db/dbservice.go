@@ -85,7 +85,24 @@ func (srv *DBService) CreateOne(ctx context.Context, record interface{}) error {
 	return nil
 }
 
-func (srv *DBService) UpdateOne(ctx context.Context, record interface{}) error {
+func (srv *DBService) UpdateOne(ctx context.Context, recordID uint, record interface{}) error {
+	sesh, cancel := srv.GetSession(ctx)
+	defer cancel()
+
+	updateResult := sesh.
+		Model(record).
+		Where("id = ?", recordID).
+		Clauses(clause.Returning{}).
+		Updates(record)
+
+	if updateResult.Error != nil {
+		return fmt.Errorf("update one failed: %w", updateResult.Error)
+	}
+
+	return nil
+}
+
+func (srv *DBService) DEPUpdateOne(ctx context.Context, record interface{}) error {
 	sesh, cancel := srv.GetSession(ctx)
 	defer cancel()
 

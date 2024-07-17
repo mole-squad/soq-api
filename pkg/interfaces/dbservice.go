@@ -8,7 +8,8 @@ import (
 
 type DBService interface {
 	CreateOne(ctx context.Context, record interface{}) error
-	UpdateOne(ctx context.Context, record interface{}) error
+	UpdateOne(ctx context.Context, recordID uint, record interface{}) error
+	DEPUpdateOne(ctx context.Context, record interface{}) error
 	DeleteOne(ctx context.Context, recordID uint, record interface{}) error
 	FindOne(
 		ctx context.Context,
