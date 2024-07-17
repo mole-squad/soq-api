@@ -7,7 +7,6 @@ import (
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
-	"gorm.io/gorm"
 )
 
 type QuotaRepoParams struct {
@@ -62,8 +61,8 @@ func (repo *QuotaRepo) UpdateOne(ctx context.Context, quota *models.Quota) error
 func (repo *QuotaRepo) DeleteOne(ctx context.Context, id uint) error {
 	repo.logger.Info("Deleting one quota", "id", id)
 
-	quota := &models.Quota{Model: gorm.Model{ID: id}}
-	err := repo.dbService.DeleteOne(ctx, quota)
+	quota := &models.Quota{}
+	err := repo.dbService.DeleteOne(ctx, id, quota)
 	if err != nil {
 		return fmt.Errorf("failed to delete one quota: %w", err)
 	}

@@ -7,7 +7,6 @@ import (
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
-	"gorm.io/gorm"
 )
 
 type DeviceRepoParams struct {
@@ -79,9 +78,9 @@ func (r *DeviceRepo) UpdateOne(ctx context.Context, device *models.Device) error
 }
 
 func (r *DeviceRepo) DeleteOne(ctx context.Context, id uint) error {
-	device := &models.Device{Model: gorm.Model{ID: id}}
+	device := &models.Device{}
 
-	err := r.dbService.DeleteOne(ctx, device)
+	err := r.dbService.DeleteOne(ctx, id, device)
 	if err != nil {
 		return fmt.Errorf("failed to delete device: %w", err)
 	}

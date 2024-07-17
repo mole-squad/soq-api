@@ -97,11 +97,11 @@ func (srv *DBService) UpdateOne(ctx context.Context, record interface{}) error {
 	return nil
 }
 
-func (srv *DBService) DeleteOne(ctx context.Context, record interface{}) error {
+func (srv *DBService) DeleteOne(ctx context.Context, recordID uint, record interface{}) error {
 	sesh, cancel := srv.GetSession(ctx)
 	defer cancel()
 
-	deleteResult := sesh.Delete(record)
+	deleteResult := sesh.Delete(record, recordID)
 	if deleteResult.Error != nil {
 		return fmt.Errorf("delete one failed: %w", deleteResult.Error)
 	}
