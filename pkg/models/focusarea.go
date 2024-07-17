@@ -16,10 +16,10 @@ type FocusArea struct {
 	User   User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
-func (f *FocusArea) AsDTO() *api.FocusAreaDTO {
+func (f *FocusArea) ToDTO() *api.FocusAreaDTO {
 	timeWindows := make([]api.TimeWindowDTO, len(f.TimeWindows))
 	for i, timeWindow := range f.TimeWindows {
-		timeWindows[i] = *timeWindow.AsDTO()
+		timeWindows[i] = *timeWindow.ToDTO()
 	}
 
 	dto := &api.FocusAreaDTO{

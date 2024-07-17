@@ -80,7 +80,7 @@ func (ctrl *QuotaController) CreateQuota(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	render.Render(w, r, quota.AsDTO())
+	render.Render(w, r, quota.ToDTO())
 }
 
 func (ctrl *QuotaController) UpdateQuota(w http.ResponseWriter, r *http.Request) {
@@ -121,7 +121,7 @@ func (ctrl *QuotaController) UpdateQuota(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	render.Render(w, r, updatedQuota.AsDTO())
+	render.Render(w, r, updatedQuota.ToDTO())
 }
 
 func (ctrl *QuotaController) DeleteQuota(w http.ResponseWriter, r *http.Request) {
@@ -166,7 +166,7 @@ func (ctrl *QuotaController) ListQuotas(w http.ResponseWriter, r *http.Request) 
 
 	respList := []render.Renderer{}
 	for _, quota := range userQuotas {
-		respList = append(respList, quota.AsDTO())
+		respList = append(respList, quota.ToDTO())
 	}
 
 	render.RenderList(w, r, respList)

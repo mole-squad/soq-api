@@ -22,7 +22,7 @@ type User struct {
 	TimeWindows []TimeWindow
 }
 
-func (u *User) AsDTO() *api.UserDTO {
+func (u *User) ToDTO() *api.UserDTO {
 	return &api.UserDTO{
 		ID:       u.ID,
 		Username: u.Username,

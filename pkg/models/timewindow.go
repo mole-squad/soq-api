@@ -21,7 +21,7 @@ type TimeWindow struct {
 	User   User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
-func (t *TimeWindow) AsDTO() *api.TimeWindowDTO {
+func (t *TimeWindow) ToDTO() *api.TimeWindowDTO {
 	dto := &api.TimeWindowDTO{
 		ID:        t.ID,
 		Weekdays:  t.Weekdays,

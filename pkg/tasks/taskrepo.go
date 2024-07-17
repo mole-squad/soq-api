@@ -94,8 +94,8 @@ func (repo *TaskRepo) DeleteOne(ctx context.Context, id uint) error {
 	return nil
 }
 
-func (repo *TaskRepo) FindManyByUser(ctx context.Context, userID uint, query string, args ...interface{}) ([]models.Task, error) {
-	var tasks []models.Task
+func (repo *TaskRepo) FindManyByUser(ctx context.Context, userID uint, query string, args ...interface{}) ([]*models.Task, error) {
+	var tasks []*models.Task
 
 	fullQuery := "tasks.user_id = ?"
 	if query != "" {
