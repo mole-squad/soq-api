@@ -50,7 +50,7 @@ func (repo *QuotaRepo) CreateOne(ctx context.Context, quota *models.Quota) error
 func (repo *QuotaRepo) UpdateOne(ctx context.Context, quota *models.Quota) error {
 	repo.logger.Info("Updating one quota", "quota", quota)
 
-	err := repo.dbService.UpdateOne(ctx, quota)
+	err := repo.dbService.OLDUpdateOne(ctx, quota)
 	if err != nil {
 		return fmt.Errorf("failed to update one quota: %w", err)
 	}

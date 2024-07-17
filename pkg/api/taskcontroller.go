@@ -6,9 +6,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/mole-squad/soq-api/pkg/common"
+	"github.com/mole-squad/soq-api/pkg/generics"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
-	"github.com/mole-squad/soq-api/pkg/rest"
 	"go.uber.org/fx"
 )
 
@@ -28,7 +28,7 @@ type TaskControllerResult struct {
 }
 
 type TaskController struct {
-	ctrl        *rest.Controller[*models.Task]
+	ctrl        *generics.Controller[*models.Task]
 	logger      interfaces.LoggerService
 	taskService interfaces.TaskService
 }
@@ -39,14 +39,14 @@ func NewTaskController(params TaskControllerParams) (TaskControllerResult, error
 		taskService: params.TaskService,
 	}
 
-	taskCtrl.ctrl = rest.NewController[*models.Task](
+	taskCtrl.ctrl = generics.NewController[*models.Task](
 		params.TaskService,
 		params.LoggerService,
 		params.AuthService,
 		models.NewTaskFromCreateRequest,
 		models.NewTaskFromUpdateRequest,
-		rest.WithContextKey[*models.Task](taskContextkey),
-		rest.WithDetailRoute[*models.Task]("POST", "/resolve", taskCtrl.ResolveTask),
+		generics.WithContextKey[*models.Task](taskContextkey),
+		generics.WithDetailRoute[*models.Task]("POST", "/resolve", taskCtrl.ResolveTask),
 	)
 
 	params.Router.Mount("/tasks", taskCtrl.ctrl.Router)
@@ -63,7 +63,7 @@ func (ctrl *TaskController) ResolveTask(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	updatedTask, err := ctrl.taskService.ResolveUserTask(ctx, task.UserID, task.ID)
+	updatedTask, err := ctrl.taskService.ResolveTask(ctx, task.ID)
 	if err != nil {
 		ctrl.logger.Error("failed to resolve task", "error", err)
 		render.Render(w, r, common.ErrUnknown(err))

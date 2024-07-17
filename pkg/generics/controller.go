@@ -1,4 +1,4 @@
-package rest
+package generics
 
 import (
 	"context"
@@ -14,23 +14,26 @@ import (
 	"gorm.io/gorm"
 )
 
-type Controller[M Resource] struct {
+// TODO rename to ResourceController
+// TODO update usages to use struct embedding
+type Controller[M interfaces.Resource] struct {
 	additionalDetailRoutes []Route
 	contextKey             ResourceContextKey
 
 	auth   interfaces.AuthService
 	logger interfaces.LoggerService
-	svc    CRUDService[M]
+	svc    interfaces.ResourceService[M]
 	Router *chi.Mux
 
 	createRequestConstructor ResourceRequestConstructor[M]
 	updateRequestConstructor ResourceRequestConstructor[M]
 }
 
-type ControllerOption[M Resource] func(*Controller[M])
+type ControllerOption[M interfaces.Resource] func(*Controller[M])
 
-func NewController[M Resource](
-	svc CRUDService[M],
+// TODO return interface type instead of concrete
+func NewController[M interfaces.Resource](
+	svc interfaces.ResourceService[M],
 	logger interfaces.LoggerService,
 	authSvc interfaces.AuthService,
 	createRequestConstructor ResourceRequestConstructor[M],
@@ -59,7 +62,8 @@ func NewController[M Resource](
 	ctrl.Router.Post("/", ctrl.Create)
 
 	ctrl.Router.Route("/{id}", func(r chi.Router) {
-		r.Use(ctrl.itemContextMiddleware)
+		r.Use(ctrl.ItemContextMiddleware)
+		r.Use(ctrl.UserAccessMiddleware)
 
 		r.Get("/", ctrl.Get)
 		r.Patch("/", ctrl.Update)
@@ -82,7 +86,7 @@ func (c *Controller[M]) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	items, err := c.svc.List(ctx, user.ID)
+	items, err := c.svc.ListByUser(ctx, user.ID)
 	if err != nil {
 		c.logger.Error("failed to list items", "error", err)
 		render.Render(w, r, common.ErrUnknown(err))
@@ -96,18 +100,6 @@ func (c *Controller[M]) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.RenderList(w, r, respList)
-}
-
-func (c *Controller[M]) Get(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	item, err := c.ItemFromContext(ctx)
-	if err != nil {
-		render.Render(w, r, common.ErrInvalidRequest(err))
-		return
-	}
-
-	render.Render(w, r, item.ToDTO())
 }
 
 func (c *Controller[M]) Create(w http.ResponseWriter, r *http.Request) {
@@ -137,14 +129,20 @@ func (c *Controller[M]) Create(w http.ResponseWriter, r *http.Request) {
 	render.Render(w, r, item.ToDTO())
 }
 
-func (c *Controller[M]) Update(w http.ResponseWriter, r *http.Request) {
+func (c *Controller[M]) Get(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	user, err := c.auth.GetUserFromCtx(ctx)
+	item, err := c.ItemFromContext(ctx)
 	if err != nil {
-		render.Render(w, r, common.ErrUnauthorized(err))
+		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
 	}
+
+	render.Render(w, r, item.ToDTO())
+}
+
+func (c *Controller[M]) Update(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 
 	item, err := c.ItemFromContext(ctx)
 	if err != nil {
@@ -158,7 +156,7 @@ func (c *Controller[M]) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updatedItem, err := c.svc.UpdateOne(ctx, user.ID, item.GetID(), update)
+	updatedItem, err := c.svc.UpdateOne(ctx, item.GetID(), update)
 	if err != nil {
 		c.logger.Error("failed to update item", "error", err)
 		render.Render(w, r, common.ErrUnknown(err))
@@ -172,19 +170,13 @@ func (c *Controller[M]) Update(w http.ResponseWriter, r *http.Request) {
 func (c *Controller[M]) Delete(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	user, err := c.auth.GetUserFromCtx(ctx)
-	if err != nil {
-		render.Render(w, r, common.ErrUnauthorized(err))
-		return
-	}
-
 	item, err := c.ItemFromContext(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
 	}
 
-	err = c.svc.DeleteOne(ctx, user.ID, item.GetID())
+	err = c.svc.DeleteOne(ctx, item.GetID())
 	if err != nil {
 		c.logger.Error("failed to delete item", "error", err)
 		render.Render(w, r, common.ErrUnknown(err))
@@ -206,7 +198,7 @@ func (c *Controller[M]) ItemFromContext(ctx context.Context) (M, error) {
 	return item, nil
 }
 
-func (c *Controller[M]) itemContextMiddleware(next http.Handler) http.Handler {
+func (c *Controller[M]) ItemContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -222,13 +214,7 @@ func (c *Controller[M]) itemContextMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		user, err := c.auth.GetUserFromCtx(ctx)
-		if err != nil {
-			render.Render(w, r, common.ErrUnauthorized(err))
-			return
-		}
-
-		item, err := c.svc.GetOne(ctx, user.ID, uint(itemIDInt))
+		item, err := c.svc.GetOne(ctx, uint(itemIDInt))
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				render.Render(w, r, common.ErrNotFound)
@@ -246,7 +232,32 @@ func (c *Controller[M]) itemContextMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func WithDetailRoute[M Resource](method, path string, handler http.HandlerFunc) ControllerOption[M] {
+func (c *Controller[M]) UserAccessMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		user, err := c.auth.GetUserFromCtx(ctx)
+		if err != nil {
+			render.Render(w, r, common.ErrUnauthorized(err))
+			return
+		}
+
+		item, err := c.ItemFromContext(ctx)
+		if err != nil {
+			render.Render(w, r, common.ErrInvalidRequest(err))
+			return
+		}
+
+		if item.GetUserID() != user.ID {
+			render.Render(w, r, common.ErrNotFound)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+func WithDetailRoute[M interfaces.Resource](method, path string, handler http.HandlerFunc) ControllerOption[M] {
 	return func(c *Controller[M]) {
 		c.additionalDetailRoutes = append(c.additionalDetailRoutes, Route{
 			Method:  method,
@@ -256,7 +267,7 @@ func WithDetailRoute[M Resource](method, path string, handler http.HandlerFunc) 
 	}
 }
 
-func WithContextKey[M Resource](key ResourceContextKey) ControllerOption[M] {
+func WithContextKey[M interfaces.Resource](key ResourceContextKey) ControllerOption[M] {
 	return func(c *Controller[M]) {
 		c.contextKey = key
 	}

@@ -51,7 +51,7 @@ func (repo *AgendaRepo) CreateOne(ctx context.Context, agenda *models.Agenda) er
 }
 
 func (repo *AgendaRepo) UpdateOne(ctx context.Context, agenda *models.Agenda) error {
-	err := repo.dbService.UpdateOne(ctx, agenda)
+	err := repo.dbService.OLDUpdateOne(ctx, agenda)
 	if err != nil {
 		return fmt.Errorf("failed to update one agenda: %w", err)
 	}

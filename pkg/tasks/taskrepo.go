@@ -1,14 +1,10 @@
 package tasks
 
 import (
-	"github.com/mole-squad/soq-api/pkg/db"
+	"github.com/mole-squad/soq-api/pkg/generics"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
-)
-
-var (
-	joins = []string{"FocusArea"}
 )
 
 type TaskRepoParams struct {
@@ -25,24 +21,24 @@ type TaskRepoResult struct {
 }
 
 type TaskRepo struct {
-	db.Repo[*models.Task]
+	*generics.ResourceRepository[*models.Task]
 
 	dbService interfaces.DBService
 	logger    interfaces.LoggerService
 }
 
 func NewTaskRepo(params TaskRepoParams) (TaskRepoResult, error) {
-	embeddedRepo := db.NewRepo[*models.Task](
+	embeddedRepo := generics.NewResourceRepository[*models.Task](
 		params.DBService,
 		params.LoggerService,
-		db.WithTableName[*models.Task]("tasks"),
-		db.WithJoinTables[*models.Task]("FocusArea"),
-	)
+		generics.WithTableName[*models.Task]("tasks"),
+		generics.WithJoinTables[*models.Task]("FocusArea"),
+	).(*generics.ResourceRepository[*models.Task])
 
 	repo := &TaskRepo{
-		Repo:      *embeddedRepo,
-		dbService: params.DBService,
-		logger:    params.LoggerService,
+		ResourceRepository: embeddedRepo,
+		dbService:          params.DBService,
+		logger:             params.LoggerService,
 	}
 
 	return TaskRepoResult{TaskRepo: repo}, nil

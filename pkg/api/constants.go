@@ -1,10 +1,8 @@
 package api
 
-import "github.com/mole-squad/soq-api/pkg/rest"
-
-type contextKey int
+import "github.com/mole-squad/soq-api/pkg/generics"
 
 const (
-	taskContextkey rest.ResourceContextKey = iota
+	taskContextkey generics.ResourceContextKey = iota
 	deviceContextKey
 )

@@ -81,7 +81,7 @@ func (repo *UserRepo) FindOneByUsername(ctx context.Context, username string) (*
 }
 
 func (repo *UserRepo) UpdateOne(ctx context.Context, user *models.User) error {
-	err := repo.dbService.UpdateOne(ctx, user)
+	err := repo.dbService.OLDUpdateOne(ctx, user)
 	if err != nil {
 		return fmt.Errorf("failed to update user: %w", err)
 	}

@@ -11,8 +11,8 @@ import (
 type TaskStatus int
 
 const (
-	TaskStatusOpen   TaskStatus = iota
-	TaskStatusClosed            = iota
+	TaskStatusOpen TaskStatus = iota
+	TaskStatusClosed
 )
 
 type Task struct {
@@ -32,6 +32,14 @@ func (t *Task) GetID() uint {
 	return t.ID
 }
 
+func (t *Task) GetUserID() uint {
+	return t.UserID
+}
+
+func (t *Task) SetUserID(userID uint) {
+	t.UserID = userID
+}
+
 func (t *Task) ToDTO() render.Renderer {
 	focusArea := t.FocusArea.ToDTO()
 
@@ -39,6 +47,7 @@ func (t *Task) ToDTO() render.Renderer {
 		ID:        t.ID,
 		Summary:   t.Summary,
 		Notes:     t.Notes,
+		Status:    int(t.Status),
 		FocusArea: *focusArea,
 	}
 

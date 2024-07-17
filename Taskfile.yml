@@ -37,6 +37,7 @@ tasks:
 
   db_admin:
     cmds:
+      - open http://localhost:5444/
       - docker compose -f docker/docker-compose.yml up db_admin
 
   fmt:
