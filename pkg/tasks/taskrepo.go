@@ -1,13 +1,10 @@
 package tasks
 
 import (
-	"context"
-	"fmt"
-
+	"github.com/mole-squad/soq-api/pkg/db"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
-	"gorm.io/gorm"
 )
 
 var (
@@ -28,86 +25,25 @@ type TaskRepoResult struct {
 }
 
 type TaskRepo struct {
+	db.Repo[*models.Task]
+
 	dbService interfaces.DBService
 	logger    interfaces.LoggerService
 }
 
 func NewTaskRepo(params TaskRepoParams) (TaskRepoResult, error) {
+	embeddedRepo := db.NewRepo[*models.Task](
+		params.DBService,
+		params.LoggerService,
+		db.WithTableName[*models.Task]("tasks"),
+		db.WithJoinTables[*models.Task]("FocusArea"),
+	)
+
 	repo := &TaskRepo{
+		Repo:      *embeddedRepo,
 		dbService: params.DBService,
 		logger:    params.LoggerService,
 	}
 
 	return TaskRepoResult{TaskRepo: repo}, nil
-}
-
-func (repo *TaskRepo) CreateOne(ctx context.Context, task *models.Task) error {
-	repo.logger.Info("Creating one task", "task", task)
-
-	err := repo.dbService.CreateOne(ctx, task)
-	if err != nil {
-		return fmt.Errorf("failed to create one task: %w", err)
-	}
-
-	return nil
-}
-
-func (repo *TaskRepo) FindOneByUser(ctx context.Context, userID uint, query string, args ...interface{}) (*models.Task, error) {
-	var task models.Task
-
-	fullQuery := "tasks.user_id = ?"
-	if query != "" {
-		fullQuery = fmt.Sprintf("%s AND %s", fullQuery, query)
-	}
-
-	fullArgs := append([]interface{}{userID}, args...)
-
-	err := repo.dbService.FindOne(ctx, &task, joins, []string{}, fullQuery, fullArgs...)
-	if err != nil {
-		return nil, fmt.Errorf("failed to find one task: %w", err)
-	}
-
-	return &task, nil
-}
-
-func (repo *TaskRepo) UpdateOne(ctx context.Context, task *models.Task) error {
-	repo.logger.Info("Updating one task", "task", task)
-
-	err := repo.dbService.UpdateOne(ctx, task)
-	if err != nil {
-		return fmt.Errorf("failed to update one task: %w", err)
-	}
-
-	return nil
-}
-
-func (repo *TaskRepo) DeleteOne(ctx context.Context, id uint) error {
-	repo.logger.Info("Deleting one task", "id", id)
-
-	task := &models.Task{Model: gorm.Model{ID: id}}
-
-	err := repo.dbService.DeleteOne(ctx, task)
-	if err != nil {
-		return fmt.Errorf("failed to delete one task: %w", err)
-	}
-
-	return nil
-}
-
-func (repo *TaskRepo) FindManyByUser(ctx context.Context, userID uint, query string, args ...interface{}) ([]*models.Task, error) {
-	var tasks []*models.Task
-
-	fullQuery := "tasks.user_id = ?"
-	if query != "" {
-		fullQuery = fmt.Sprintf("%s AND %s", fullQuery, query)
-	}
-
-	fullArgs := append([]interface{}{userID}, args...)
-
-	err := repo.dbService.FindMany(ctx, &tasks, joins, []string{}, fullQuery, fullArgs...)
-	if err != nil {
-		return nil, fmt.Errorf("failed to find many taks by user: %w", err)
-	}
-
-	return tasks, nil
 }

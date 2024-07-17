@@ -7,7 +7,6 @@ import (
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
-	"gorm.io/gorm"
 )
 
 type FocusAreaRepoParams struct {
@@ -62,9 +61,9 @@ func (repo *FocusAreaRepo) UpdateOne(ctx context.Context, focusArea *models.Focu
 func (repo *FocusAreaRepo) DeleteOne(ctx context.Context, id uint) error {
 	repo.logger.Info("Deleting one focus area", "id", id)
 
-	focusArea := &models.FocusArea{Model: gorm.Model{ID: id}}
+	focusArea := &models.FocusArea{}
 
-	err := repo.dbService.DeleteOne(ctx, focusArea)
+	err := repo.dbService.DeleteOne(ctx, id, focusArea)
 	if err != nil {
 		return fmt.Errorf("failed to delete one focus area: %w", err)
 	}
