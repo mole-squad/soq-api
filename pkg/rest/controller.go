@@ -102,7 +102,11 @@ func (c *Controller[M]) List(w http.ResponseWriter, r *http.Request) {
 func (c *Controller[M]) Get(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	item := ctx.Value(c.contextKey).(M)
+	item, err := c.ItemFromContext(ctx)
+	if err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
 
 	render.Render(w, r, item.ToDTO())
 }
@@ -129,6 +133,7 @@ func (c *Controller[M]) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	render.Status(r, http.StatusCreated)
 	render.Render(w, r, item.ToDTO())
 }
 
@@ -144,6 +149,7 @@ func (c *Controller[M]) Update(w http.ResponseWriter, r *http.Request) {
 	item, err := c.ItemFromContext(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
 	}
 
 	update, err := c.updateRequestConstructor(r)
@@ -174,6 +180,7 @@ func (c *Controller[M]) Delete(w http.ResponseWriter, r *http.Request) {
 	item, err := c.ItemFromContext(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
 	}
 
 	err = c.svc.DeleteOne(ctx, user.ID, item.GetID())

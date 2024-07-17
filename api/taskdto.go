@@ -2,8 +2,6 @@ package api
 
 import (
 	"net/http"
-
-	"github.com/go-chi/render"
 )
 
 type TaskDTO struct {
@@ -17,5 +15,3 @@ type TaskDTO struct {
 func (t *TaskDTO) Render(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
-
-var _ render.Renderer = &TaskDTO{}
