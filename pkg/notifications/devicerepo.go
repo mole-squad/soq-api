@@ -67,7 +67,7 @@ func (r *DeviceRepo) FindOneByUser(ctx context.Context, userID uint, query strin
 }
 
 func (r *DeviceRepo) UpdateOne(ctx context.Context, device *models.Device) error {
-	err := r.dbService.OLDUpdateOne(ctx, device)
+	err := r.dbService.DEPUpdateOne(ctx, device)
 	if err != nil {
 		return fmt.Errorf("failed to update device: %w", err)
 	}

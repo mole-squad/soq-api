@@ -50,7 +50,7 @@ func (repo *FocusAreaRepo) CreateOne(ctx context.Context, focusArea *models.Focu
 func (repo *FocusAreaRepo) UpdateOne(ctx context.Context, focusArea *models.FocusArea) error {
 	repo.logger.Info("Updating one focus area", "focusArea", focusArea)
 
-	err := repo.dbService.OLDUpdateOne(ctx, focusArea)
+	err := repo.dbService.DEPUpdateOne(ctx, focusArea)
 	if err != nil {
 		return fmt.Errorf("failed to update one focus area: %w", err)
 	}

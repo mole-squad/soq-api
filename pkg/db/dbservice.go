@@ -102,7 +102,7 @@ func (srv *DBService) UpdateOne(ctx context.Context, recordID uint, record inter
 	return nil
 }
 
-func (srv *DBService) OLDUpdateOne(ctx context.Context, record interface{}) error {
+func (srv *DBService) DEPUpdateOne(ctx context.Context, record interface{}) error {
 	sesh, cancel := srv.GetSession(ctx)
 	defer cancel()
 
