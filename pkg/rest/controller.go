@@ -123,6 +123,7 @@ func (c *Controller[M]) Create(w http.ResponseWriter, r *http.Request) {
 	newItem, err := c.createRequestConstructor(r)
 	if err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
 	}
 
 	item, err := c.svc.CreateOne(ctx, user.ID, newItem)
@@ -155,6 +156,7 @@ func (c *Controller[M]) Update(w http.ResponseWriter, r *http.Request) {
 	update, err := c.updateRequestConstructor(r)
 	if err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
 	}
 
 	updatedItem, err := c.svc.UpdateOne(ctx, user.ID, item.GetID(), update)
@@ -192,6 +194,17 @@ func (c *Controller[M]) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.NoContent(w, r)
+}
+
+func (c *Controller[M]) ItemFromContext(ctx context.Context) (M, error) {
+	var item M
+
+	item, ok := ctx.Value(c.contextKey).(M)
+	if !ok {
+		return item, fmt.Errorf("failed to get item from context")
+	}
+
+	return item, nil
 }
 
 func (c *Controller[M]) itemContextMiddleware(next http.Handler) http.Handler {
@@ -234,16 +247,6 @@ func (c *Controller[M]) itemContextMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (c *Controller[M]) ItemFromContext(ctx context.Context) (M, error) {
-	var item M
-
-	item, ok := ctx.Value(c.contextKey).(M)
-	if !ok {
-		return item, fmt.Errorf("failed to get item from context")
-	}
-
-	return item, nil
-}
 func WithDetailRoute[M Resource](method, path string, handler http.HandlerFunc) ControllerOption[M] {
 	return func(c *Controller[M]) {
 		c.additionalDetailRoutes = append(c.additionalDetailRoutes, Route{
