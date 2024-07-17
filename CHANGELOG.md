@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.8.0] - 2024-07-17
+### :sparkles: New Features
+- [`9904e94`](https://github.com/mole-squad/soq-api/commit/9904e947bca7b1547094df79c094698677f35330) - add generic rest controller *(PR [#34](https://github.com/mole-squad/soq-api/pull/34) by [@burkel24](https://github.com/burkel24))*
+
+
 ## [v0.7.0] - 2024-07-16
 ### :sparkles: New Features
 - [`cde645f`](https://github.com/mole-squad/soq-api/commit/cde645fdd0ccffea4e57009a187cdf5f8aa3a164) - add device CRUD apis *(PR [#33](https://github.com/mole-squad/soq-api/pull/33) by [@burkel24](https://github.com/burkel24))*
@@ -51,3 +56,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v0.5.0]: https://github.com/mole-squad/soq-api/compare/v0.4.0...v0.5.0
 [v0.6.0]: https://github.com/mole-squad/soq-api/compare/v0.5.0...v0.6.0
 [v0.7.0]: https://github.com/mole-squad/soq-api/compare/v0.6.0...v0.7.0
+[v0.8.0]: https://github.com/mole-squad/soq-api/compare/v0.7.0...v0.8.0
