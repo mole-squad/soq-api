@@ -15,7 +15,7 @@ type Device struct {
 	User   User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
-func (d *Device) AsDTO() *api.DeviceDTO {
+func (d *Device) ToDTO() *api.DeviceDTO {
 	return &api.DeviceDTO{
 		ID:       d.ID,
 		UserKey:  d.UserKey,

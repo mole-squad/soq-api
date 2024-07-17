@@ -77,7 +77,7 @@ func (ctrl *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Status(r, http.StatusCreated)
-	render.Render(w, r, user.AsDTO())
+	render.Render(w, r, user.ToDTO())
 
 }
 

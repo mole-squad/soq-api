@@ -76,7 +76,7 @@ func (ctrl *FocusAreaController) CreateFocusArea(w http.ResponseWriter, r *http.
 		return
 	}
 
-	render.Render(w, r, createdFocusArea.AsDTO())
+	render.Render(w, r, createdFocusArea.ToDTO())
 }
 
 func (ctrl *FocusAreaController) UpdateFocusArea(w http.ResponseWriter, r *http.Request) {
@@ -112,7 +112,7 @@ func (ctrl *FocusAreaController) UpdateFocusArea(w http.ResponseWriter, r *http.
 		return
 	}
 
-	render.Render(w, r, updatedFocusArea.AsDTO())
+	render.Render(w, r, updatedFocusArea.ToDTO())
 }
 
 func (ctrl *FocusAreaController) DeleteFocusArea(w http.ResponseWriter, r *http.Request) {
@@ -157,7 +157,7 @@ func (ctrl *FocusAreaController) ListFocusAreas(w http.ResponseWriter, r *http.R
 
 	respList := []render.Renderer{}
 	for _, focusArea := range focusAreas {
-		respList = append(respList, focusArea.AsDTO())
+		respList = append(respList, focusArea.ToDTO())
 	}
 
 	render.RenderList(w, r, respList)

@@ -74,7 +74,7 @@ func (ctrl *DeviceController) ListDevices(w http.ResponseWriter, r *http.Request
 
 	respList := []render.Renderer{}
 	for _, device := range devices {
-		respList = append(respList, device.AsDTO())
+		respList = append(respList, device.ToDTO())
 	}
 
 	render.RenderList(w, r, respList)
@@ -106,7 +106,7 @@ func (ctrl *DeviceController) CreateDevice(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	render.Render(w, r, device.AsDTO())
+	render.Render(w, r, device.ToDTO())
 }
 
 func (ctrl *DeviceController) UpdateDevice(w http.ResponseWriter, r *http.Request) {
@@ -132,7 +132,7 @@ func (ctrl *DeviceController) UpdateDevice(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	render.Render(w, r, updatedDevice.AsDTO())
+	render.Render(w, r, updatedDevice.ToDTO())
 }
 
 func (ctrl *DeviceController) DeleteDevice(w http.ResponseWriter, r *http.Request) {

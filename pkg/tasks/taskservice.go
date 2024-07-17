@@ -31,44 +31,44 @@ func NewTaskService(params TaskServiceParams) (TaskServiceResult, error) {
 	return TaskServiceResult{TaskService: srv}, nil
 }
 
-func (srv *TaskService) CreateUserTask(
-	ctx context.Context,
-	user *models.User,
-	task *models.Task,
-) (models.Task, error) {
-	task.UserID = user.ID
+func (srv *TaskService) CreateOne(ctx context.Context, userID uint, task *models.Task) (*models.Task, error) {
+	task.UserID = userID
 
 	err := srv.taskRepo.CreateOne(ctx, task)
 	if err != nil {
-		return models.Task{}, fmt.Errorf("failed to create user task: %w", err)
+		return nil, fmt.Errorf("failed to create user task: %w", err)
 	}
 
-	return *task, nil
+	return task, nil
 }
 
-func (srv *TaskService) GetUserTask(
+func (srv *TaskService) GetOne(
 	ctx context.Context,
 	userID uint,
 	taskID uint,
-) (models.Task, error) {
+) (*models.Task, error) {
 	task, err := srv.taskRepo.FindOneByUser(ctx, userID, "tasks.id = ?", taskID)
 	if err != nil {
-		return models.Task{}, fmt.Errorf("failed to get user task: %w", err)
+		return nil, fmt.Errorf("failed to get user task: %w", err)
 	}
 
-	return *task, nil
+	return task, nil
 }
 
-func (srv *TaskService) UpdateUserTask(
+func (srv *TaskService) UpdateOne(
 	ctx context.Context,
+	userID uint,
+	taskID uint,
 	task *models.Task,
-) (models.Task, error) {
+) (*models.Task, error) {
+	task.ID = taskID
+
 	err := srv.taskRepo.UpdateOne(ctx, task)
 	if err != nil {
-		return models.Task{}, fmt.Errorf("failed to update user task: %w", err)
+		return nil, fmt.Errorf("failed to update user task: %w", err)
 	}
 
-	return *task, nil
+	return task, nil
 }
 
 func (srv *TaskService) ResolveUserTask(
@@ -90,8 +90,8 @@ func (srv *TaskService) ResolveUserTask(
 	return task, nil
 }
 
-func (srv *TaskService) DeleteUserTask(ctx context.Context, id uint) error {
-	err := srv.taskRepo.DeleteOne(ctx, id)
+func (srv *TaskService) DeleteOne(ctx context.Context, userID uint, taskID uint) error {
+	err := srv.taskRepo.DeleteOne(ctx, taskID)
 	if err != nil {
 		return fmt.Errorf("failed to delete user task: %w", err)
 	}
@@ -99,7 +99,7 @@ func (srv *TaskService) DeleteUserTask(ctx context.Context, id uint) error {
 	return nil
 }
 
-func (srv *TaskService) ListOpenUserTasks(ctx context.Context, userID uint) ([]models.Task, error) {
+func (srv *TaskService) List(ctx context.Context, userID uint) ([]*models.Task, error) {
 	tasks, err := srv.taskRepo.FindManyByUser(ctx, userID, "status = ?", models.TaskStatusOpen)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list user tasks: %w", err)
@@ -108,7 +108,7 @@ func (srv *TaskService) ListOpenUserTasks(ctx context.Context, userID uint) ([]m
 	return tasks, nil
 }
 
-func (srv *TaskService) ListOpenUserTasksForFocusArea(ctx context.Context, userID uint, focusAreaID uint) ([]models.Task, error) {
+func (srv *TaskService) ListOpenUserTasksForFocusArea(ctx context.Context, userID uint, focusAreaID uint) ([]*models.Task, error) {
 	tasks, err := srv.taskRepo.FindManyByUser(ctx, userID, "status = ? AND focus_area_id = ?", models.TaskStatusOpen, focusAreaID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list user tasks: %w", err)

@@ -30,8 +30,8 @@ type Quota struct {
 	User   User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
-func (q *Quota) AsDTO() *api.QuotaDTO {
-	focusArea := q.FocusArea.AsDTO()
+func (q *Quota) ToDTO() *api.QuotaDTO {
+	focusArea := q.FocusArea.ToDTO()
 
 	dto := &api.QuotaDTO{
 		ID:        q.ID,
