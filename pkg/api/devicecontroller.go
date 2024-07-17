@@ -10,7 +10,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/mole-squad/soq-api/api"
-	"github.com/mole-squad/soq-api/pkg/auth"
 	"github.com/mole-squad/soq-api/pkg/common"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
@@ -33,11 +32,15 @@ type DeviceControllerResult struct {
 }
 
 type DeviceController struct {
+	auth          interfaces.AuthService
 	deviceService interfaces.DeviceService
 }
 
 func NewDeviceController(params DeviceControllerParams) (DeviceControllerResult, error) {
-	ctrl := DeviceController{deviceService: params.DeviceService}
+	ctrl := DeviceController{
+		auth:          params.AuthService,
+		deviceService: params.DeviceService,
+	}
 
 	deviceRouter := chi.NewRouter()
 	deviceRouter.Use(params.AuthService.AuthRequired())
@@ -60,7 +63,7 @@ func NewDeviceController(params DeviceControllerParams) (DeviceControllerResult,
 func (ctrl *DeviceController) ListDevices(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	user, err := auth.GetUserFromCtx(ctx)
+	user, err := ctrl.auth.GetUserFromCtx(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrUnauthorized(err))
 		return
@@ -83,7 +86,7 @@ func (ctrl *DeviceController) ListDevices(w http.ResponseWriter, r *http.Request
 func (ctrl *DeviceController) CreateDevice(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	user, err := auth.GetUserFromCtx(ctx)
+	user, err := ctrl.auth.GetUserFromCtx(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrUnauthorized(err))
 		return
@@ -159,7 +162,7 @@ func (ctrl *DeviceController) deviceContextMiddleware(next http.Handler) http.Ha
 			return
 		}
 
-		user, err := auth.GetUserFromCtx(ctx)
+		user, err := ctrl.auth.GetUserFromCtx(ctx)
 		if err != nil {
 			render.Render(w, r, common.ErrUnauthorized(err))
 			return

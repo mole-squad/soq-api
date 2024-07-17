@@ -88,7 +88,7 @@ func (svc *AuthService) AdminRequired() func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
 
-			user, err := GetUserFromCtx(ctx)
+			user, err := svc.GetUserFromCtx(ctx)
 			if err != nil {
 				render.Render(w, r, common.ErrUnauthorized(err))
 				return
@@ -102,6 +102,15 @@ func (svc *AuthService) AdminRequired() func(http.Handler) http.Handler {
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
+}
+
+func (svc *AuthService) GetUserFromCtx(ctx context.Context) (*models.User, error) {
+	user, ok := ctx.Value(userContextKey).(*models.User)
+	if !ok {
+		return nil, fmt.Errorf("could not get user from context")
+	}
+
+	return user, nil
 }
 
 func (svc *AuthService) LoginUser(ctx context.Context, username, password string) (string, error) {

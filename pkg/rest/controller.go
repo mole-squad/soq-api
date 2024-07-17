@@ -9,7 +9,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"github.com/mole-squad/soq-api/pkg/auth"
 	"github.com/mole-squad/soq-api/pkg/common"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"gorm.io/gorm"
@@ -77,7 +76,7 @@ func NewController[M Resource](
 func (c *Controller[M]) List(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	user, err := auth.GetUserFromCtx(ctx)
+	user, err := c.auth.GetUserFromCtx(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrUnauthorized(err))
 		return
@@ -114,7 +113,7 @@ func (c *Controller[M]) Get(w http.ResponseWriter, r *http.Request) {
 func (c *Controller[M]) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	user, err := auth.GetUserFromCtx(ctx)
+	user, err := c.auth.GetUserFromCtx(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrUnauthorized(err))
 		return
@@ -141,7 +140,7 @@ func (c *Controller[M]) Create(w http.ResponseWriter, r *http.Request) {
 func (c *Controller[M]) Update(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	user, err := auth.GetUserFromCtx(ctx)
+	user, err := c.auth.GetUserFromCtx(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrUnauthorized(err))
 		return
@@ -173,7 +172,7 @@ func (c *Controller[M]) Update(w http.ResponseWriter, r *http.Request) {
 func (c *Controller[M]) Delete(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	user, err := auth.GetUserFromCtx(ctx)
+	user, err := c.auth.GetUserFromCtx(ctx)
 	if err != nil {
 		render.Render(w, r, common.ErrUnauthorized(err))
 		return
@@ -223,7 +222,7 @@ func (c *Controller[M]) itemContextMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		user, err := auth.GetUserFromCtx(ctx)
+		user, err := c.auth.GetUserFromCtx(ctx)
 		if err != nil {
 			render.Render(w, r, common.ErrUnauthorized(err))
 			return
