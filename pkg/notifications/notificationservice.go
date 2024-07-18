@@ -15,7 +15,7 @@ import (
 type NotificationServiceParams struct {
 	fx.In
 
-	DeviceRepo    interfaces.DeviceRepo
+	DeviceService interfaces.DeviceService
 	LoggerService interfaces.LoggerService
 }
 
@@ -27,7 +27,7 @@ type NotificationServiceResult struct {
 
 type NotificationService struct {
 	client               *pushover.Pushover
-	deviceRepo           interfaces.DeviceRepo
+	deviceService        interfaces.DeviceService
 	logger               interfaces.LoggerService
 	notificationsEnabled bool
 }
@@ -47,7 +47,7 @@ func NewNotificationService(p NotificationServiceParams) (NotificationServiceRes
 
 	result.NotificationService = &NotificationService{
 		client:               client,
-		deviceRepo:           p.DeviceRepo,
+		deviceService:        p.DeviceService,
 		logger:               p.LoggerService,
 		notificationsEnabled: notificationsEnabled,
 	}
@@ -73,13 +73,13 @@ func (srv *NotificationService) SendNotification(
 		srv.notificationsEnabled,
 	)
 
-	userDevices, err := srv.deviceRepo.FindManyByUser(ctx, userID)
+	userDevices, err := srv.deviceService.ListByUser(ctx, userID)
 	if err != nil {
 		return fmt.Errorf("failed to send notifications: %w", err)
 	}
 
 	for _, device := range userDevices {
-		err := srv.sendNotificationToDevice(&device, title, message)
+		err := srv.sendNotificationToDevice(device, title, message)
 		if err != nil {
 			return fmt.Errorf("failed to send notifications: %w", err)
 		}

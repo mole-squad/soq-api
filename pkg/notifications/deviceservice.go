@@ -1,9 +1,7 @@
 package notifications
 
 import (
-	"context"
-	"fmt"
-
+	"github.com/mole-squad/soq-api/pkg/generics"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -12,8 +10,7 @@ import (
 type DeviceServiceParams struct {
 	fx.In
 
-	DeviceRepo    interfaces.DeviceRepo
-	LoggerService interfaces.LoggerService
+	DeviceRepo interfaces.DeviceRepo
 }
 
 type DeviceServiceResult struct {
@@ -23,62 +20,17 @@ type DeviceServiceResult struct {
 }
 
 type DeviceService struct {
-	deviceRepo interfaces.DeviceRepo
-	logger     interfaces.LoggerService
+	*generics.ResourceService[*models.Device]
 }
 
-func NewDeviceService(p DeviceServiceParams) DeviceServiceResult {
+func NewDeviceService(params DeviceServiceParams) DeviceServiceResult {
+	embeddedSvc := generics.NewResourceService[*models.Device](
+		params.DeviceRepo,
+	).(*generics.ResourceService[*models.Device])
+
 	srv := &DeviceService{
-		deviceRepo: p.DeviceRepo,
-		logger:     p.LoggerService,
+		ResourceService: embeddedSvc,
 	}
 
 	return DeviceServiceResult{DeviceService: srv}
-}
-
-func (srv *DeviceService) CreateUserDevice(ctx context.Context, user *models.User, device *models.Device) (models.Device, error) {
-	device.UserID = user.ID
-
-	err := srv.deviceRepo.CreateOne(ctx, device)
-	if err != nil {
-		return models.Device{}, err
-	}
-
-	return *device, nil
-}
-
-func (srv *DeviceService) GetUserDevice(ctx context.Context, userID uint, deviceID uint) (models.Device, error) {
-	device, err := srv.deviceRepo.FindOneByUser(ctx, userID, "devices.id = ?", deviceID)
-	if err != nil {
-		return models.Device{}, fmt.Errorf("failed to get user device: %w", err)
-	}
-
-	return *device, nil
-}
-
-func (srv *DeviceService) UpdateUserDevice(ctx context.Context, device *models.Device) (models.Device, error) {
-	err := srv.deviceRepo.UpdateOne(ctx, device)
-	if err != nil {
-		return models.Device{}, fmt.Errorf("failed to update user device: %w", err)
-	}
-
-	return *device, nil
-}
-
-func (srv *DeviceService) DeleteUserDevice(ctx context.Context, id uint) error {
-	err := srv.deviceRepo.DeleteOne(ctx, id)
-	if err != nil {
-		return fmt.Errorf("failed to delete user device: %w", err)
-	}
-
-	return nil
-}
-
-func (srv *DeviceService) ListUserDevices(ctx context.Context, userID uint) ([]models.Device, error) {
-	devices, err := srv.deviceRepo.FindManyByUser(ctx, userID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to list user devices: %w", err)
-	}
-
-	return devices, nil
 }
