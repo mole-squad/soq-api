@@ -41,7 +41,7 @@ func (t *Task) SetUserID(userID uint) {
 }
 
 func (t *Task) ToDTO() render.Renderer {
-	focusArea := t.FocusArea.ToDTO()
+	focusArea := t.FocusArea.ToDTO().(*api.FocusAreaDTO)
 
 	dto := &api.TaskDTO{
 		ID:        t.ID,
