@@ -7,7 +7,8 @@ var Module = fx.Module(
 	fx.Invoke(NewAuthController),
 	fx.Invoke(NewFocusAreaController),
 	fx.Invoke(NewDeviceController),
-	fx.Invoke(NewTaskController),
 	fx.Invoke(NewQuotaController),
+	fx.Invoke(NewTaskController),
+	fx.Invoke(NewTimeWindowController),
 	fx.Invoke(NewUserController),
 )

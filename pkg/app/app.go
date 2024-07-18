@@ -14,6 +14,7 @@ import (
 	"github.com/mole-squad/soq-api/pkg/notifications"
 	"github.com/mole-squad/soq-api/pkg/quotas"
 	"github.com/mole-squad/soq-api/pkg/tasks"
+	"github.com/mole-squad/soq-api/pkg/timewindows"
 	"github.com/mole-squad/soq-api/pkg/users"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
@@ -48,6 +49,7 @@ func BuildAppOpts() []fx.Option {
 		focusareas.Module,
 		notifications.Module,
 		tasks.Module,
+		timewindows.Module,
 		quotas.Module,
 		agendas.Module,
 	}

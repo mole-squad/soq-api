@@ -34,7 +34,7 @@ func (f *FocusArea) SetUserID(userID uint) {
 func (f *FocusArea) ToDTO() render.Renderer {
 	timeWindows := make([]api.TimeWindowDTO, len(f.TimeWindows))
 	for i, timeWindow := range f.TimeWindows {
-		timeWindows[i] = *timeWindow.ToDTO()
+		timeWindows[i] = *timeWindow.ToDTO().(*api.TimeWindowDTO)
 	}
 
 	dto := &api.FocusAreaDTO{
