@@ -25,16 +25,10 @@ type FocusAreaControllerResult struct {
 
 type FocusAreaController struct {
 	interfaces.ResourceController[*models.FocusArea]
-
-	auth             interfaces.AuthService
-	focusAreaService interfaces.FocusAreaService
 }
 
 func NewFocusAreaController(params FocusAreaControllerParams) (FocusAreaControllerResult, error) {
-	ctrl := FocusAreaController{
-		auth:             params.AuthService,
-		focusAreaService: params.FocusAreaService,
-	}
+	ctrl := FocusAreaController{}
 
 	ctrl.ResourceController = generics.NewResourceController[*models.FocusArea](
 		params.FocusAreaService,

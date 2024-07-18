@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-type UpdateQuotaRequestDto struct {
+type UpdateQuotaRequestDTO struct {
 	Summary string `json:"summary"`
 
 	TargetTimeMins  int `json:"targetTimeMins"`
@@ -15,6 +15,6 @@ type UpdateQuotaRequestDto struct {
 	FocusAreaID uint `json:"focusAreaId"`
 }
 
-func (dto *UpdateQuotaRequestDto) Bind(r *http.Request) error {
+func (dto *UpdateQuotaRequestDTO) Bind(r *http.Request) error {
 	return nil
 }

@@ -22,9 +22,6 @@ type FocusAreaRepoResult struct {
 
 type FocusAreaRepo struct {
 	*generics.ResourceRepository[*models.FocusArea]
-
-	dbService interfaces.DBService
-	logger    interfaces.LoggerService
 }
 
 func NewFocusAreaRepo(params FocusAreaRepoParams) (FocusAreaRepoResult, error) {
@@ -37,8 +34,6 @@ func NewFocusAreaRepo(params FocusAreaRepoParams) (FocusAreaRepoResult, error) {
 
 	repo := &FocusAreaRepo{
 		ResourceRepository: embeddedRepo,
-		dbService:          params.DBService,
-		logger:             params.LoggerService,
 	}
 
 	return FocusAreaRepoResult{FocusAreaRepo: repo}, nil

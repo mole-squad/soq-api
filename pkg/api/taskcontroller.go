@@ -35,24 +35,24 @@ type TaskController struct {
 }
 
 func NewTaskController(params TaskControllerParams) (TaskControllerResult, error) {
-	taskCtrl := TaskController{
+	ctrl := TaskController{
 		logger:      params.LoggerService,
 		taskService: params.TaskService,
 	}
 
-	taskCtrl.ResourceController = generics.NewResourceController[*models.Task](
+	ctrl.ResourceController = generics.NewResourceController[*models.Task](
 		params.TaskService,
 		params.LoggerService,
 		params.AuthService,
 		models.NewTaskFromCreateRequest,
 		models.NewTaskFromUpdateRequest,
 		generics.WithContextKey[*models.Task](taskContextkey),
-		generics.WithDetailRoute[*models.Task]("POST", "/resolve", taskCtrl.ResolveTask),
+		generics.WithDetailRoute[*models.Task]("POST", "/resolve", ctrl.ResolveTask),
 	).(*generics.ResourceController[*models.Task])
 
-	params.Router.Mount("/tasks", taskCtrl.ResourceController.GetRouter())
+	params.Router.Mount("/tasks", ctrl.ResourceController.GetRouter())
 
-	return TaskControllerResult{TaskController: taskCtrl}, nil
+	return TaskControllerResult{TaskController: ctrl}, nil
 }
 
 func (ctrl *TaskController) ResolveTask(w http.ResponseWriter, r *http.Request) {

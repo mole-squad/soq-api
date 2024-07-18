@@ -6,4 +6,5 @@ const (
 	taskContextkey generics.ResourceContextKey = iota
 	deviceContextKey
 	focusAreaContextKey
+	quotaContextKey
 )
