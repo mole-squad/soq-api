@@ -81,13 +81,13 @@ func (srv *AgendaService) GenerateAgendasForUpcomingTimeWindows(ctx context.Cont
 func (srv *AgendaService) GenerateAgendasForUser(ctx context.Context, user *models.User) error {
 	srv.logger.Info("Generating agendas for user", "user", user.ID)
 
-	focusAreas, err := srv.focusAreaService.ListUserFocusAreas(ctx, user)
+	focusAreas, err := srv.focusAreaService.ListByUser(ctx, user.ID)
 	if err != nil {
 		return fmt.Errorf("failed to load focus areas for user: %w", err)
 	}
 
 	for _, focusArea := range focusAreas {
-		err := srv.GenerateAgendasForFocusArea(ctx, user, &focusArea)
+		err := srv.GenerateAgendasForFocusArea(ctx, user, focusArea)
 		if err != nil {
 			return fmt.Errorf("failed to generate agendas for focus area: %w", err)
 		}

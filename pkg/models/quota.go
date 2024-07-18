@@ -31,7 +31,7 @@ type Quota struct {
 }
 
 func (q *Quota) ToDTO() *api.QuotaDTO {
-	focusArea := q.FocusArea.ToDTO()
+	focusArea := q.FocusArea.ToDTO().(*api.FocusAreaDTO)
 
 	dto := &api.QuotaDTO{
 		ID:        q.ID,

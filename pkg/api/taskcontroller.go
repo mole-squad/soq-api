@@ -29,6 +29,7 @@ type TaskControllerResult struct {
 
 type TaskController struct {
 	interfaces.ResourceController[*models.Task]
+
 	logger      interfaces.LoggerService
 	taskService interfaces.TaskService
 }

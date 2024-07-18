@@ -12,8 +12,9 @@ type ResourceRepository[M models.Model] struct {
 	db     interfaces.DBService
 	logger interfaces.LoggerService
 
-	joinTables []string
-	tableName  string
+	joinTables    []string
+	preloadTables []string
+	tableName     string
 }
 
 type ResourceRepositoryOption[M models.Model] func(*ResourceRepository[M])
@@ -89,7 +90,7 @@ func (r *ResourceRepository[M]) FindManyByUser(ctx context.Context, userID uint,
 
 	fullArgs := append([]interface{}{userID}, args...)
 
-	err := r.db.FindMany(ctx, &items, r.joinTables, []string{}, fullQuery, fullArgs...)
+	err := r.db.FindMany(ctx, &items, r.joinTables, r.preloadTables, fullQuery, fullArgs...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find many items by user: %w", err)
 	}
@@ -143,5 +144,11 @@ func WithTableName[M models.Model](tableName string) ResourceRepositoryOption[M]
 func WithJoinTables[M models.Model](joinTables ...string) ResourceRepositoryOption[M] {
 	return func(r *ResourceRepository[M]) {
 		r.joinTables = joinTables
+	}
+}
+
+func WithPreloadTables[M models.Model](preloadTables ...string) ResourceRepositoryOption[M] {
+	return func(r *ResourceRepository[M]) {
+		r.preloadTables = preloadTables
 	}
 }
