@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.13.0] - 2024-07-18
+### :sparkles: New Features
+- [`b0c272c`](https://github.com/mole-squad/soq-api/commit/b0c272c1573b75e168adbff3dd572e0477c94609) - port focusareas to generic resource *(PR [#41](https://github.com/mole-squad/soq-api/pull/41) by [@burkel24](https://github.com/burkel24))*
+
+
 ## [v0.12.0] - 2024-07-17
 ### :sparkles: New Features
 - [`4814b38`](https://github.com/mole-squad/soq-api/commit/4814b38213dd1732e97d69c3640a81e1c22da1a4) - consolidate generic patterns *(PR [#40](https://github.com/mole-squad/soq-api/pull/40) by [@burkel24](https://github.com/burkel24))*
@@ -93,3 +98,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v0.10.0]: https://github.com/mole-squad/soq-api/compare/v0.9.0...v0.10.0
 [v0.11.0]: https://github.com/mole-squad/soq-api/compare/v0.10.0...v0.11.0
 [v0.12.0]: https://github.com/mole-squad/soq-api/compare/v0.11.0...v0.12.0
+[v0.13.0]: https://github.com/mole-squad/soq-api/compare/v0.12.0...v0.13.0
