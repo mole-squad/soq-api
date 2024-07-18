@@ -22,9 +22,6 @@ type TimeWindowRepoResult struct {
 
 type TimeWindowRepo struct {
 	*generics.ResourceRepository[*models.TimeWindow]
-
-	dbService interfaces.DBService
-	logger    interfaces.LoggerService
 }
 
 func NewTimeWindowRepo(params TimeWindowRepoParams) (TimeWindowRepoResult, error) {
@@ -36,8 +33,6 @@ func NewTimeWindowRepo(params TimeWindowRepoParams) (TimeWindowRepoResult, error
 
 	repo := &TimeWindowRepo{
 		ResourceRepository: embeddedRepo,
-		dbService:          params.DBService,
-		logger:             params.LoggerService,
 	}
 
 	return TimeWindowRepoResult{TimeWindowRepo: repo}, nil

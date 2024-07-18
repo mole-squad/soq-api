@@ -25,16 +25,10 @@ type TimeWindowControllerResult struct {
 
 type TimeWindowController struct {
 	interfaces.ResourceController[*models.TimeWindow]
-
-	logger      interfaces.LoggerService
-	taskService interfaces.TimeWindowService
 }
 
 func NewTimeWindowController(params TimeWindowControllerParams) (TimeWindowControllerResult, error) {
-	ctrl := TimeWindowController{
-		logger:      params.LoggerService,
-		taskService: params.TimeWindowService,
-	}
+	ctrl := TimeWindowController{}
 
 	ctrl.ResourceController = generics.NewResourceController[*models.TimeWindow](
 		params.TimeWindowService,
