@@ -1,6 +1,9 @@
 package models
 
 import (
+	"net/http"
+
+	"github.com/go-chi/render"
 	"github.com/mole-squad/soq-api/api"
 	"gorm.io/gorm"
 )
@@ -30,7 +33,19 @@ type Quota struct {
 	User   User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
-func (q *Quota) ToDTO() *api.QuotaDTO {
+func (q *Quota) GetID() uint {
+	return q.ID
+}
+
+func (q *Quota) GetUserID() uint {
+	return q.UserID
+}
+
+func (q *Quota) SetUserID(userID uint) {
+	q.UserID = userID
+}
+
+func (q *Quota) ToDTO() render.Renderer {
 	focusArea := q.FocusArea.ToDTO().(*api.FocusAreaDTO)
 
 	dto := &api.QuotaDTO{
@@ -40,4 +55,36 @@ func (q *Quota) ToDTO() *api.QuotaDTO {
 	}
 
 	return dto
+}
+
+func NewQuotaFromCreateRequest(r *http.Request) (*Quota, error) {
+	quota := &Quota{}
+
+	dto := &api.CreateQuotaRequestDTO{}
+	if err := render.Bind(r, dto); err != nil {
+		return nil, err
+	}
+
+	quota.Summary = dto.Summary
+	quota.TargetTimeMins = dto.TargetTimeMins
+	quota.TargetInstances = dto.TargetInstances
+	quota.Period = QuotaPeriod(dto.Period)
+
+	return quota, nil
+}
+
+func NewQuotaFromUpdateRequest(r *http.Request) (*Quota, error) {
+	quota := &Quota{}
+
+	dto := &api.UpdateQuotaRequestDTO{}
+	if err := render.Bind(r, dto); err != nil {
+		return nil, err
+	}
+
+	quota.Summary = dto.Summary
+	quota.TargetTimeMins = dto.TargetTimeMins
+	quota.TargetInstances = dto.TargetInstances
+	quota.Period = QuotaPeriod(dto.Period)
+
+	return quota, nil
 }

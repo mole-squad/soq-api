@@ -16,5 +16,7 @@ type CreateQuotaRequestDTO struct {
 }
 
 func (dto *CreateQuotaRequestDTO) Bind(r *http.Request) error {
+	// TODO validate user owns focusarea
+
 	return nil
 }

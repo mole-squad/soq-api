@@ -21,8 +21,6 @@ type FocusAreaServiceResult struct {
 
 type FocusAreaService struct {
 	*generics.ResourceService[*models.FocusArea]
-
-	focusAreaRepo interfaces.FocusAreaRepo
 }
 
 func NewFocusAreaService(params FocusAreaServiceParams) (FocusAreaServiceResult, error) {
@@ -32,7 +30,6 @@ func NewFocusAreaService(params FocusAreaServiceParams) (FocusAreaServiceResult,
 
 	srv := &FocusAreaService{
 		ResourceService: embeddedSvc,
-		focusAreaRepo:   params.FocusAreaRepo,
 	}
 
 	return FocusAreaServiceResult{FocusAreaService: srv}, nil
