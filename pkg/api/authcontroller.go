@@ -57,5 +57,7 @@ func (ctrl *AuthController) GetToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := api.NewTokenResponseDTO(token)
+
+	render.Status(r, http.StatusCreated)
 	render.Render(w, r, resp)
 }
