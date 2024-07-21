@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.15.0] - 2024-07-21
+### :sparkles: New Features
+- [`7befb30`](https://github.com/mole-squad/soq-api/commit/7befb3027fc4e578bf7e73c139a7771cd0c1ae9c) - use patch instead of post for resolve task *(PR [#45](https://github.com/mole-squad/soq-api/pull/45) by [@burkel24](https://github.com/burkel24))*
+
+
 ## [v0.14.0] - 2024-07-18
 ### :sparkles: New Features
 - [`f47a63f`](https://github.com/mole-squad/soq-api/commit/f47a63fdc95a19461def398ee450340253902656) - use generic resource for quotas *(PR [#42](https://github.com/mole-squad/soq-api/pull/42) by [@burkel24](https://github.com/burkel24))*
@@ -107,3 +112,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v0.12.0]: https://github.com/mole-squad/soq-api/compare/v0.11.0...v0.12.0
 [v0.13.0]: https://github.com/mole-squad/soq-api/compare/v0.12.0...v0.13.0
 [v0.14.0]: https://github.com/mole-squad/soq-api/compare/v0.13.0...v0.14.0
+[v0.15.0]: https://github.com/mole-squad/soq-api/compare/v0.14.0...v0.15.0
