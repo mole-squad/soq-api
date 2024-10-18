@@ -8,7 +8,7 @@ import (
 	"github.com/mole-squad/soq-api/pkg/models"
 )
 
-type ResourceRepository[M models.Model] struct {
+type Repository[M models.Model] struct {
 	db     interfaces.DBService
 	logger interfaces.LoggerService
 
@@ -17,14 +17,14 @@ type ResourceRepository[M models.Model] struct {
 	tableName     string
 }
 
-type ResourceRepositoryOption[M models.Model] func(*ResourceRepository[M])
+type RepositoryOption[M models.Model] func(*Repository[M])
 
-func NewResourceRepository[M models.Model](
+func NewRepository[M models.Model](
 	db interfaces.DBService,
 	logger interfaces.LoggerService,
-	opts ...ResourceRepositoryOption[M],
-) interfaces.ResourceRepository[M] {
-	repo := &ResourceRepository[M]{
+	opts ...RepositoryOption[M],
+) interfaces.Repository[M] {
+	repo := &Repository[M]{
 		db:     db,
 		logger: logger,
 	}
@@ -36,7 +36,7 @@ func NewResourceRepository[M models.Model](
 	return repo
 }
 
-func (r *ResourceRepository[M]) FindOne(ctx context.Context, query string, args ...interface{}) (M, error) {
+func (r *Repository[M]) FindOne(ctx context.Context, query string, args ...interface{}) (M, error) {
 	var item M
 
 	err := r.db.FindOne(ctx, &item, r.joinTables, []string{}, query, args...)
@@ -49,7 +49,7 @@ func (r *ResourceRepository[M]) FindOne(ctx context.Context, query string, args 
 	return item, nil
 }
 
-func (r *ResourceRepository[M]) FindOneByID(ctx context.Context, itemID uint, query string, args ...interface{}) (M, error) {
+func (r *Repository[M]) FindOneByID(ctx context.Context, itemID uint, query string, args ...interface{}) (M, error) {
 	fullQuery := fmt.Sprintf("%s.id = ?", r.tableName)
 	if query != "" {
 		fullQuery = fmt.Sprintf("%s AND %s", fullQuery, query)
@@ -60,7 +60,7 @@ func (r *ResourceRepository[M]) FindOneByID(ctx context.Context, itemID uint, qu
 	return r.FindOne(ctx, fullQuery, fullArgs...)
 }
 
-func (r *ResourceRepository[M]) FindOneByUser(ctx context.Context, userID uint, query string, args ...interface{}) (M, error) {
+func (r *Repository[M]) FindOneByUser(ctx context.Context, userID uint, query string, args ...interface{}) (M, error) {
 	var item M
 
 	fullQuery := fmt.Sprintf("%s.user_id = ?", r.tableName)
@@ -80,7 +80,7 @@ func (r *ResourceRepository[M]) FindOneByUser(ctx context.Context, userID uint, 
 	return item, nil
 }
 
-func (r *ResourceRepository[M]) FindManyByUser(ctx context.Context, userID uint, query string, args ...interface{}) ([]M, error) {
+func (r *Repository[M]) FindManyByUser(ctx context.Context, userID uint, query string, args ...interface{}) ([]M, error) {
 	var items []M
 
 	fullQuery := fmt.Sprintf("%s.user_id = ?", r.tableName)
@@ -100,7 +100,7 @@ func (r *ResourceRepository[M]) FindManyByUser(ctx context.Context, userID uint,
 	return items, nil
 }
 
-func (r *ResourceRepository[M]) CreateOne(ctx context.Context, item M) error {
+func (r *Repository[M]) CreateOne(ctx context.Context, item M) error {
 	err := r.db.CreateOne(ctx, item)
 	if err != nil {
 		return fmt.Errorf("failed to create one item: %w", err)
@@ -111,7 +111,7 @@ func (r *ResourceRepository[M]) CreateOne(ctx context.Context, item M) error {
 	return nil
 }
 
-func (r *ResourceRepository[M]) UpdateOne(ctx context.Context, itemID uint, item M) error {
+func (r *Repository[M]) UpdateOne(ctx context.Context, itemID uint, item M) error {
 	err := r.db.UpdateOne(ctx, itemID, item)
 	if err != nil {
 		return fmt.Errorf("failed to update one item: %w", err)
@@ -122,7 +122,7 @@ func (r *ResourceRepository[M]) UpdateOne(ctx context.Context, itemID uint, item
 	return nil
 }
 
-func (r *ResourceRepository[M]) DeleteOne(ctx context.Context, itemID uint) error {
+func (r *Repository[M]) DeleteOne(ctx context.Context, itemID uint) error {
 	item := new(M)
 
 	err := r.db.DeleteOne(ctx, itemID, item)
@@ -135,20 +135,20 @@ func (r *ResourceRepository[M]) DeleteOne(ctx context.Context, itemID uint) erro
 	return nil
 }
 
-func WithTableName[M models.Model](tableName string) ResourceRepositoryOption[M] {
-	return func(r *ResourceRepository[M]) {
+func WithTableName[M models.Model](tableName string) RepositoryOption[M] {
+	return func(r *Repository[M]) {
 		r.tableName = tableName
 	}
 }
 
-func WithJoinTables[M models.Model](joinTables ...string) ResourceRepositoryOption[M] {
-	return func(r *ResourceRepository[M]) {
+func WithJoinTables[M models.Model](joinTables ...string) RepositoryOption[M] {
+	return func(r *Repository[M]) {
 		r.joinTables = joinTables
 	}
 }
 
-func WithPreloadTables[M models.Model](preloadTables ...string) ResourceRepositoryOption[M] {
-	return func(r *ResourceRepository[M]) {
+func WithPreloadTables[M models.Model](preloadTables ...string) RepositoryOption[M] {
+	return func(r *Repository[M]) {
 		r.preloadTables = preloadTables
 	}
 }

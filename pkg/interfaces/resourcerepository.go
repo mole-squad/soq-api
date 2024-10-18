@@ -6,7 +6,7 @@ import (
 	"github.com/mole-squad/soq-api/pkg/models"
 )
 
-type ResourceRepository[M models.Model] interface {
+type Repository[M models.Model] interface {
 	FindOne(ctx context.Context, query string, args ...interface{}) (M, error)
 	FindOneByID(ctx context.Context, itemID uint, query string, args ...interface{}) (M, error)
 	FindOneByUser(ctx context.Context, userID uint, query string, args ...interface{}) (M, error)

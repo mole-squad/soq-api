@@ -5,5 +5,5 @@ import (
 )
 
 type DeviceRepo interface {
-	ResourceRepository[*models.Device]
+	Repository[*models.Device]
 }

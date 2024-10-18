@@ -21,24 +21,24 @@ type TaskRepoResult struct {
 }
 
 type TaskRepo struct {
-	*generics.ResourceRepository[*models.Task]
+	*generics.Repository[*models.Task]
 
 	dbService interfaces.DBService
 	logger    interfaces.LoggerService
 }
 
 func NewTaskRepo(params TaskRepoParams) (TaskRepoResult, error) {
-	embeddedRepo := generics.NewResourceRepository[*models.Task](
+	embeddedRepo := generics.NewRepository[*models.Task](
 		params.DBService,
 		params.LoggerService,
 		generics.WithTableName[*models.Task]("tasks"),
 		generics.WithJoinTables[*models.Task]("FocusArea"),
-	).(*generics.ResourceRepository[*models.Task])
+	).(*generics.Repository[*models.Task])
 
 	repo := &TaskRepo{
-		ResourceRepository: embeddedRepo,
-		dbService:          params.DBService,
-		logger:             params.LoggerService,
+		Repository: embeddedRepo,
+		dbService:  params.DBService,
+		logger:     params.LoggerService,
 	}
 
 	return TaskRepoResult{TaskRepo: repo}, nil

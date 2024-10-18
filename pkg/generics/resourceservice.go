@@ -8,7 +8,7 @@ import (
 )
 
 type ResourceService[M interfaces.Resource] struct {
-	repo interfaces.ResourceRepository[M]
+	repo interfaces.Repository[M]
 
 	listQuery *Query
 	getQuery  *Query
@@ -17,7 +17,7 @@ type ResourceService[M interfaces.Resource] struct {
 type ResourceServiceOption[M interfaces.Resource] func(*ResourceService[M])
 
 func NewResourceService[M interfaces.Resource](
-	repo interfaces.ResourceRepository[M],
+	repo interfaces.Repository[M],
 	opts ...ResourceServiceOption[M],
 ) interfaces.ResourceService[M] {
 	svc := &ResourceService[M]{

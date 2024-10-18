@@ -21,19 +21,19 @@ type QuotaRepoResult struct {
 }
 
 type QuotaRepo struct {
-	*generics.ResourceRepository[*models.Quota]
+	*generics.Repository[*models.Quota]
 }
 
 func NewQuotaRepo(params QuotaRepoParams) (QuotaRepoResult, error) {
-	embeddedRepo := generics.NewResourceRepository[*models.Quota](
+	embeddedRepo := generics.NewRepository[*models.Quota](
 		params.DBService,
 		params.LoggerService,
 		generics.WithTableName[*models.Quota]("quotas"),
 		generics.WithJoinTables[*models.Quota]("FocusArea"),
-	).(*generics.ResourceRepository[*models.Quota])
+	).(*generics.Repository[*models.Quota])
 
 	repo := &QuotaRepo{
-		ResourceRepository: embeddedRepo,
+		Repository: embeddedRepo,
 	}
 
 	return QuotaRepoResult{QuotaRepo: repo}, nil

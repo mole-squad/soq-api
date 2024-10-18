@@ -21,21 +21,21 @@ type DeviceRepoResult struct {
 }
 
 type DeviceRepo struct {
-	*generics.ResourceRepository[*models.Device]
+	*generics.Repository[*models.Device]
 
 	dbService interfaces.DBService
 	logger    interfaces.LoggerService
 }
 
 func NewDeviceRepo(params DeviceRepoParams) DeviceRepoResult {
-	embeddedRepo := generics.NewResourceRepository[*models.Device](
+	embeddedRepo := generics.NewRepository[*models.Device](
 		params.DBService,
 		params.LoggerService,
 		generics.WithTableName[*models.Device]("devices"),
-	).(*generics.ResourceRepository[*models.Device])
+	).(*generics.Repository[*models.Device])
 
 	repo := &DeviceRepo{
-		ResourceRepository: embeddedRepo,
+		Repository: embeddedRepo,
 	}
 
 	return DeviceRepoResult{DeviceRepo: repo}

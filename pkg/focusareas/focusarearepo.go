@@ -21,19 +21,19 @@ type FocusAreaRepoResult struct {
 }
 
 type FocusAreaRepo struct {
-	*generics.ResourceRepository[*models.FocusArea]
+	*generics.Repository[*models.FocusArea]
 }
 
 func NewFocusAreaRepo(params FocusAreaRepoParams) (FocusAreaRepoResult, error) {
-	embeddedRepo := generics.NewResourceRepository[*models.FocusArea](
+	embeddedRepo := generics.NewRepository[*models.FocusArea](
 		params.DBService,
 		params.LoggerService,
 		generics.WithTableName[*models.FocusArea]("focus_areas"),
 		generics.WithPreloadTables[*models.FocusArea]("TimeWindows"),
-	).(*generics.ResourceRepository[*models.FocusArea])
+	).(*generics.Repository[*models.FocusArea])
 
 	repo := &FocusAreaRepo{
-		ResourceRepository: embeddedRepo,
+		Repository: embeddedRepo,
 	}
 
 	return FocusAreaRepoResult{FocusAreaRepo: repo}, nil

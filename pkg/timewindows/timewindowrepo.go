@@ -21,18 +21,18 @@ type TimeWindowRepoResult struct {
 }
 
 type TimeWindowRepo struct {
-	*generics.ResourceRepository[*models.TimeWindow]
+	*generics.Repository[*models.TimeWindow]
 }
 
 func NewTimeWindowRepo(params TimeWindowRepoParams) (TimeWindowRepoResult, error) {
-	embeddedRepo := generics.NewResourceRepository[*models.TimeWindow](
+	embeddedRepo := generics.NewRepository[*models.TimeWindow](
 		params.DBService,
 		params.LoggerService,
 		generics.WithTableName[*models.TimeWindow]("time_windows"),
-	).(*generics.ResourceRepository[*models.TimeWindow])
+	).(*generics.Repository[*models.TimeWindow])
 
 	repo := &TimeWindowRepo{
-		ResourceRepository: embeddedRepo,
+		Repository: embeddedRepo,
 	}
 
 	return TimeWindowRepoResult{TimeWindowRepo: repo}, nil
