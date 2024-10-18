@@ -20,16 +20,16 @@ type DeviceServiceResult struct {
 }
 
 type DeviceService struct {
-	*generics.ResourceService[*models.Device]
+	*generics.Service[*models.Device]
 }
 
 func NewDeviceService(params DeviceServiceParams) DeviceServiceResult {
-	embeddedSvc := generics.NewResourceService[*models.Device](
+	embeddedSvc := generics.NewService[*models.Device](
 		params.DeviceRepo,
-	).(*generics.ResourceService[*models.Device])
+	).(*generics.Service[*models.Device])
 
 	srv := &DeviceService{
-		ResourceService: embeddedSvc,
+		Service: embeddedSvc,
 	}
 
 	return DeviceServiceResult{DeviceService: srv}

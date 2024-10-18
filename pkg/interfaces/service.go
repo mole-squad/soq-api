@@ -2,7 +2,7 @@ package interfaces
 
 import "context"
 
-type ResourceService[M Resource] interface {
+type Service[M Resource] interface {
 	ListByUser(ctx context.Context, userID uint) ([]M, error)
 	CreateOne(ctx context.Context, userID uint, item M) (M, error)
 	GetOne(ctx context.Context, itemID uint) (M, error)

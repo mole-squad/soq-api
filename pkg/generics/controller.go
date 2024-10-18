@@ -20,7 +20,7 @@ type Controller[M interfaces.Resource] struct {
 
 	auth   interfaces.AuthService
 	logger interfaces.LoggerService
-	svc    interfaces.ResourceService[M]
+	svc    interfaces.Service[M]
 	Router *chi.Mux
 
 	createRequestConstructor ResourceRequestConstructor[M]
@@ -30,13 +30,13 @@ type Controller[M interfaces.Resource] struct {
 type ControllerOption[M interfaces.Resource] func(*Controller[M])
 
 func NewController[M interfaces.Resource](
-	svc interfaces.ResourceService[M],
+	svc interfaces.Service[M],
 	logger interfaces.LoggerService,
 	authSvc interfaces.AuthService,
 	createRequestConstructor ResourceRequestConstructor[M],
 	updateRequestConstructor ResourceRequestConstructor[M],
 	opts ...ControllerOption[M],
-) interfaces.ResourceController[M] {
+) interfaces.Controller[M] {
 	ctrl := &Controller[M]{
 		additionalDetailRoutes: make([]Route, 0),
 

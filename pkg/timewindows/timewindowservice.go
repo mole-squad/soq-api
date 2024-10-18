@@ -20,16 +20,16 @@ type TimeWindowServiceResult struct {
 }
 
 type TimeWindowService struct {
-	*generics.ResourceService[*models.TimeWindow]
+	*generics.Service[*models.TimeWindow]
 }
 
 func NewTimeWindowService(params TimeWindowServiceParams) (TimeWindowServiceResult, error) {
-	embeddedSvc := generics.NewResourceService[*models.TimeWindow](
+	embeddedSvc := generics.NewService[*models.TimeWindow](
 		params.TimeWindowRepo,
-	).(*generics.ResourceService[*models.TimeWindow])
+	).(*generics.Service[*models.TimeWindow])
 
 	srv := &TimeWindowService{
-		ResourceService: embeddedSvc,
+		Service: embeddedSvc,
 	}
 
 	return TimeWindowServiceResult{TimeWindowService: srv}, nil

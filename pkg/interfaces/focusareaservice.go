@@ -5,5 +5,5 @@ import (
 )
 
 type FocusAreaService interface {
-	ResourceService[*models.FocusArea]
+	Service[*models.FocusArea]
 }

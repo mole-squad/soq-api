@@ -7,7 +7,7 @@ import (
 )
 
 type TaskService interface {
-	ResourceService[*models.Task]
+	Service[*models.Task]
 
 	ResolveTask(ctx context.Context, taskID uint) (*models.Task, error)
 	ListOpenUserTasksForFocusArea(ctx context.Context, userID uint, focusAreaID uint) ([]*models.Task, error)

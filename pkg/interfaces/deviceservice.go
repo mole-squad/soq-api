@@ -5,5 +5,5 @@ import (
 )
 
 type DeviceService interface {
-	ResourceService[*models.Device]
+	Service[*models.Device]
 }

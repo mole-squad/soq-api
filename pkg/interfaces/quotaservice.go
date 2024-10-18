@@ -5,5 +5,5 @@ import (
 )
 
 type QuotaService interface {
-	ResourceService[*models.Quota]
+	Service[*models.Quota]
 }

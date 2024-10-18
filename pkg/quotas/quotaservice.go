@@ -20,16 +20,16 @@ type QuotaServiceResult struct {
 }
 
 type QuotaService struct {
-	*generics.ResourceService[*models.Quota]
+	*generics.Service[*models.Quota]
 }
 
 func NewQuotaService(params QuotaServiceParams) (QuotaServiceResult, error) {
-	embeddedSvc := generics.NewResourceService[*models.Quota](
+	embeddedSvc := generics.NewService[*models.Quota](
 		params.QuotaRepo,
-	).(*generics.ResourceService[*models.Quota])
+	).(*generics.Service[*models.Quota])
 
 	srv := &QuotaService{
-		ResourceService: embeddedSvc,
+		Service: embeddedSvc,
 	}
 
 	return QuotaServiceResult{QuotaService: srv}, nil

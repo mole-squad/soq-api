@@ -23,20 +23,20 @@ type TaskServiceResult struct {
 }
 
 type TaskService struct {
-	*generics.ResourceService[*models.Task]
+	*generics.Service[*models.Task]
 
 	taskRepo interfaces.TaskRepo
 }
 
 func NewTaskService(params TaskServiceParams) (TaskServiceResult, error) {
-	embeddedSvc := generics.NewResourceService[*models.Task](
+	embeddedSvc := generics.NewService[*models.Task](
 		params.TaskRepo,
 		generics.WithListQuery[*models.Task]("status = ?", models.TaskStatusOpen),
-	).(*generics.ResourceService[*models.Task])
+	).(*generics.Service[*models.Task])
 
 	srv := &TaskService{
-		ResourceService: embeddedSvc,
-		taskRepo:        params.TaskRepo,
+		Service:  embeddedSvc,
+		taskRepo: params.TaskRepo,
 	}
 
 	return TaskServiceResult{TaskService: srv}, nil

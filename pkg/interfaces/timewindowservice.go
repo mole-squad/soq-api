@@ -5,5 +5,5 @@ import (
 )
 
 type TimeWindowService interface {
-	ResourceService[*models.TimeWindow]
+	Service[*models.TimeWindow]
 }

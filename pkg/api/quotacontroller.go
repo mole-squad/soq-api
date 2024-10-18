@@ -24,13 +24,13 @@ type QuotaControllerResult struct {
 }
 
 type QuotaController struct {
-	interfaces.ResourceController[*models.Quota]
+	interfaces.Controller[*models.Quota]
 }
 
 func NewQuotaController(params QuotaControllerParams) (QuotaControllerResult, error) {
 	ctrl := QuotaController{}
 
-	ctrl.ResourceController = generics.NewController[*models.Quota](
+	ctrl.Controller = generics.NewController[*models.Quota](
 		params.QuotaService,
 		params.Logger,
 		params.AuthService,
@@ -39,7 +39,7 @@ func NewQuotaController(params QuotaControllerParams) (QuotaControllerResult, er
 		generics.WithContextKey[*models.Quota](quotaContextKey),
 	).(*generics.Controller[*models.Quota])
 
-	params.Router.Mount("/quotas", ctrl.ResourceController.GetRouter())
+	params.Router.Mount("/quotas", ctrl.Controller.GetRouter())
 
 	return QuotaControllerResult{QuotaController: ctrl}, nil
 }

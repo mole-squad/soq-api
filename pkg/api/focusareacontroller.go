@@ -24,13 +24,13 @@ type FocusAreaControllerResult struct {
 }
 
 type FocusAreaController struct {
-	interfaces.ResourceController[*models.FocusArea]
+	interfaces.Controller[*models.FocusArea]
 }
 
 func NewFocusAreaController(params FocusAreaControllerParams) (FocusAreaControllerResult, error) {
 	ctrl := FocusAreaController{}
 
-	ctrl.ResourceController = generics.NewController[*models.FocusArea](
+	ctrl.Controller = generics.NewController[*models.FocusArea](
 		params.FocusAreaService,
 		params.LoggerService,
 		params.AuthService,
@@ -39,7 +39,7 @@ func NewFocusAreaController(params FocusAreaControllerParams) (FocusAreaControll
 		generics.WithContextKey[*models.FocusArea](focusAreaContextKey),
 	).(*generics.Controller[*models.FocusArea])
 
-	params.Router.Mount("/focusareas", ctrl.ResourceController.GetRouter())
+	params.Router.Mount("/focusareas", ctrl.Controller.GetRouter())
 
 	return FocusAreaControllerResult{FocusAreaController: ctrl}, nil
 }

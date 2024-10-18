@@ -24,13 +24,13 @@ type DeviceControllerResult struct {
 }
 
 type DeviceController struct {
-	interfaces.ResourceController[*models.Device]
+	interfaces.Controller[*models.Device]
 }
 
 func NewDeviceController(params DeviceControllerParams) (DeviceControllerResult, error) {
 	ctrl := DeviceController{}
 
-	ctrl.ResourceController = generics.NewController[*models.Device](
+	ctrl.Controller = generics.NewController[*models.Device](
 		params.DeviceService,
 		params.LoggerService,
 		params.AuthService,
@@ -39,7 +39,7 @@ func NewDeviceController(params DeviceControllerParams) (DeviceControllerResult,
 		generics.WithContextKey[*models.Device](deviceContextKey),
 	).(*generics.Controller[*models.Device])
 
-	params.Router.Mount("/devices", ctrl.ResourceController.GetRouter())
+	params.Router.Mount("/devices", ctrl.Controller.GetRouter())
 
 	return DeviceControllerResult{DeviceController: ctrl}, nil
 }
