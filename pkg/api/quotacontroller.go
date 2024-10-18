@@ -30,14 +30,14 @@ type QuotaController struct {
 func NewQuotaController(params QuotaControllerParams) (QuotaControllerResult, error) {
 	ctrl := QuotaController{}
 
-	ctrl.ResourceController = generics.NewResourceController[*models.Quota](
+	ctrl.ResourceController = generics.NewController[*models.Quota](
 		params.QuotaService,
 		params.Logger,
 		params.AuthService,
 		models.NewQuotaFromCreateRequest,
 		models.NewQuotaFromUpdateRequest,
 		generics.WithContextKey[*models.Quota](quotaContextKey),
-	).(*generics.ResourceController[*models.Quota])
+	).(*generics.Controller[*models.Quota])
 
 	params.Router.Mount("/quotas", ctrl.ResourceController.GetRouter())
 

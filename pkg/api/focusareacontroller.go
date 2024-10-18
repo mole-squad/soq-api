@@ -30,14 +30,14 @@ type FocusAreaController struct {
 func NewFocusAreaController(params FocusAreaControllerParams) (FocusAreaControllerResult, error) {
 	ctrl := FocusAreaController{}
 
-	ctrl.ResourceController = generics.NewResourceController[*models.FocusArea](
+	ctrl.ResourceController = generics.NewController[*models.FocusArea](
 		params.FocusAreaService,
 		params.LoggerService,
 		params.AuthService,
 		models.NewFocusAreaFromCreateRequest,
 		models.NewFocusAreaFromUpdateRequest,
 		generics.WithContextKey[*models.FocusArea](focusAreaContextKey),
-	).(*generics.ResourceController[*models.FocusArea])
+	).(*generics.Controller[*models.FocusArea])
 
 	params.Router.Mount("/focusareas", ctrl.ResourceController.GetRouter())
 

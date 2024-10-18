@@ -30,14 +30,14 @@ type TimeWindowController struct {
 func NewTimeWindowController(params TimeWindowControllerParams) (TimeWindowControllerResult, error) {
 	ctrl := TimeWindowController{}
 
-	ctrl.ResourceController = generics.NewResourceController[*models.TimeWindow](
+	ctrl.ResourceController = generics.NewController[*models.TimeWindow](
 		params.TimeWindowService,
 		params.LoggerService,
 		params.AuthService,
 		models.NewTimeWindowFromCreateRequest,
 		models.NewTimeWindowFromUpdateRequest,
 		generics.WithContextKey[*models.TimeWindow](timeWindowContextKey),
-	).(*generics.ResourceController[*models.TimeWindow])
+	).(*generics.Controller[*models.TimeWindow])
 
 	params.Router.Mount("/timewindows", ctrl.ResourceController.GetRouter())
 

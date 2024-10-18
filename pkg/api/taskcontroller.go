@@ -40,7 +40,7 @@ func NewTaskController(params TaskControllerParams) (TaskControllerResult, error
 		taskService: params.TaskService,
 	}
 
-	ctrl.ResourceController = generics.NewResourceController[*models.Task](
+	ctrl.ResourceController = generics.NewController[*models.Task](
 		params.TaskService,
 		params.LoggerService,
 		params.AuthService,
@@ -48,7 +48,7 @@ func NewTaskController(params TaskControllerParams) (TaskControllerResult, error
 		models.NewTaskFromUpdateRequest,
 		generics.WithContextKey[*models.Task](taskContextkey),
 		generics.WithDetailRoute[*models.Task]("PATCH", "/resolve", ctrl.ResolveTask),
-	).(*generics.ResourceController[*models.Task])
+	).(*generics.Controller[*models.Task])
 
 	params.Router.Mount("/tasks", ctrl.ResourceController.GetRouter())
 
