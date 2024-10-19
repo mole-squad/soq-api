@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/db"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
@@ -16,7 +17,7 @@ type AgendaRepoParams struct {
 	fx.In
 
 	DBService     interfaces.DBService
-	LoggerService interfaces.LoggerService
+	LoggerService mochi.LoggerService
 }
 
 type AgendaRepoResult struct {

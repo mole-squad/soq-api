@@ -2,7 +2,6 @@ package api
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/mole-squad/soq-api/pkg/generics"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -24,13 +23,13 @@ type DeviceControllerResult struct {
 }
 
 type DeviceController struct {
-	interfaces.Controller[*models.Device]
+	interfaces.ResourceController[*models.Device]
 }
 
 func NewDeviceController(params DeviceControllerParams) (DeviceControllerResult, error) {
 	ctrl := DeviceController{}
 
-	ctrl.Controller = generics.NewController[*models.Device](
+	ctrl.ResourceController = generics.NewController[*models.Device](
 		params.DeviceService,
 		params.LoggerService,
 		params.AuthService,
@@ -39,7 +38,7 @@ func NewDeviceController(params DeviceControllerParams) (DeviceControllerResult,
 		generics.WithContextKey[*models.Device](deviceContextKey),
 	).(*generics.Controller[*models.Device])
 
-	params.Router.Mount("/devices", ctrl.Controller.GetRouter())
+	params.Router.Mount("/devices", ctrl.ResourceController.GetRouter())
 
 	return DeviceControllerResult{DeviceController: ctrl}, nil
 }

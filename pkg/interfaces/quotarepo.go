@@ -5,5 +5,5 @@ import (
 )
 
 type QuotaRepo interface {
-	Repository[*models.Quota]
+	ResourceRepository[*models.Quota]
 }

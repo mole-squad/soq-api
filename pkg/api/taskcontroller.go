@@ -28,7 +28,7 @@ type TaskControllerResult struct {
 }
 
 type TaskController struct {
-	interfaces.Controller[*models.Task]
+	interfaces.ResourceController[*models.Task]
 
 	logger      interfaces.LoggerService
 	taskService interfaces.TaskService
@@ -40,7 +40,7 @@ func NewTaskController(params TaskControllerParams) (TaskControllerResult, error
 		taskService: params.TaskService,
 	}
 
-	ctrl.Controller = generics.NewController[*models.Task](
+	ctrl.ResourceController = generics.NewController[*models.Task](
 		params.TaskService,
 		params.LoggerService,
 		params.AuthService,
@@ -50,7 +50,7 @@ func NewTaskController(params TaskControllerParams) (TaskControllerResult, error
 		generics.WithDetailRoute[*models.Task]("PATCH", "/resolve", ctrl.ResolveTask),
 	).(*generics.Controller[*models.Task])
 
-	params.Router.Mount("/tasks", ctrl.Controller.GetRouter())
+	params.Router.Mount("/tasks", ctrl.ResourceController.GetRouter())
 
 	return TaskControllerResult{TaskController: ctrl}, nil
 }

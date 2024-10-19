@@ -1,9 +1,11 @@
 package api
 
-import "github.com/mole-squad/soq-api/pkg/generics"
+import (
+	"github.com/burkel24/go-mochi"
+)
 
 const (
-	taskContextkey generics.ResourceContextKey = iota
+	taskContextkey mochi.ResourceContextKey = iota
 	deviceContextKey
 	focusAreaContextKey
 	quotaContextKey

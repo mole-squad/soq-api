@@ -5,5 +5,5 @@ import (
 )
 
 type FocusAreaRepo interface {
-	Repository[*models.FocusArea]
+	ResourceRepository[*models.FocusArea]
 }
