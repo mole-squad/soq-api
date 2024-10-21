@@ -1,12 +1,13 @@
 package api
 
 import (
+	"github.com/burkel24/go-mochi"
+
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/mole-squad/soq-api/pkg/common"
-	"github.com/mole-squad/soq-api/pkg/generics"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -15,8 +16,8 @@ import (
 type TaskControllerParams struct {
 	fx.In
 
-	AuthService   interfaces.AuthService
-	LoggerService interfaces.LoggerService
+	AuthService   mochi.AuthService
+	LoggerService mochi.LoggerService
 	TaskService   interfaces.TaskService
 	Router        *chi.Mux
 }
@@ -28,9 +29,9 @@ type TaskControllerResult struct {
 }
 
 type TaskController struct {
-	interfaces.ResourceController[*models.Task]
+	mochi.Controller[*models.Task]
 
-	logger      interfaces.LoggerService
+	logger      mochi.LoggerService
 	taskService interfaces.TaskService
 }
 
@@ -40,17 +41,17 @@ func NewTaskController(params TaskControllerParams) (TaskControllerResult, error
 		taskService: params.TaskService,
 	}
 
-	ctrl.ResourceController = generics.NewController[*models.Task](
+	ctrl.Controller = mochi.NewController(
 		params.TaskService,
 		params.LoggerService,
 		params.AuthService,
 		models.NewTaskFromCreateRequest,
 		models.NewTaskFromUpdateRequest,
-		generics.WithContextKey[*models.Task](taskContextkey),
-		generics.WithDetailRoute[*models.Task]("PATCH", "/resolve", ctrl.ResolveTask),
-	).(*generics.Controller[*models.Task])
+		mochi.WithContextKey[*models.Task](taskContextkey),
+		mochi.WithDetailRoute[*models.Task]("PATCH", "/resolve", ctrl.ResolveTask),
+	)
 
-	params.Router.Mount("/tasks", ctrl.ResourceController.GetRouter())
+	params.Router.Mount("/tasks", ctrl.Controller.GetRouter())
 
 	return TaskControllerResult{TaskController: ctrl}, nil
 }

@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mole-squad/soq-api/pkg/generics"
+	"github.com/burkel24/go-mochi"
+
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -23,16 +24,16 @@ type TaskServiceResult struct {
 }
 
 type TaskService struct {
-	*generics.Service[*models.Task]
+	mochi.Service[*models.Task]
 
 	taskRepo interfaces.TaskRepo
 }
 
 func NewTaskService(params TaskServiceParams) (TaskServiceResult, error) {
-	embeddedSvc := generics.NewService[*models.Task](
+	embeddedSvc := mochi.NewService(
 		params.TaskRepo,
-		generics.WithListQuery[*models.Task]("status = ?", models.TaskStatusOpen),
-	).(*generics.Service[*models.Task])
+		mochi.WithListQuery[*models.Task]("status = ?", models.TaskStatusOpen),
+	)
 
 	srv := &TaskService{
 		Service:  embeddedSvc,

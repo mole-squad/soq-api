@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/burkel24/go-mochi"
+
 	"github.com/mole-squad/soq-api/pkg/db"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
@@ -27,43 +28,28 @@ type AgendaRepoResult struct {
 }
 
 type AgendaRepo struct {
+	mochi.Repository[*models.Agenda]
+
 	dbService interfaces.DBService
-	logger    interfaces.LoggerService
+	logger    mochi.LoggerService
 }
 
 func NewAgendaRepo(params AgendaRepoParams) (AgendaRepoResult, error) {
+	embeddedRepo := mochi.NewRepository(
+		params.DBService,
+		params.LoggerService,
+		mochi.WithTableName[*models.Agenda]("agendas"),
+	)
+
 	repo := &AgendaRepo{
-		dbService: params.DBService,
-		logger:    params.LoggerService,
+		Repository: embeddedRepo,
 	}
 
 	return AgendaRepoResult{AgendaRepo: repo}, nil
 }
 
-func (repo *AgendaRepo) CreateOne(ctx context.Context, agenda *models.Agenda) error {
-	err := repo.dbService.CreateOne(ctx, agenda)
-	if err != nil {
-		return fmt.Errorf("failed to create one agenda: %w", err)
-	}
-
-	repo.logger.Debug("Created one agenda", "agenda", agenda)
-
-	return nil
-}
-
-func (repo *AgendaRepo) UpdateOne(ctx context.Context, agenda *models.Agenda) error {
-	err := repo.dbService.DEPUpdateOne(ctx, agenda)
-	if err != nil {
-		return fmt.Errorf("failed to update one agenda: %w", err)
-	}
-
-	repo.logger.Debug("Updated one agenda", "agenda", agenda)
-
-	return nil
-}
-
-func (repo *AgendaRepo) FindManyByUser(ctx context.Context, userID uint) ([]models.Agenda, error) {
-	var agendas []models.Agenda
+func (repo *AgendaRepo) FindManyByUser(ctx context.Context, userID uint, query string, args ...interface{}) ([]*models.Agenda, error) {
+	var agendas []*models.Agenda
 
 	err := repo.dbService.FindMany(ctx, &agendas, []string{"FocusArea"}, []string{}, "agendas.user_id = ?", userID)
 	if err != nil {

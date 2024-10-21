@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -13,7 +14,7 @@ type UserRepoParams struct {
 	fx.In
 
 	DBService     interfaces.DBService
-	LoggerService interfaces.LoggerService
+	LoggerService mochi.LoggerService
 }
 
 type UserRepoResult struct {
@@ -24,7 +25,7 @@ type UserRepoResult struct {
 
 type UserRepo struct {
 	dbService interfaces.DBService
-	logger    interfaces.LoggerService
+	logger    mochi.LoggerService
 }
 
 func NewUserRepo(params UserRepoParams) (UserRepoResult, error) {

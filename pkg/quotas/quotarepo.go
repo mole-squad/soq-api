@@ -1,7 +1,7 @@
 package quotas
 
 import (
-	"github.com/mole-squad/soq-api/pkg/generics"
+	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -11,7 +11,7 @@ type QuotaRepoParams struct {
 	fx.In
 
 	DBService     interfaces.DBService
-	LoggerService interfaces.LoggerService
+	LoggerService mochi.LoggerService
 }
 
 type QuotaRepoResult struct {
@@ -21,16 +21,16 @@ type QuotaRepoResult struct {
 }
 
 type QuotaRepo struct {
-	*generics.Repository[*models.Quota]
+	mochi.Repository[*models.Quota]
 }
 
 func NewQuotaRepo(params QuotaRepoParams) (QuotaRepoResult, error) {
-	embeddedRepo := generics.NewRepository[*models.Quota](
+	embeddedRepo := mochi.NewRepository(
 		params.DBService,
 		params.LoggerService,
-		generics.WithTableName[*models.Quota]("quotas"),
-		generics.WithJoinTables[*models.Quota]("FocusArea"),
-	).(*generics.Repository[*models.Quota])
+		mochi.WithTableName[*models.Quota]("quotas"),
+		mochi.WithJoinTables[*models.Quota]("FocusArea"),
+	)
 
 	repo := &QuotaRepo{
 		Repository: embeddedRepo,

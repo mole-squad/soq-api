@@ -3,6 +3,7 @@ package models
 import (
 	"net/http"
 
+	"github.com/burkel24/go-mochi"
 	"github.com/go-chi/render"
 	"github.com/mole-squad/soq-api/api"
 	"gorm.io/gorm"
@@ -22,14 +23,6 @@ func (d *Device) GetID() uint {
 	return d.ID
 }
 
-func (d *Device) GetUserID() uint {
-	return d.UserID
-}
-
-func (d *Device) SetUserID(userID uint) {
-	d.UserID = userID
-}
-
 func (d *Device) ToDTO() render.Renderer {
 	return &api.DeviceDTO{
 		ID:       d.ID,
@@ -38,7 +31,7 @@ func (d *Device) ToDTO() render.Renderer {
 	}
 }
 
-func NewDeviceFromCreateRequest(r *http.Request) (*Device, error) {
+func NewDeviceFromCreateRequest(r *http.Request, user mochi.User) (*Device, error) {
 	device := &Device{}
 
 	dto := &api.CreateDeviceRequestDTO{}
@@ -52,7 +45,7 @@ func NewDeviceFromCreateRequest(r *http.Request) (*Device, error) {
 	return device, nil
 }
 
-func NewDeviceFromUpdateRequest(r *http.Request) (*Device, error) {
+func NewDeviceFromUpdateRequest(r *http.Request, user mochi.User) (*Device, error) {
 	device := &Device{}
 
 	dto := &api.UpdateDeviceRequestDTO{}

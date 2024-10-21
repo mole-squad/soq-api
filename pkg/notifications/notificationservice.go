@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/burkel24/go-mochi"
 	"github.com/gregdel/pushover"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
@@ -16,7 +17,7 @@ type NotificationServiceParams struct {
 	fx.In
 
 	DeviceService interfaces.DeviceService
-	LoggerService interfaces.LoggerService
+	LoggerService mochi.LoggerService
 }
 
 type NotificationServiceResult struct {
@@ -28,7 +29,7 @@ type NotificationServiceResult struct {
 type NotificationService struct {
 	client               *pushover.Pushover
 	deviceService        interfaces.DeviceService
-	logger               interfaces.LoggerService
+	logger               mochi.LoggerService
 	notificationsEnabled bool
 }
 

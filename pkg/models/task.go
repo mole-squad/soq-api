@@ -3,6 +3,7 @@ package models
 import (
 	"net/http"
 
+	"github.com/burkel24/go-mochi"
 	"github.com/go-chi/render"
 	"github.com/mole-squad/soq-api/api"
 	"gorm.io/gorm"
@@ -32,14 +33,6 @@ func (t *Task) GetID() uint {
 	return t.ID
 }
 
-func (t *Task) GetUserID() uint {
-	return t.UserID
-}
-
-func (t *Task) SetUserID(userID uint) {
-	t.UserID = userID
-}
-
 func (t *Task) ToDTO() render.Renderer {
 	focusArea := t.FocusArea.ToDTO().(*api.FocusAreaDTO)
 
@@ -54,7 +47,7 @@ func (t *Task) ToDTO() render.Renderer {
 	return dto
 }
 
-func NewTaskFromCreateRequest(r *http.Request) (*Task, error) {
+func NewTaskFromCreateRequest(r *http.Request, user mochi.User) (*Task, error) {
 	task := &Task{}
 
 	dto := &api.CreateTaskRequestDTO{}
@@ -69,7 +62,7 @@ func NewTaskFromCreateRequest(r *http.Request) (*Task, error) {
 	return task, nil
 }
 
-func NewTaskFromUpdateRequest(r *http.Request) (*Task, error) {
+func NewTaskFromUpdateRequest(r *http.Request, user mochi.User) (*Task, error) {
 	task := &Task{}
 
 	dto := &api.UpdateTaskRequestDTO{}

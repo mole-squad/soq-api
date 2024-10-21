@@ -1,7 +1,7 @@
 package focusareas
 
 import (
-	"github.com/mole-squad/soq-api/pkg/generics"
+	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -11,7 +11,7 @@ type FocusAreaRepoParams struct {
 	fx.In
 
 	DBService     interfaces.DBService
-	LoggerService interfaces.LoggerService
+	LoggerService mochi.LoggerService
 }
 
 type FocusAreaRepoResult struct {
@@ -21,16 +21,11 @@ type FocusAreaRepoResult struct {
 }
 
 type FocusAreaRepo struct {
-	*generics.Repository[*models.FocusArea]
+	mochi.Repository[*models.FocusArea]
 }
 
 func NewFocusAreaRepo(params FocusAreaRepoParams) (FocusAreaRepoResult, error) {
-	embeddedRepo := generics.NewRepository[*models.FocusArea](
-		params.DBService,
-		params.LoggerService,
-		generics.WithTableName[*models.FocusArea]("focus_areas"),
-		generics.WithPreloadTables[*models.FocusArea]("TimeWindows"),
-	).(*generics.Repository[*models.FocusArea])
+	embeddedRepo := mochi.NewRepository(params.DBService, params.LoggerService, mochi.WithTableName[*models.FocusArea]("focus_areas"), mochi.WithPreloadTables[*models.FocusArea]("TimeWindows"))
 
 	repo := &FocusAreaRepo{
 		Repository: embeddedRepo,

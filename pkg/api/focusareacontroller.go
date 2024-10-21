@@ -1,8 +1,9 @@
 package api
 
 import (
+	"github.com/burkel24/go-mochi"
+
 	"github.com/go-chi/chi/v5"
-	"github.com/mole-squad/soq-api/pkg/generics"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -11,9 +12,9 @@ import (
 type FocusAreaControllerParams struct {
 	fx.In
 
-	AuthService      interfaces.AuthService
+	AuthService      mochi.AuthService
 	FocusAreaService interfaces.FocusAreaService
-	LoggerService    interfaces.LoggerService
+	LoggerService    mochi.LoggerService
 	Router           *chi.Mux
 }
 
@@ -24,22 +25,22 @@ type FocusAreaControllerResult struct {
 }
 
 type FocusAreaController struct {
-	interfaces.ResourceController[*models.FocusArea]
+	mochi.Controller[*models.FocusArea]
 }
 
 func NewFocusAreaController(params FocusAreaControllerParams) (FocusAreaControllerResult, error) {
 	ctrl := FocusAreaController{}
 
-	ctrl.ResourceController = generics.NewController[*models.FocusArea](
+	ctrl.Controller = mochi.NewController(
 		params.FocusAreaService,
 		params.LoggerService,
 		params.AuthService,
 		models.NewFocusAreaFromCreateRequest,
 		models.NewFocusAreaFromUpdateRequest,
-		generics.WithContextKey[*models.FocusArea](focusAreaContextKey),
-	).(*generics.Controller[*models.FocusArea])
+		mochi.WithContextKey[*models.FocusArea](focusAreaContextKey),
+	)
 
-	params.Router.Mount("/focusareas", ctrl.ResourceController.GetRouter())
+	params.Router.Mount("/focusareas", ctrl.Controller.GetRouter())
 
 	return FocusAreaControllerResult{FocusAreaController: ctrl}, nil
 }

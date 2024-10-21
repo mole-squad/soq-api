@@ -1,6 +1,8 @@
 package api
 
 import (
+	"github.com/burkel24/go-mochi"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
@@ -10,9 +12,9 @@ import (
 type DeviceControllerParams struct {
 	fx.In
 
-	AuthService   interfaces.AuthService
+	AuthService   mochi.AuthService
 	DeviceService interfaces.DeviceService
-	LoggerService interfaces.LoggerService
+	LoggerService mochi.LoggerService
 	Router        *chi.Mux
 }
 
@@ -23,22 +25,22 @@ type DeviceControllerResult struct {
 }
 
 type DeviceController struct {
-	interfaces.ResourceController[*models.Device]
+	mochi.Controller[*models.Device]
 }
 
 func NewDeviceController(params DeviceControllerParams) (DeviceControllerResult, error) {
 	ctrl := DeviceController{}
 
-	ctrl.ResourceController = generics.NewController[*models.Device](
+	ctrl.Controller = mochi.NewController(
 		params.DeviceService,
 		params.LoggerService,
 		params.AuthService,
 		models.NewDeviceFromCreateRequest,
 		models.NewDeviceFromUpdateRequest,
-		generics.WithContextKey[*models.Device](deviceContextKey),
-	).(*generics.Controller[*models.Device])
+		mochi.WithContextKey[*models.Device](deviceContextKey),
+	)
 
-	params.Router.Mount("/devices", ctrl.ResourceController.GetRouter())
+	params.Router.Mount("/devices", ctrl.Controller.GetRouter())
 
 	return DeviceControllerResult{DeviceController: ctrl}, nil
 }

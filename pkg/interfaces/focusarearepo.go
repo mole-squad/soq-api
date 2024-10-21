@@ -1,9 +1,10 @@
 package interfaces
 
 import (
+	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/models"
 )
 
 type FocusAreaRepo interface {
-	ResourceRepository[*models.FocusArea]
+	mochi.Repository[*models.FocusArea]
 }
