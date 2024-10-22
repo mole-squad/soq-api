@@ -1,7 +1,7 @@
 package notifications
 
 import (
-	"github.com/mole-squad/soq-api/pkg/generics"
+	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -20,16 +20,16 @@ type DeviceServiceResult struct {
 }
 
 type DeviceService struct {
-	*generics.ResourceService[*models.Device]
+	mochi.Service[*models.Device]
 }
 
 func NewDeviceService(params DeviceServiceParams) DeviceServiceResult {
-	embeddedSvc := generics.NewResourceService[*models.Device](
+	embeddedSvc := mochi.NewService(
 		params.DeviceRepo,
-	).(*generics.ResourceService[*models.Device])
+	)
 
 	srv := &DeviceService{
-		ResourceService: embeddedSvc,
+		Service: embeddedSvc,
 	}
 
 	return DeviceServiceResult{DeviceService: srv}

@@ -3,6 +3,7 @@ package models
 import (
 	"net/http"
 
+	"github.com/burkel24/go-mochi"
 	"github.com/go-chi/render"
 	"github.com/mole-squad/soq-api/api"
 	"gorm.io/gorm"
@@ -23,14 +24,6 @@ func (f *FocusArea) GetID() uint {
 	return f.ID
 }
 
-func (f *FocusArea) GetUserID() uint {
-	return f.UserID
-}
-
-func (f *FocusArea) SetUserID(userID uint) {
-	f.UserID = userID
-}
-
 func (f *FocusArea) ToDTO() render.Renderer {
 	timeWindows := make([]api.TimeWindowDTO, len(f.TimeWindows))
 	for i, timeWindow := range f.TimeWindows {
@@ -46,7 +39,7 @@ func (f *FocusArea) ToDTO() render.Renderer {
 	return dto
 }
 
-func NewFocusAreaFromCreateRequest(r *http.Request) (*FocusArea, error) {
+func NewFocusAreaFromCreateRequest(r *http.Request, user mochi.User) (*FocusArea, error) {
 	focusArea := &FocusArea{}
 
 	dto := &api.CreateFocusAreaRequestDTO{}
@@ -59,7 +52,7 @@ func NewFocusAreaFromCreateRequest(r *http.Request) (*FocusArea, error) {
 	return focusArea, nil
 }
 
-func NewFocusAreaFromUpdateRequest(r *http.Request) (*FocusArea, error) {
+func NewFocusAreaFromUpdateRequest(r *http.Request, user mochi.User) (*FocusArea, error) {
 	focusArea := &FocusArea{}
 
 	dto := &api.UpdateFocusAreaRequestDTO{}

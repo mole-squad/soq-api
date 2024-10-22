@@ -1,8 +1,9 @@
 package api
 
 import (
+	"github.com/burkel24/go-mochi"
+
 	"github.com/go-chi/chi/v5"
-	"github.com/mole-squad/soq-api/pkg/generics"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -11,8 +12,8 @@ import (
 type QuotaControllerParams struct {
 	fx.In
 
-	AuthService  interfaces.AuthService
-	Logger       interfaces.LoggerService
+	AuthService  mochi.AuthService
+	Logger       mochi.LoggerService
 	QuotaService interfaces.QuotaService
 	Router       *chi.Mux
 }
@@ -24,22 +25,22 @@ type QuotaControllerResult struct {
 }
 
 type QuotaController struct {
-	interfaces.ResourceController[*models.Quota]
+	mochi.Controller[*models.Quota]
 }
 
 func NewQuotaController(params QuotaControllerParams) (QuotaControllerResult, error) {
 	ctrl := QuotaController{}
 
-	ctrl.ResourceController = generics.NewResourceController[*models.Quota](
+	ctrl.Controller = mochi.NewController(
 		params.QuotaService,
 		params.Logger,
 		params.AuthService,
 		models.NewQuotaFromCreateRequest,
 		models.NewQuotaFromUpdateRequest,
-		generics.WithContextKey[*models.Quota](quotaContextKey),
-	).(*generics.ResourceController[*models.Quota])
+		mochi.WithContextKey[*models.Quota](quotaContextKey),
+	)
 
-	params.Router.Mount("/quotas", ctrl.ResourceController.GetRouter())
+	params.Router.Mount("/quotas", ctrl.Controller.GetRouter())
 
 	return QuotaControllerResult{QuotaController: ctrl}, nil
 }

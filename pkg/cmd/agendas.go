@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 
+	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/app"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/spf13/cobra"
@@ -24,7 +25,7 @@ type GenerateAgendasParams struct {
 	fx.In
 
 	AgendaService interfaces.AgendaService
-	Logger        interfaces.LoggerService
+	Logger        mochi.LoggerService
 }
 
 func GenerateAndSendAgendas(params GenerateAgendasParams) error {

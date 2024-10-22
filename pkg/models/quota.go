@@ -3,6 +3,7 @@ package models
 import (
 	"net/http"
 
+	"github.com/burkel24/go-mochi"
 	"github.com/go-chi/render"
 	"github.com/mole-squad/soq-api/api"
 	"gorm.io/gorm"
@@ -37,14 +38,6 @@ func (q *Quota) GetID() uint {
 	return q.ID
 }
 
-func (q *Quota) GetUserID() uint {
-	return q.UserID
-}
-
-func (q *Quota) SetUserID(userID uint) {
-	q.UserID = userID
-}
-
 func (q *Quota) ToDTO() render.Renderer {
 	focusArea := q.FocusArea.ToDTO().(*api.FocusAreaDTO)
 
@@ -57,7 +50,7 @@ func (q *Quota) ToDTO() render.Renderer {
 	return dto
 }
 
-func NewQuotaFromCreateRequest(r *http.Request) (*Quota, error) {
+func NewQuotaFromCreateRequest(r *http.Request, user mochi.User) (*Quota, error) {
 	quota := &Quota{}
 
 	dto := &api.CreateQuotaRequestDTO{}
@@ -73,7 +66,7 @@ func NewQuotaFromCreateRequest(r *http.Request) (*Quota, error) {
 	return quota, nil
 }
 
-func NewQuotaFromUpdateRequest(r *http.Request) (*Quota, error) {
+func NewQuotaFromUpdateRequest(r *http.Request, user mochi.User) (*Quota, error) {
 	quota := &Quota{}
 
 	dto := &api.UpdateQuotaRequestDTO{}

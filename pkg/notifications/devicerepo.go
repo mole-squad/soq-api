@@ -1,7 +1,7 @@
 package notifications
 
 import (
-	"github.com/mole-squad/soq-api/pkg/generics"
+	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -11,7 +11,7 @@ type DeviceRepoParams struct {
 	fx.In
 
 	DBService     interfaces.DBService
-	LoggerService interfaces.LoggerService
+	LoggerService mochi.LoggerService
 }
 
 type DeviceRepoResult struct {
@@ -21,21 +21,21 @@ type DeviceRepoResult struct {
 }
 
 type DeviceRepo struct {
-	*generics.ResourceRepository[*models.Device]
+	mochi.Repository[*models.Device]
 
 	dbService interfaces.DBService
-	logger    interfaces.LoggerService
+	logger    mochi.LoggerService
 }
 
 func NewDeviceRepo(params DeviceRepoParams) DeviceRepoResult {
-	embeddedRepo := generics.NewResourceRepository[*models.Device](
+	embeddedRepo := mochi.NewRepository(
 		params.DBService,
 		params.LoggerService,
-		generics.WithTableName[*models.Device]("devices"),
-	).(*generics.ResourceRepository[*models.Device])
+		mochi.WithTableName[*models.Device]("devices"),
+	)
 
 	repo := &DeviceRepo{
-		ResourceRepository: embeddedRepo,
+		Repository: embeddedRepo,
 	}
 
 	return DeviceRepoResult{DeviceRepo: repo}

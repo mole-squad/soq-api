@@ -1,7 +1,7 @@
 package focusareas
 
 import (
-	"github.com/mole-squad/soq-api/pkg/generics"
+	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -20,16 +20,16 @@ type FocusAreaServiceResult struct {
 }
 
 type FocusAreaService struct {
-	*generics.ResourceService[*models.FocusArea]
+	mochi.Service[*models.FocusArea]
 }
 
 func NewFocusAreaService(params FocusAreaServiceParams) (FocusAreaServiceResult, error) {
-	embeddedSvc := generics.NewResourceService[*models.FocusArea](
+	embeddedSvc := mochi.NewService(
 		params.FocusAreaRepo,
-	).(*generics.ResourceService[*models.FocusArea])
+	)
 
 	srv := &FocusAreaService{
-		ResourceService: embeddedSvc,
+		Service: embeddedSvc,
 	}
 
 	return FocusAreaServiceResult{FocusAreaService: srv}, nil

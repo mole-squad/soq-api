@@ -1,7 +1,7 @@
 package tasks
 
 import (
-	"github.com/mole-squad/soq-api/pkg/generics"
+	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -11,7 +11,7 @@ type TaskRepoParams struct {
 	fx.In
 
 	DBService     interfaces.DBService
-	LoggerService interfaces.LoggerService
+	LoggerService mochi.LoggerService
 }
 
 type TaskRepoResult struct {
@@ -21,24 +21,24 @@ type TaskRepoResult struct {
 }
 
 type TaskRepo struct {
-	*generics.ResourceRepository[*models.Task]
+	mochi.Repository[*models.Task]
 
 	dbService interfaces.DBService
-	logger    interfaces.LoggerService
+	logger    mochi.LoggerService
 }
 
 func NewTaskRepo(params TaskRepoParams) (TaskRepoResult, error) {
-	embeddedRepo := generics.NewResourceRepository[*models.Task](
+	embeddedRepo := mochi.NewRepository(
 		params.DBService,
 		params.LoggerService,
-		generics.WithTableName[*models.Task]("tasks"),
-		generics.WithJoinTables[*models.Task]("FocusArea"),
-	).(*generics.ResourceRepository[*models.Task])
+		mochi.WithTableName[*models.Task]("tasks"),
+		mochi.WithJoinTables[*models.Task]("FocusArea"),
+	)
 
 	repo := &TaskRepo{
-		ResourceRepository: embeddedRepo,
-		dbService:          params.DBService,
-		logger:             params.LoggerService,
+		Repository: embeddedRepo,
+		dbService:  params.DBService,
+		logger:     params.LoggerService,
 	}
 
 	return TaskRepoResult{TaskRepo: repo}, nil

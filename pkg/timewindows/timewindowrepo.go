@@ -1,7 +1,7 @@
 package timewindows
 
 import (
-	"github.com/mole-squad/soq-api/pkg/generics"
+	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -11,7 +11,7 @@ type TimeWindowRepoParams struct {
 	fx.In
 
 	DBService     interfaces.DBService
-	LoggerService interfaces.LoggerService
+	LoggerService mochi.LoggerService
 }
 
 type TimeWindowRepoResult struct {
@@ -21,18 +21,18 @@ type TimeWindowRepoResult struct {
 }
 
 type TimeWindowRepo struct {
-	*generics.ResourceRepository[*models.TimeWindow]
+	mochi.Repository[*models.TimeWindow]
 }
 
 func NewTimeWindowRepo(params TimeWindowRepoParams) (TimeWindowRepoResult, error) {
-	embeddedRepo := generics.NewResourceRepository[*models.TimeWindow](
+	embeddedRepo := mochi.NewRepository(
 		params.DBService,
 		params.LoggerService,
-		generics.WithTableName[*models.TimeWindow]("time_windows"),
-	).(*generics.ResourceRepository[*models.TimeWindow])
+		mochi.WithTableName[*models.TimeWindow]("time_windows"),
+	)
 
 	repo := &TimeWindowRepo{
-		ResourceRepository: embeddedRepo,
+		Repository: embeddedRepo,
 	}
 
 	return TimeWindowRepoResult{TimeWindowRepo: repo}, nil

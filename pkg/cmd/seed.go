@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/app"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
@@ -32,7 +33,7 @@ type SeederParams struct {
 	fx.In
 
 	DbService interfaces.DBService
-	Logger    interfaces.LoggerService
+	Logger    mochi.LoggerService
 	interfaces.UserService
 }
 

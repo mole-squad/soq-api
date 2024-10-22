@@ -1,7 +1,7 @@
 package timewindows
 
 import (
-	"github.com/mole-squad/soq-api/pkg/generics"
+	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -20,16 +20,16 @@ type TimeWindowServiceResult struct {
 }
 
 type TimeWindowService struct {
-	*generics.ResourceService[*models.TimeWindow]
+	mochi.Service[*models.TimeWindow]
 }
 
 func NewTimeWindowService(params TimeWindowServiceParams) (TimeWindowServiceResult, error) {
-	embeddedSvc := generics.NewResourceService[*models.TimeWindow](
+	embeddedSvc := mochi.NewService(
 		params.TimeWindowRepo,
-	).(*generics.ResourceService[*models.TimeWindow])
+	)
 
 	srv := &TimeWindowService{
-		ResourceService: embeddedSvc,
+		Service: embeddedSvc,
 	}
 
 	return TimeWindowServiceResult{TimeWindowService: srv}, nil

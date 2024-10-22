@@ -4,13 +4,13 @@ import (
 	"context"
 	"time"
 
+	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/models"
 )
 
 type AgendaRepo interface {
-	CreateOne(ctx context.Context, agenda *models.Agenda) error
-	UpdateOne(ctx context.Context, agenda *models.Agenda) error
-	FindManyByUser(ctx context.Context, userID uint) ([]models.Agenda, error)
+	mochi.Repository[*models.Agenda]
+
 	FindManyByStatus(ctx context.Context, status models.AgendaStatus) ([]models.Agenda, error)
 	FindOneByTimeRangeFocusArea(
 		ctx context.Context,

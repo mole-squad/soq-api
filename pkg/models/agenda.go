@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-chi/render"
 	"gorm.io/gorm"
 )
 
@@ -33,6 +34,10 @@ type Agenda struct {
 	User   User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
+func (a *Agenda) GetID() uint {
+	return a.ID
+}
+
 func (a *Agenda) GetTitle() string {
 	return fmt.Sprintf(
 		"%s Agenda %s",
@@ -51,4 +56,8 @@ func (a *Agenda) GetBody() string {
 	}
 
 	return builder.String()
+}
+
+func (a *Agenda) ToDTO() render.Renderer {
+	return nil
 }

@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/burkel24/go-mochi"
 	"github.com/go-chi/chi/v5"
-	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"go.uber.org/fx"
 )
 
-func NewServer(lc fx.Lifecycle, router *chi.Mux, logger interfaces.LoggerService) *http.Server {
+func NewServer(lc fx.Lifecycle, router *chi.Mux, logger mochi.LoggerService) *http.Server {
 	portStr := os.Getenv("PORT")
 	port := fmt.Sprintf(":%s", portStr)
 

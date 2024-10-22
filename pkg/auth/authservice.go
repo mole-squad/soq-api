@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/burkel24/go-mochi"
 	"github.com/go-chi/render"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/mole-squad/soq-api/pkg/common"
@@ -27,7 +28,7 @@ const (
 type AuthServiceParams struct {
 	fx.In
 
-	Logger      interfaces.LoggerService
+	Logger      mochi.LoggerService
 	UserService interfaces.UserService
 }
 
@@ -38,7 +39,7 @@ type AuthServiceResult struct {
 }
 
 type AuthService struct {
-	logger        interfaces.LoggerService
+	logger        mochi.LoggerService
 	signingSecret string
 	userService   interfaces.UserService
 }

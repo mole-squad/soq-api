@@ -1,7 +1,7 @@
 package quotas
 
 import (
-	"github.com/mole-squad/soq-api/pkg/generics"
+	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -20,16 +20,16 @@ type QuotaServiceResult struct {
 }
 
 type QuotaService struct {
-	*generics.ResourceService[*models.Quota]
+	mochi.Service[*models.Quota]
 }
 
 func NewQuotaService(params QuotaServiceParams) (QuotaServiceResult, error) {
-	embeddedSvc := generics.NewResourceService[*models.Quota](
+	embeddedSvc := mochi.NewService(
 		params.QuotaRepo,
-	).(*generics.ResourceService[*models.Quota])
+	)
 
 	srv := &QuotaService{
-		ResourceService: embeddedSvc,
+		Service: embeddedSvc,
 	}
 
 	return QuotaServiceResult{QuotaService: srv}, nil

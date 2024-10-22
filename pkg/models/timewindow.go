@@ -3,6 +3,7 @@ package models
 import (
 	"net/http"
 
+	"github.com/burkel24/go-mochi"
 	"github.com/go-chi/render"
 	"github.com/lib/pq"
 	"github.com/mole-squad/soq-api/api"
@@ -28,14 +29,6 @@ func (t *TimeWindow) GetID() uint {
 	return t.ID
 }
 
-func (t *TimeWindow) GetUserID() uint {
-	return t.UserID
-}
-
-func (t *TimeWindow) SetUserID(userID uint) {
-	t.UserID = userID
-}
-
 func (t *TimeWindow) ToDTO() render.Renderer {
 	dto := &api.TimeWindowDTO{
 		ID:        t.ID,
@@ -47,7 +40,7 @@ func (t *TimeWindow) ToDTO() render.Renderer {
 	return dto
 }
 
-func NewTimeWindowFromCreateRequest(r *http.Request) (*TimeWindow, error) {
+func NewTimeWindowFromCreateRequest(r *http.Request, user mochi.User) (*TimeWindow, error) {
 	timeWindow := &TimeWindow{}
 
 	dto := &api.CreateTimeWindowRequestDTO{}
@@ -63,7 +56,7 @@ func NewTimeWindowFromCreateRequest(r *http.Request) (*TimeWindow, error) {
 	return timeWindow, nil
 }
 
-func NewTimeWindowFromUpdateRequest(r *http.Request) (*TimeWindow, error) {
+func NewTimeWindowFromUpdateRequest(r *http.Request, user mochi.User) (*TimeWindow, error) {
 	timeWindow := &TimeWindow{}
 
 	dto := &api.UpdateTimeWindowRequestDTO{}

@@ -1,8 +1,9 @@
 package api
 
 import (
+	"github.com/burkel24/go-mochi"
+
 	"github.com/go-chi/chi/v5"
-	"github.com/mole-squad/soq-api/pkg/generics"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -11,8 +12,8 @@ import (
 type TimeWindowControllerParams struct {
 	fx.In
 
-	AuthService       interfaces.AuthService
-	LoggerService     interfaces.LoggerService
+	AuthService       mochi.AuthService
+	LoggerService     mochi.LoggerService
 	TimeWindowService interfaces.TimeWindowService
 	Router            *chi.Mux
 }
@@ -24,22 +25,22 @@ type TimeWindowControllerResult struct {
 }
 
 type TimeWindowController struct {
-	interfaces.ResourceController[*models.TimeWindow]
+	mochi.Controller[*models.TimeWindow]
 }
 
 func NewTimeWindowController(params TimeWindowControllerParams) (TimeWindowControllerResult, error) {
 	ctrl := TimeWindowController{}
 
-	ctrl.ResourceController = generics.NewResourceController[*models.TimeWindow](
+	ctrl.Controller = mochi.NewController(
 		params.TimeWindowService,
 		params.LoggerService,
 		params.AuthService,
 		models.NewTimeWindowFromCreateRequest,
 		models.NewTimeWindowFromUpdateRequest,
-		generics.WithContextKey[*models.TimeWindow](timeWindowContextKey),
-	).(*generics.ResourceController[*models.TimeWindow])
+		mochi.WithContextKey[*models.TimeWindow](timeWindowContextKey),
+	)
 
-	params.Router.Mount("/timewindows", ctrl.ResourceController.GetRouter())
+	params.Router.Mount("/timewindows", ctrl.Controller.GetRouter())
 
 	return TimeWindowControllerResult{TimeWindowController: ctrl}, nil
 }

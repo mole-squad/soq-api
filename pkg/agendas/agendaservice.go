@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/burkel24/go-mochi"
+
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -22,7 +24,7 @@ type AgendaServiceParams struct {
 
 	AgendaRepo          interfaces.AgendaRepo
 	FocusAreaService    interfaces.FocusAreaService
-	LoggerService       interfaces.LoggerService
+	LoggerService       mochi.LoggerService
 	NotificationService interfaces.NotificationService
 	QuotaService        interfaces.QuotaService
 	TaskService         interfaces.TaskService
@@ -36,9 +38,11 @@ type AgendaServiceResult struct {
 }
 
 type AgendaService struct {
+	mochi.Service[*models.Agenda]
+
 	agendaRepo          interfaces.AgendaRepo
 	focusAreaService    interfaces.FocusAreaService
-	logger              interfaces.LoggerService
+	logger              mochi.LoggerService
 	notificationService interfaces.NotificationService
 	quotaService        interfaces.QuotaService
 	taskService         interfaces.TaskService
@@ -46,8 +50,13 @@ type AgendaService struct {
 }
 
 func NewAgendaService(params AgendaServiceParams) (AgendaServiceResult, error) {
+	embeddedSvc := mochi.NewService(
+		params.AgendaRepo,
+	)
+
 	srv := &AgendaService{
-		agendaRepo:          params.AgendaRepo,
+		Service: embeddedSvc,
+
 		focusAreaService:    params.FocusAreaService,
 		logger:              params.LoggerService,
 		notificationService: params.NotificationService,
@@ -291,7 +300,7 @@ func (srv *AgendaService) populateAgenda(ctx context.Context, agenda *models.Age
 	agenda.AgendaItems = agendaItems
 	agenda.Status = models.AgendaStatusGenerated
 
-	err = srv.agendaRepo.UpdateOne(ctx, agenda)
+	err = srv.agendaRepo.UpdateOne(ctx, agenda.UserID, agenda)
 	if err != nil {
 		return fmt.Errorf("failed to update agenda: %w", err)
 	}
@@ -332,7 +341,7 @@ func (srv *AgendaService) sendAgendaNotification(ctx context.Context, agenda *mo
 
 	agenda.Status = models.AgendaStatusSent
 
-	err = srv.agendaRepo.UpdateOne(ctx, agenda)
+	err = srv.agendaRepo.UpdateOne(ctx, agenda.UserID, agenda)
 	if err != nil {
 		return fmt.Errorf("failed to update agenda: %w", err)
 	}
