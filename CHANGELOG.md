@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.17.1] - 2024-10-22
+### :bug: Bug Fixes
+- [`ee50a02`](https://github.com/mole-squad/soq-api/commit/ee50a02406388c5db989d572c155154b267d46d4) - fix refactor issues *(commit by [@burkel24](https://github.com/burkel24))*
+
+
 ## [v0.17.0] - 2024-09-02
 ### :sparkles: New Features
 - [`90551e8`](https://github.com/mole-squad/soq-api/commit/90551e86043c514b24641d7706ab9b8ebb6a81b9) - validate name on focus area create *(PR [#47](https://github.com/mole-squad/soq-api/pull/47) by [@burkel24](https://github.com/burkel24))*
@@ -125,3 +130,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v0.15.0]: https://github.com/mole-squad/soq-api/compare/v0.14.0...v0.15.0
 [v0.16.0]: https://github.com/mole-squad/soq-api/compare/v0.15.0...v0.16.0
 [v0.17.0]: https://github.com/mole-squad/soq-api/compare/v0.16.0...v0.17.0
+[v0.17.1]: https://github.com/mole-squad/soq-api/compare/v0.17.0...v0.17.1
