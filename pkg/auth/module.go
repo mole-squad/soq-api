@@ -1,8 +1,11 @@
 package auth
 
-import "go.uber.org/fx"
+import (
+	"github.com/burkel24/go-mochi"
+	"go.uber.org/fx"
+)
 
 var Module = fx.Module(
 	"Auth",
-	fx.Provide(NewAuthService),
+	fx.Provide(mochi.NewAuthService),
 )

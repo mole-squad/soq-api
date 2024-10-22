@@ -10,7 +10,7 @@ import (
 type FocusAreaRepoParams struct {
 	fx.In
 
-	DBService     interfaces.DBService
+	DBService     mochi.DBService
 	LoggerService mochi.LoggerService
 }
 

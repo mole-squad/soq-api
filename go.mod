@@ -3,7 +3,7 @@ module github.com/mole-squad/soq-api
 go 1.23.1
 
 require (
-	github.com/burkel24/go-mochi v0.0.5
+	github.com/burkel24/go-mochi v0.0.8
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-chi/render v1.0.3
 	github.com/golang-jwt/jwt/v5 v5.2.1
@@ -12,7 +12,6 @@ require (
 	github.com/spf13/cobra v1.8.1
 	go.uber.org/fx v1.23.0
 	golang.org/x/crypto v0.25.0
-	gorm.io/driver/postgres v1.5.9
 	gorm.io/gorm v1.25.12
 )
 
@@ -32,4 +31,5 @@ require (
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
+	gorm.io/driver/postgres v1.5.9 // indirect
 )

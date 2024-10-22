@@ -3,11 +3,11 @@ package api
 import (
 	"net/http"
 
+	"github.com/burkel24/go-mochi"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/mole-squad/soq-api/api"
 	"github.com/mole-squad/soq-api/pkg/common"
-	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"github.com/mole-squad/soq-api/pkg/users"
 	"go.uber.org/fx"
@@ -16,8 +16,8 @@ import (
 type UserControllerParams struct {
 	fx.In
 
-	AuthService interfaces.AuthService
-	UserService interfaces.UserService
+	AuthService mochi.AuthService
+	UserService mochi.UserService
 	Router      *chi.Mux
 }
 
@@ -28,8 +28,8 @@ type UserControllerResult struct {
 }
 
 type UserController struct {
-	auth        interfaces.AuthService
-	userService interfaces.UserService
+	auth        mochi.AuthService
+	userService mochi.UserService
 }
 
 func NewUserController(params UserControllerParams) (UserControllerResult, error) {
@@ -80,7 +80,7 @@ func (ctrl *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Status(r, http.StatusCreated)
-	render.Render(w, r, user.ToDTO())
+	render.Render(w, r, user.(*models.User).ToDTO())
 
 }
 
@@ -99,7 +99,7 @@ func (ctrl *UserController) SetPassword(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	err = ctrl.userService.UpdateUserPassword(ctx, user.ID, dto.Password)
+	err = ctrl.userService.UpdateUserPassword(ctx, user.GetID(), dto.Password)
 	if err != nil {
 		render.Render(w, r, common.ErrUnknown(err))
 		return

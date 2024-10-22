@@ -13,7 +13,7 @@ import (
 type UserRepoParams struct {
 	fx.In
 
-	DBService     interfaces.DBService
+	DBService     mochi.DBService
 	LoggerService mochi.LoggerService
 }
 
@@ -24,7 +24,7 @@ type UserRepoResult struct {
 }
 
 type UserRepo struct {
-	dbService interfaces.DBService
+	dbService mochi.DBService
 	logger    mochi.LoggerService
 }
 
@@ -37,8 +37,8 @@ func NewUserRepo(params UserRepoParams) (UserRepoResult, error) {
 	return UserRepoResult{UserRepo: repo}, nil
 }
 
-func (repo *UserRepo) ListUsers(ctx context.Context) ([]models.User, error) {
-	var users []models.User
+func (repo *UserRepo) ListUsers(ctx context.Context) ([]*models.User, error) {
+	var users []*models.User
 
 	err := repo.dbService.FindMany(ctx, &users, nil, nil, nil)
 	if err != nil {

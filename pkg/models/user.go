@@ -22,6 +22,14 @@ type User struct {
 	TimeWindows []TimeWindow
 }
 
+func (u *User) GetID() uint {
+	return u.ID
+}
+
+func (u *User) IsAdmin() bool {
+	return u.Admin
+}
+
 func (u *User) ToDTO() *api.UserDTO {
 	return &api.UserDTO{
 		ID:       u.ID,

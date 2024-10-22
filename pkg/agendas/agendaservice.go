@@ -28,7 +28,7 @@ type AgendaServiceParams struct {
 	NotificationService interfaces.NotificationService
 	QuotaService        interfaces.QuotaService
 	TaskService         interfaces.TaskService
-	UserService         interfaces.UserService
+	UserService         mochi.UserService
 }
 
 type AgendaServiceResult struct {
@@ -46,7 +46,7 @@ type AgendaService struct {
 	notificationService interfaces.NotificationService
 	quotaService        interfaces.QuotaService
 	taskService         interfaces.TaskService
-	userService         interfaces.UserService
+	userService         mochi.UserService
 }
 
 func NewAgendaService(params AgendaServiceParams) (AgendaServiceResult, error) {
@@ -77,7 +77,7 @@ func (srv *AgendaService) GenerateAgendasForUpcomingTimeWindows(ctx context.Cont
 	}
 
 	for _, user := range users {
-		err := srv.GenerateAgendasForUser(ctx, &user)
+		err := srv.GenerateAgendasForUser(ctx, user.(*models.User))
 
 		if err != nil {
 			return fmt.Errorf("failed to generate agendas for user: %w", err)

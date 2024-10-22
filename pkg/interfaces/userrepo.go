@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepo interface {
-	ListUsers(ctx context.Context) ([]models.User, error)
+	ListUsers(ctx context.Context) ([]*models.User, error)
 	CreateOne(ctx context.Context, user *models.User) error
 	FindOneByID(ctx context.Context, userID uint) (*models.User, error)
 	FindOneByUsername(ctx context.Context, username string) (*models.User, error)

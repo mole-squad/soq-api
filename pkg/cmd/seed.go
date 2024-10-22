@@ -7,7 +7,6 @@ import (
 
 	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/app"
-	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"github.com/mole-squad/soq-api/pkg/users"
 	"github.com/spf13/cobra"
@@ -32,9 +31,9 @@ var (
 type SeederParams struct {
 	fx.In
 
-	DbService interfaces.DBService
+	DbService mochi.DBService
 	Logger    mochi.LoggerService
-	interfaces.UserService
+	mochi.UserService
 }
 
 func NewSeeder(params SeederParams) error {

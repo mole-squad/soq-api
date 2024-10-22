@@ -10,7 +10,7 @@ import (
 type TaskRepoParams struct {
 	fx.In
 
-	DBService     interfaces.DBService
+	DBService     mochi.DBService
 	LoggerService mochi.LoggerService
 }
 
@@ -23,7 +23,7 @@ type TaskRepoResult struct {
 type TaskRepo struct {
 	mochi.Repository[*models.Task]
 
-	dbService interfaces.DBService
+	dbService mochi.DBService
 	logger    mochi.LoggerService
 }
 

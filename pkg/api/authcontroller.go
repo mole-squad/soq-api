@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/burkel24/go-mochi"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/mole-squad/soq-api/api"
 	"github.com/mole-squad/soq-api/pkg/common"
-	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"go.uber.org/fx"
 )
 
 type AuthControllerParams struct {
 	fx.In
 
-	AuthService interfaces.AuthService
+	AuthService mochi.AuthService
 	Router      *chi.Mux
 }
 
@@ -26,7 +26,7 @@ type AuthControllerResult struct {
 }
 
 type AuthController struct {
-	authService interfaces.AuthService
+	authService mochi.AuthService
 }
 
 func NewAuthController(params AuthControllerParams) (AuthControllerResult, error) {

@@ -10,7 +10,7 @@ import (
 type DeviceRepoParams struct {
 	fx.In
 
-	DBService     interfaces.DBService
+	DBService     mochi.DBService
 	LoggerService mochi.LoggerService
 }
 
@@ -23,7 +23,7 @@ type DeviceRepoResult struct {
 type DeviceRepo struct {
 	mochi.Repository[*models.Device]
 
-	dbService interfaces.DBService
+	dbService mochi.DBService
 	logger    mochi.LoggerService
 }
 

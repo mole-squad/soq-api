@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/burkel24/go-mochi"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -19,7 +20,7 @@ type UserServiceParams struct {
 type UserServiceResult struct {
 	fx.Out
 
-	UserService interfaces.UserService
+	UserService mochi.UserService
 }
 
 type UserService struct {
@@ -31,17 +32,22 @@ func NewUserService(params UserServiceParams) (UserServiceResult, error) {
 	return UserServiceResult{UserService: &srv}, nil
 }
 
-func (srv *UserService) ListUsers(ctx context.Context) ([]models.User, error) {
+func (srv *UserService) ListUsers(ctx context.Context) ([]mochi.User, error) {
 	users, err := srv.userRepo.ListUsers(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list users: %w", err)
 	}
 
-	return users, nil
+	result := make([]mochi.User, len(users))
+	for i, user := range users {
+		result[i] = user
+	}
+
+	return result, nil
 }
 
-func (srv *UserService) CreateUser(ctx context.Context, user *models.User) (*models.User, error) {
-	err := srv.userRepo.CreateOne(ctx, user)
+func (srv *UserService) CreateUser(ctx context.Context, user mochi.User) (mochi.User, error) {
+	err := srv.userRepo.CreateOne(ctx, user.(*models.User))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
@@ -49,7 +55,7 @@ func (srv *UserService) CreateUser(ctx context.Context, user *models.User) (*mod
 	return user, nil
 }
 
-func (srv *UserService) GetUserByID(ctx context.Context, userID uint) (*models.User, error) {
+func (srv *UserService) GetUserByID(ctx context.Context, userID uint) (mochi.User, error) {
 	user, err := srv.userRepo.FindOneByID(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user by ID: %w", err)
@@ -58,7 +64,7 @@ func (srv *UserService) GetUserByID(ctx context.Context, userID uint) (*models.U
 	return user, nil
 }
 
-func (srv *UserService) GetUserByCredentials(ctx context.Context, username, passwordHash string) (*models.User, error) {
+func (srv *UserService) GetUserByCredentials(ctx context.Context, username, passwordHash string) (mochi.User, error) {
 	user, err := srv.userRepo.FindOneByUsername(ctx, username)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user by username: %w", err)

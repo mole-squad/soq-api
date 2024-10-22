@@ -8,7 +8,6 @@ import (
 
 	"github.com/burkel24/go-mochi"
 
-	"github.com/mole-squad/soq-api/pkg/db"
 	"github.com/mole-squad/soq-api/pkg/interfaces"
 	"github.com/mole-squad/soq-api/pkg/models"
 	"go.uber.org/fx"
@@ -17,7 +16,7 @@ import (
 type AgendaRepoParams struct {
 	fx.In
 
-	DBService     interfaces.DBService
+	DBService     mochi.DBService
 	LoggerService mochi.LoggerService
 }
 
@@ -30,7 +29,7 @@ type AgendaRepoResult struct {
 type AgendaRepo struct {
 	mochi.Repository[*models.Agenda]
 
-	dbService interfaces.DBService
+	dbService mochi.DBService
 	logger    mochi.LoggerService
 }
 
@@ -100,7 +99,7 @@ func (repo *AgendaRepo) FindOneByTimeRangeFocusArea(
 	)
 
 	if err != nil {
-		if errors.Is(err, db.ErrorNotFound) {
+		if errors.Is(err, mochi.ErrRecordNotFound) {
 			return nil, nil
 		}
 
